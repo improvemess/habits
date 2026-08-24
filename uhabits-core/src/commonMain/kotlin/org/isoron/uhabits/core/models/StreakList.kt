@@ -35,6 +35,11 @@ class StreakList {
     }
 
     @Synchronized
+    fun getCurrentStreak(today: LocalDate = getToday()): Streak? {
+        return list.firstOrNull { it.end >= today && it.start <= today }
+    }
+
+    @Synchronized
     fun recompute(
         computedEntries: EntryList,
         from: LocalDate,

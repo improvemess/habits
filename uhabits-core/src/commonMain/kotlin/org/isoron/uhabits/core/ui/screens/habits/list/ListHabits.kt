@@ -32,7 +32,8 @@ data class ListHabitsState(
     val secondaryOrder: Order,
     val isSortable: Boolean,
     val checkmarkCount: Int,
-    val theme: Theme
+    val theme: Theme,
+    val showStreak: Boolean = false
 )
 
 object ListHabitsPresenter {
@@ -42,7 +43,8 @@ object ListHabitsPresenter {
         primaryOrder: Order,
         secondaryOrder: Order,
         checkmarkCount: Int,
-        theme: Theme
+        theme: Theme,
+        showStreak: Boolean = false
     ): ListHabitsState {
         val view = allHabits.getFiltered(filter)
         view.primaryOrder = primaryOrder
@@ -54,6 +56,7 @@ object ListHabitsPresenter {
         for (habit in view) {
             val id = habit.id ?: continue
             val score = habit.scores[today].value
+            val streak = habit.streaks.getCurrentStreak(today)?.length ?: 0
             val entries = habit.computedEntries.getByInterval(dateFrom, today)
             items.add(
                 HabitCardState(
@@ -67,7 +70,8 @@ object ListHabitsPresenter {
                     checkmarks = entries.map { it.value },
                     completed = entries.map { it.completed },
                     notes = entries.map { it.notes },
-                    category = habit.category
+                    category = habit.category,
+                    streak = streak
                 )
             )
         }
@@ -78,7 +82,8 @@ object ListHabitsPresenter {
             secondaryOrder = secondaryOrder,
             isSortable = primaryOrder == Order.BY_POSITION,
             checkmarkCount = checkmarkCount,
-            theme = theme
+            theme = theme,
+            showStreak = showStreak
         )
     }
 }
@@ -94,5 +99,6 @@ data class HabitCardState(
     val checkmarks: List<Int>,
     val completed: List<Boolean>,
     val notes: List<String>,
-    val category: String
+    val category: String,
+    val streak: Int = 0
 )

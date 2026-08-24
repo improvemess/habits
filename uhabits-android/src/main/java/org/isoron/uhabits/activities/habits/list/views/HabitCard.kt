@@ -41,6 +41,7 @@ import org.isoron.platform.time.LocalDate
 import org.isoron.platform.time.getToday
 import org.isoron.uhabits.R
 import org.isoron.uhabits.activities.common.views.RingView
+import org.isoron.uhabits.activities.common.views.StreakFlameView
 import org.isoron.uhabits.core.ui.screens.habits.list.HabitCardState
 import org.isoron.uhabits.inject.ActivityContext
 import org.isoron.uhabits.utils.currentTheme
@@ -50,7 +51,8 @@ import org.isoron.uhabits.utils.sres
 data class HabitCardViewState(
     val record: HabitCardState,
     val selected: Boolean,
-    val buttonCount: Int
+    val buttonCount: Int,
+    val showStreak: Boolean = false
 )
 
 class HabitCardView(
@@ -65,6 +67,7 @@ class HabitCardView(
     private var innerFrame: LinearLayout
     private var label: TextView
     private var scoreRing: RingView
+    private var streakFlame: StreakFlameView
 
     private var dataOffset = 0
     private var state: HabitCardViewState? = null
@@ -83,6 +86,13 @@ class HabitCardView(
             setPercentage(r.score.toFloat())
             setPrecision(1.0f / 16)
             setColor(c)
+            visibility = if (newState.showStreak) View.GONE else View.VISIBLE
+        }
+        streakFlame.apply {
+            color = c
+            isArchived = r.archived
+            streak = r.streak
+            visibility = if (newState.showStreak) View.VISIBLE else View.GONE
         }
         checkmarkPanel.visibility = when (r.isNumerical) {
             true -> View.GONE
@@ -129,6 +139,15 @@ class HabitCardView(
                 gravity = Gravity.CENTER
             }
             setThickness(thickness)
+        }
+
+        streakFlame = StreakFlameView(context).apply {
+            val margin = dp(4f).toInt()
+            layoutParams = LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT).apply {
+                setMargins(margin, 0, margin, 0)
+                gravity = Gravity.CENTER
+            }
+            visibility = GONE
         }
 
         label = TextView(context).apply {
@@ -182,6 +201,7 @@ class HabitCardView(
             elevation = dp(1f)
 
             addView(scoreRing)
+            addView(streakFlame)
             addView(label)
             addView(checkmarkPanel)
             addView(numberPanel)
