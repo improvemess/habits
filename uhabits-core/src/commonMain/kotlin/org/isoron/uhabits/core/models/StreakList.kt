@@ -35,6 +35,21 @@ class StreakList {
     }
 
     @Synchronized
+    fun getCurrentStreak(today: LocalDate = getToday()): Streak? {
+        return list.firstOrNull { it.end >= today && it.start <= today }
+    }
+
+    /**
+     * Returns the streak that is still alive: one that includes today, or one that
+     * ended yesterday and can still be continued today.
+     */
+    @Synchronized
+    fun getOngoingStreak(today: LocalDate = getToday()): Streak? {
+        val yesterday = today.minus(1)
+        return list.firstOrNull { it.end >= yesterday && it.start <= today }
+    }
+
+    @Synchronized
     fun recompute(
         computedEntries: EntryList,
         from: LocalDate,

@@ -24,6 +24,8 @@ import org.isoron.uhabits.core.BaseUnitTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 class StreakListTest : BaseUnitTest() {
     private lateinit var habit: Habit
@@ -77,5 +79,80 @@ class StreakListTest : BaseUnitTest() {
         val best = habit.streaks.getBest(10)
         assertEquals(1, best.size)
         assertEquals(3, best[0].length)
+    }
+
+    @Test
+    fun testGetCurrentStreak_completedToday() {
+        habit.originalEntries.clear()
+        habit.originalEntries.add(Entry(today, Entry.YES_MANUAL))
+        habit.originalEntries.add(Entry(today.minus(1), Entry.YES_MANUAL))
+        habit.originalEntries.add(Entry(today.minus(2), Entry.YES_MANUAL))
+        habit.recompute()
+        val current = streaks.getCurrentStreak(today)
+        assertNotNull(current)
+        assertEquals(3, current.length)
+        assertEquals(today.minus(2), current.start)
+        assertEquals(today, current.end)
+    }
+
+    @Test
+    fun testGetCurrentStreak_completedYesterdayNotToday() {
+        habit.originalEntries.clear()
+        habit.originalEntries.add(Entry(today.minus(1), Entry.YES_MANUAL))
+        habit.originalEntries.add(Entry(today.minus(2), Entry.YES_MANUAL))
+        habit.recompute()
+        val current = streaks.getCurrentStreak(today)
+        assertNull(current)
+    }
+
+    @Test
+    fun testGetCurrentStreak_brokenTwoDaysAgo() {
+        habit.originalEntries.clear()
+        habit.originalEntries.add(Entry(today.minus(2), Entry.YES_MANUAL))
+        habit.originalEntries.add(Entry(today.minus(3), Entry.YES_MANUAL))
+        habit.recompute()
+        val current = streaks.getCurrentStreak(today)
+        assertNull(current)
+    }
+
+    @Test
+    fun testGetCurrentStreak_empty() {
+        habit.originalEntries.clear()
+        habit.recompute()
+        val current = streaks.getCurrentStreak(today)
+        assertNull(current)
+    }
+
+    @Test
+    fun testGetOngoingStreak_completedToday() {
+        habit.originalEntries.clear()
+        habit.originalEntries.add(Entry(today, Entry.YES_MANUAL))
+        habit.originalEntries.add(Entry(today.minus(1), Entry.YES_MANUAL))
+        habit.recompute()
+        val ongoing = streaks.getOngoingStreak(today)
+        assertNotNull(ongoing)
+        assertEquals(2, ongoing.length)
+        assertEquals(today, ongoing.end)
+    }
+
+    @Test
+    fun testGetOngoingStreak_completedYesterdayNotToday() {
+        habit.originalEntries.clear()
+        habit.originalEntries.add(Entry(today.minus(1), Entry.YES_MANUAL))
+        habit.originalEntries.add(Entry(today.minus(2), Entry.YES_MANUAL))
+        habit.recompute()
+        val ongoing = streaks.getOngoingStreak(today)
+        assertNotNull(ongoing)
+        assertEquals(2, ongoing.length)
+        assertEquals(today.minus(1), ongoing.end)
+    }
+
+    @Test
+    fun testGetOngoingStreak_brokenTwoDaysAgo() {
+        habit.originalEntries.clear()
+        habit.originalEntries.add(Entry(today.minus(2), Entry.YES_MANUAL))
+        habit.originalEntries.add(Entry(today.minus(3), Entry.YES_MANUAL))
+        habit.recompute()
+        assertNull(streaks.getOngoingStreak(today))
     }
 }

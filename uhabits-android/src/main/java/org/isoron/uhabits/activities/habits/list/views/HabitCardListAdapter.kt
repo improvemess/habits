@@ -196,7 +196,7 @@ class HabitCardListAdapter(
                 val isSelected = selected.contains(row.card.id)
                 listView!!.bindCardView(
                     holder as HabitCardViewHolder,
-                    HabitCardViewState(row.card, isSelected, st.checkmarkCount)
+                    HabitCardViewState(row.card, isSelected, st.checkmarkCount, st.showStreak)
                 )
             }
             is Row.Category -> {

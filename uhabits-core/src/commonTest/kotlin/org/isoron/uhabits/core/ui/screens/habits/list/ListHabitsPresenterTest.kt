@@ -21,6 +21,7 @@ package org.isoron.uhabits.core.ui.screens.habits.list
 import org.isoron.platform.time.getToday
 import org.isoron.uhabits.core.BaseUnitTest
 import org.isoron.uhabits.core.models.Entry
+import org.isoron.uhabits.core.models.Frequency
 import org.isoron.uhabits.core.models.Habit
 import org.isoron.uhabits.core.models.HabitList.Order
 import org.isoron.uhabits.core.models.HabitMatcher
@@ -66,7 +67,9 @@ class ListHabitsPresenterTest : BaseUnitTest() {
                     checkmarks = listOf(2, -1, -1),
                     completed = listOf(true, false, false),
                     notes = listOf("", "", ""),
-                    category = ""
+                    category = "",
+                    streak = 1,
+                    streakDoneToday = true
                 ),
                 HabitCardState(
                     id = 1,
@@ -79,7 +82,8 @@ class ListHabitsPresenterTest : BaseUnitTest() {
                     checkmarks = listOf(-1, 2, -1),
                     completed = listOf(false, true, false),
                     notes = listOf("", "", ""),
-                    category = ""
+                    category = "",
+                    streak = 1
                 ),
                 HabitCardState(
                     id = 0,
@@ -92,7 +96,9 @@ class ListHabitsPresenterTest : BaseUnitTest() {
                     checkmarks = listOf(2, -1, -1),
                     completed = listOf(true, false, false),
                     notes = listOf("", "", ""),
-                    category = ""
+                    category = "",
+                    streak = 1,
+                    streakDoneToday = true
                 ),
                 HabitCardState(
                     id = 4,
@@ -180,5 +186,33 @@ class ListHabitsPresenterTest : BaseUnitTest() {
         habit.recompute()
         habitList.add(habit)
         return habit
+    }
+
+    @Test
+    fun testStreakCountsOnlyPerformedDays() {
+        // 3 times in 4 days: days between repetitions are not required (YES_AUTO)
+        val habit = fixtures.createEmptyHabit()
+        habit.frequency = Frequency(3, 4)
+        val today = getToday()
+        for (offset in intArrayOf(0, 1, 3)) {
+            habit.originalEntries.add(Entry(today.minus(offset), Entry.YES_MANUAL))
+        }
+        habit.recompute()
+        habitList.add(habit)
+
+        val state = ListHabitsPresenter.buildState(
+            allHabits = habitList,
+            filter = null,
+            primaryOrder = Order.BY_POSITION,
+            secondaryOrder = Order.BY_NAME_ASC,
+            checkmarkCount = checkmarkCount,
+            theme = theme
+        )
+        val card = state.items.single()
+        assertEquals(3, card.streak)
+        assertEquals(true, card.streakDoneToday)
+        // The streak range also covers the days in between, but they are not counted
+        val range = habit.streaks.getOngoingStreak(today)!!
+        assertEquals(true, range.length > 3)
     }
 }
