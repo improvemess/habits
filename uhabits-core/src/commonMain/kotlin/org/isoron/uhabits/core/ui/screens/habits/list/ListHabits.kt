@@ -18,8 +18,8 @@
  */
 package org.isoron.uhabits.core.ui.screens.habits.list
 
-import org.isoron.platform.time.getToday
 import org.isoron.platform.time.LocalDate
+import org.isoron.platform.time.getToday
 import org.isoron.uhabits.core.models.Entry
 import org.isoron.uhabits.core.models.Habit
 import org.isoron.uhabits.core.models.HabitList
