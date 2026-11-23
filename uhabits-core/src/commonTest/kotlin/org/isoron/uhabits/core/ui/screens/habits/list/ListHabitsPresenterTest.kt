@@ -66,7 +66,8 @@ class ListHabitsPresenterTest : BaseUnitTest() {
                     checkmarks = listOf(2, -1, -1),
                     completed = listOf(true, false, false),
                     notes = listOf("", "", ""),
-                    category = ""
+                    category = "",
+                    streak = 1
                 ),
                 HabitCardState(
                     id = 1,
@@ -92,7 +93,8 @@ class ListHabitsPresenterTest : BaseUnitTest() {
                     checkmarks = listOf(2, -1, -1),
                     completed = listOf(true, false, false),
                     notes = listOf("", "", ""),
-                    category = ""
+                    category = "",
+                    streak = 1
                 ),
                 HabitCardState(
                     id = 4,
