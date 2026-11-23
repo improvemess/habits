@@ -60,6 +60,17 @@ android {
     }
 
     signingConfigs {
+        // Fester Debug-Schlüssel, damit Debug-APKs aus CI und lokalen Builds
+        // sich gegenseitig überinstallieren lassen. Ohne DEBUG_KEYSTORE nutzt
+        // AGP wie gewohnt ~/.android/debug.keystore.
+        System.getenv("DEBUG_KEYSTORE")?.takeIf { it.isNotBlank() }?.let { path ->
+            getByName("debug") {
+                storeFile = file(path)
+                storePassword = "android"
+                keyAlias = "androiddebugkey"
+                keyPassword = "android"
+            }
+        }
         if (System.getenv("LOOP_KEY_ALIAS") != null) {
             create("release") {
                 keyAlias = System.getenv("LOOP_KEY_ALIAS")
