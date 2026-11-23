@@ -55,7 +55,7 @@ class PendingIntentFactory(
                 data = Uri.parse(habit.uriString)
                 action = WidgetReceiver.ACTION_ADD_REPETITION
                 if (date != null) putExtra("timestamp", date.unixTime)
-                putExtra(WidgetReceiver.EXTRA_SOURCE, source.key)
+                putExtra(WidgetReceiver.EXTRA_SOURCE, source.name)
             },
             FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT
         )
@@ -79,7 +79,7 @@ class PendingIntentFactory(
                 action = WidgetReceiver.ACTION_REMOVE_REPETITION
                 data = Uri.parse(habit.uriString)
                 if (date != null) putExtra("timestamp", date.unixTime)
-                putExtra(WidgetReceiver.EXTRA_SOURCE, source.key)
+                putExtra(WidgetReceiver.EXTRA_SOURCE, source.name)
             },
             FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT
         )

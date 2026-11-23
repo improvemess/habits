@@ -21,14 +21,19 @@ package org.isoron.uhabits.core.commands
 /**
  * Where a change to a habit entry originated from.
  *
- * Used by external integrations (e.g. Home Assistant) to tell apart changes
- * made by the user from changes they triggered themselves, so that
- * automations do not end up in loops.
+ * Lets event consumers tell apart changes made by the user from changes
+ * that an external system triggered itself, so that automations do not end
+ * up in loops.
  */
-enum class EntrySource(val key: String) {
-    APP("app"),
-    WIDGET("widget"),
-    NOTIFICATION("notification"),
-    AUTOMATION("automation"),
-    HOME_ASSISTANT("homeassistant")
+enum class EntrySource {
+    /** The app's own UI (habit list, habit screen). */
+    APP,
+    WIDGET,
+    NOTIFICATION,
+
+    /** Tasker / Locale plugin actions. */
+    AUTOMATION,
+
+    /** An external integration writing back into the app. */
+    EXTERNAL
 }

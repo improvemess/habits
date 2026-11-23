@@ -64,7 +64,7 @@ class HabitEventFactoryTest : BaseUnitTest() {
         assertEquals(habit.uuid, event.habitUuid)
         assertEquals("Meditate", event.habitName)
         assertEquals("Health", event.category)
-        assertEquals("2015-01-25", event.date)
+        assertEquals(today, event.date)
         assertEquals(EntryState.YES, event.state)
         assertEquals(1.0, event.value)
         assertEquals(HabitEvent.Type.YES_NO, event.habitType)
@@ -120,7 +120,7 @@ class HabitEventFactoryTest : BaseUnitTest() {
     fun testPastDate() {
         val habit = yesNoHabit(3 to Entry.YES_MANUAL)
         val event = HabitEventFactory.entryChanged(habit, today.minus(3), EntrySource.APP)
-        assertEquals("2015-01-22", event.date)
+        assertEquals(today.minus(3), event.date)
         assertEquals(EntryState.YES, event.state)
         assertTrue(event.completed)
         // The streak is evaluated as of today, so an old streak is not current

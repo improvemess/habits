@@ -56,12 +56,12 @@ class HabitEventPublisherTest : BaseUnitTest() {
     @Test
     fun testPublishesEntryChange() {
         publisher()
-        check(EntrySource.HOME_ASSISTANT)
+        check(EntrySource.EXTERNAL)
         assertEquals(1, events.size)
         assertEquals(habit.uuid, events[0].habitUuid)
         assertEquals(EntryState.YES, events[0].state)
         assertTrue(events[0].completed)
-        assertEquals(EntrySource.HOME_ASSISTANT, events[0].source)
+        assertEquals(EntrySource.EXTERNAL, events[0].source)
     }
 
     @Test

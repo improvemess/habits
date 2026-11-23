@@ -18,18 +18,21 @@
  */
 package org.isoron.uhabits.core.events
 
+import org.isoron.platform.time.LocalDate
 import org.isoron.uhabits.core.commands.EntrySource
 
 /**
- * Transport-agnostic description of a change to a habit entry, sent to
- * external integrations such as Home Assistant.
+ * Transport-agnostic description of a change to a habit entry.
+ *
+ * Contains domain values only; how they are serialized (key names, date
+ * format, ...) is up to each [HabitEventTransport].
  */
 data class HabitEvent(
     val habitUuid: String,
     val habitName: String,
     val category: String,
-    /** Date of the changed entry, formatted as YYYY-MM-DD. */
-    val date: String,
+    /** Date of the changed entry. */
+    val date: LocalDate,
     val state: EntryState,
     /**
      * Value of the entry in the habit's unit. 1.0 for "yes" / 0.0 for "no" on
@@ -50,24 +53,24 @@ data class HabitEvent(
     val score: Double,
     val source: EntrySource
 ) {
-    enum class EntryState(val key: String) {
-        YES("yes"),
-        YES_AUTO("yes_auto"),
-        NO("no"),
-        SKIP("skip"),
-        UNKNOWN("unknown"),
+    enum class EntryState {
+        YES,
+        YES_AUTO,
+        NO,
+        SKIP,
+        UNKNOWN,
 
         /** A numerical habit with a known value. */
-        VALUE("value")
+        VALUE
     }
 
-    enum class Type(val key: String) {
-        YES_NO("yes_no"),
-        NUMERICAL("numerical")
+    enum class Type {
+        YES_NO,
+        NUMERICAL
     }
 
-    enum class TargetType(val key: String) {
-        AT_LEAST("at_least"),
-        AT_MOST("at_most")
+    enum class TargetType {
+        AT_LEAST,
+        AT_MOST
     }
 }

@@ -19,8 +19,7 @@
 package org.isoron.uhabits.core.events
 
 /**
- * Delivers [HabitEvent]s to an external system (e.g. Home Assistant via the
- * Companion App, or its REST API).
+ * Delivers [HabitEvent]s to an external system, and owns their wire format.
  *
  * Called on the main thread; implementations must not block.
  */

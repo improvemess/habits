@@ -38,7 +38,7 @@ object HabitEventFactory {
             habitUuid = habit.uuid!!,
             habitName = habit.name,
             category = habit.category,
-            date = date.toCSVString(),
+            date = date,
             state = stateOf(habit, raw),
             value = valueOf(habit, raw),
             habitType = if (habit.isNumerical) HabitEvent.Type.NUMERICAL else HabitEvent.Type.YES_NO,

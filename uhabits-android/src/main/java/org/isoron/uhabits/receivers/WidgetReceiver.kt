@@ -62,9 +62,9 @@ class WidgetReceiver : BroadcastReceiver() {
                 data = parser.parseCheckmarkIntent(intent)
             }
             // Only accept sources this receiver is actually used for, so that other apps
-            // cannot impersonate e.g. Home Assistant.
+            // cannot pretend to be e.g. an external integration.
             val source = when (intent.getStringExtra(EXTRA_SOURCE)) {
-                EntrySource.NOTIFICATION.key -> EntrySource.NOTIFICATION
+                EntrySource.NOTIFICATION.name -> EntrySource.NOTIFICATION
                 else -> EntrySource.WIDGET
             }
             when (intent.action) {
