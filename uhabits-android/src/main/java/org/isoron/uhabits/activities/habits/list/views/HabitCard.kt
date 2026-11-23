@@ -92,6 +92,7 @@ class HabitCardView(
             color = c
             isArchived = r.archived
             streak = r.streak
+            isActive = r.streakDoneToday
             visibility = if (newState.showStreak) View.VISIBLE else View.GONE
         }
         checkmarkPanel.visibility = when (r.isNumerical) {

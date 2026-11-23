@@ -56,7 +56,9 @@ object ListHabitsPresenter {
         for (habit in view) {
             val id = habit.id ?: continue
             val score = habit.scores[today].value
-            val streak = habit.streaks.getCurrentStreak(today)?.length ?: 0
+            val ongoing = habit.streaks.getOngoingStreak(today)
+            val streak = ongoing?.length ?: 0
+            val streakDoneToday = ongoing != null && ongoing.end >= today
             val entries = habit.computedEntries.getByInterval(dateFrom, today)
             items.add(
                 HabitCardState(
@@ -71,7 +73,8 @@ object ListHabitsPresenter {
                     completed = entries.map { it.completed },
                     notes = entries.map { it.notes },
                     category = habit.category,
-                    streak = streak
+                    streak = streak,
+                    streakDoneToday = streakDoneToday
                 )
             )
         }
@@ -100,5 +103,6 @@ data class HabitCardState(
     val completed: List<Boolean>,
     val notes: List<String>,
     val category: String,
-    val streak: Int = 0
+    val streak: Int = 0,
+    val streakDoneToday: Boolean = false
 )

@@ -67,7 +67,8 @@ class ListHabitsPresenterTest : BaseUnitTest() {
                     completed = listOf(true, false, false),
                     notes = listOf("", "", ""),
                     category = "",
-                    streak = 1
+                    streak = 1,
+                    streakDoneToday = true
                 ),
                 HabitCardState(
                     id = 1,
@@ -80,7 +81,8 @@ class ListHabitsPresenterTest : BaseUnitTest() {
                     checkmarks = listOf(-1, 2, -1),
                     completed = listOf(false, true, false),
                     notes = listOf("", "", ""),
-                    category = ""
+                    category = "",
+                    streak = 1
                 ),
                 HabitCardState(
                     id = 0,
@@ -94,7 +96,8 @@ class ListHabitsPresenterTest : BaseUnitTest() {
                     completed = listOf(true, false, false),
                     notes = listOf("", "", ""),
                     category = "",
-                    streak = 1
+                    streak = 1,
+                    streakDoneToday = true
                 ),
                 HabitCardState(
                     id = 4,

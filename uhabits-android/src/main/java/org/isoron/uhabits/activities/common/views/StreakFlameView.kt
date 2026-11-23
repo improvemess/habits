@@ -29,7 +29,6 @@ import android.util.AttributeSet
 import android.view.View
 import org.isoron.platform.gui.FontAwesome
 import org.isoron.uhabits.R
-import org.isoron.uhabits.utils.ColorUtils.setAlpha
 import org.isoron.uhabits.utils.dp
 import org.isoron.uhabits.utils.getFontAwesome
 import org.isoron.uhabits.utils.sp
@@ -47,6 +46,15 @@ class StreakFlameView : View {
         }
 
     var color: Int = Color.BLACK
+        set(value) {
+            if (field != value) {
+                field = value
+                invalidate()
+            }
+        }
+
+    /** True once today's check-in is done; until then the flame is shown in gray. */
+    var isActive: Boolean = false
         set(value) {
             if (field != value) {
                 field = value
@@ -122,8 +130,8 @@ class StreakFlameView : View {
 
         val displayColor = when {
             isArchived -> sres.getColor(R.attr.contrast60)
-            streak > 0 -> color
-            else -> setAlpha(color, 0.4f)
+            isActive -> color
+            else -> sres.getColor(R.attr.contrast40)
         }
 
         pFlame.color = displayColor

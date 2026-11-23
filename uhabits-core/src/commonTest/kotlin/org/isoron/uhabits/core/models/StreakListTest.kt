@@ -122,4 +122,37 @@ class StreakListTest : BaseUnitTest() {
         val current = streaks.getCurrentStreak(today)
         assertNull(current)
     }
+
+    @Test
+    fun testGetOngoingStreak_completedToday() {
+        habit.originalEntries.clear()
+        habit.originalEntries.add(Entry(today, Entry.YES_MANUAL))
+        habit.originalEntries.add(Entry(today.minus(1), Entry.YES_MANUAL))
+        habit.recompute()
+        val ongoing = streaks.getOngoingStreak(today)
+        assertNotNull(ongoing)
+        assertEquals(2, ongoing.length)
+        assertEquals(today, ongoing.end)
+    }
+
+    @Test
+    fun testGetOngoingStreak_completedYesterdayNotToday() {
+        habit.originalEntries.clear()
+        habit.originalEntries.add(Entry(today.minus(1), Entry.YES_MANUAL))
+        habit.originalEntries.add(Entry(today.minus(2), Entry.YES_MANUAL))
+        habit.recompute()
+        val ongoing = streaks.getOngoingStreak(today)
+        assertNotNull(ongoing)
+        assertEquals(2, ongoing.length)
+        assertEquals(today.minus(1), ongoing.end)
+    }
+
+    @Test
+    fun testGetOngoingStreak_brokenTwoDaysAgo() {
+        habit.originalEntries.clear()
+        habit.originalEntries.add(Entry(today.minus(2), Entry.YES_MANUAL))
+        habit.originalEntries.add(Entry(today.minus(3), Entry.YES_MANUAL))
+        habit.recompute()
+        assertNull(streaks.getOngoingStreak(today))
+    }
 }
