@@ -19,6 +19,9 @@
 package org.isoron.uhabits.core.ui.screens.habits.list
 
 import org.isoron.platform.time.getToday
+import org.isoron.platform.time.LocalDate
+import org.isoron.uhabits.core.models.Entry
+import org.isoron.uhabits.core.models.Habit
 import org.isoron.uhabits.core.models.HabitList
 import org.isoron.uhabits.core.models.HabitList.Order
 import org.isoron.uhabits.core.models.HabitMatcher
@@ -57,7 +60,7 @@ object ListHabitsPresenter {
             val id = habit.id ?: continue
             val score = habit.scores[today].value
             val ongoing = habit.streaks.getOngoingStreak(today)
-            val streak = ongoing?.length ?: 0
+            val streak = ongoing?.let { countPerformedDays(habit, it.start, it.end) } ?: 0
             val streakDoneToday = ongoing != null && ongoing.end >= today
             val entries = habit.computedEntries.getByInterval(dateFrom, today)
             items.add(
@@ -106,3 +109,17 @@ data class HabitCardState(
     val streak: Int = 0,
     val streakDoneToday: Boolean = false
 )
+
+/**
+ * Counts the days in [from]..[to] on which the habit was actually performed. Days that are only
+ * covered because the frequency does not require a repetition (YES_AUTO) and skipped days keep
+ * a streak alive, but do not increase its number.
+ */
+internal fun countPerformedDays(habit: Habit, from: LocalDate, to: LocalDate): Int {
+    return habit.computedEntries.getByInterval(from, to).count {
+        when {
+            habit.isNumerical -> it.completed && it.value != Entry.SKIP
+            else -> it.value == Entry.YES_MANUAL
+        }
+    }
+}
