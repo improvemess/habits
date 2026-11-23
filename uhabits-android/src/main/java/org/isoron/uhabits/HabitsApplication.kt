@@ -25,6 +25,7 @@ import org.isoron.platform.time.computeToday
 import org.isoron.platform.time.setFirstWeekday
 import org.isoron.platform.time.setToday
 import org.isoron.uhabits.core.database.UnsupportedDatabaseVersionException
+import org.isoron.uhabits.core.events.HabitEventPublisher
 import org.isoron.uhabits.core.reminders.ReminderScheduler
 import org.isoron.uhabits.core.ui.NotificationTray
 import org.isoron.uhabits.inject.HabitsApplicationComponent
@@ -42,6 +43,7 @@ class HabitsApplication : Application() {
     private lateinit var widgetUpdater: WidgetUpdater
     private lateinit var reminderScheduler: ReminderScheduler
     private lateinit var notificationTray: NotificationTray
+    private lateinit var habitEventPublisher: HabitEventPublisher
 
     override fun onCreate() {
         super.onCreate()
@@ -86,6 +88,13 @@ class HabitsApplication : Application() {
         notificationTray = component.notificationTray
         notificationTray.startListening()
 
+        // Sends nothing until the Home Assistant integration is enabled.
+        habitEventPublisher = HabitEventPublisher(
+            component.commandRunner,
+            component.companionAppTransport
+        )
+        habitEventPublisher.startListening()
+
         val taskRunner = component.taskRunner
         taskRunner.execute {
             reminderScheduler.scheduleAll()
@@ -97,6 +106,7 @@ class HabitsApplication : Application() {
         reminderScheduler.stopListening()
         widgetUpdater.stopListening()
         notificationTray.stopListening()
+        habitEventPublisher.stopListening()
         super.onTerminate()
     }
 
