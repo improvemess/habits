@@ -60,10 +60,12 @@ jobs:
           cp uhabits-android/build/outputs/apk/debug/uhabits-android-debug.apk "dist/${NAME}.apk"
           echo "name=${NAME}" >> "$GITHUB_OUTPUT"
 
+      # archive: false uploads the APK as-is instead of zipping it. Only a
+      # single file is allowed; its file name becomes the artifact name.
       - name: Upload APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
-          name: ${{ steps.prepare.outputs.name }}
-          path: dist/*.apk
+          path: dist/${{ steps.prepare.outputs.name }}.apk
+          archive: false
           retention-days: 30
           if-no-files-found: error
