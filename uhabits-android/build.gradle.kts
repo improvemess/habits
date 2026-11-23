@@ -96,7 +96,12 @@ android {
         }
     }
     buildFeatures.viewBinding = true
-    lint.abortOnError = false
+    lint {
+        // Bestehende Befunde stehen in der Baseline; nur neue Lint-Errors brechen den Build ab.
+        // Baseline aktualisieren: ./gradlew :uhabits-android:updateLintBaseline
+        baseline = file("lint-baseline.xml")
+        abortOnError = true
+    }
 }
 
 mokkery {
