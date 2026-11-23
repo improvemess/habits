@@ -22,6 +22,7 @@ import me.tatarka.inject.annotations.Inject
 import org.isoron.platform.time.LocalDate
 import org.isoron.uhabits.core.commands.CommandRunner
 import org.isoron.uhabits.core.commands.CreateRepetitionCommand
+import org.isoron.uhabits.core.commands.EntrySource
 import org.isoron.uhabits.core.models.Entry
 import org.isoron.uhabits.core.models.Entry.Companion.nextToggleValue
 import org.isoron.uhabits.core.models.Habit
@@ -36,19 +37,19 @@ class WidgetBehavior(
     private val notificationTray: NotificationTray,
     private val preferences: Preferences
 ) {
-    fun onAddRepetition(habit: Habit, date: LocalDate) {
+    fun onAddRepetition(habit: Habit, date: LocalDate, source: EntrySource = EntrySource.WIDGET) {
         notificationTray.cancel(habit)
         val entry = habit.originalEntries.get(date)
-        setValue(habit, date, Entry.YES_MANUAL, entry.notes)
+        setValue(habit, date, Entry.YES_MANUAL, entry.notes, source)
     }
 
-    fun onRemoveRepetition(habit: Habit, date: LocalDate) {
+    fun onRemoveRepetition(habit: Habit, date: LocalDate, source: EntrySource = EntrySource.WIDGET) {
         notificationTray.cancel(habit)
         val entry = habit.originalEntries.get(date)
-        setValue(habit, date, Entry.NO, entry.notes)
+        setValue(habit, date, Entry.NO, entry.notes, source)
     }
 
-    fun onToggleRepetition(habit: Habit, date: LocalDate) {
+    fun onToggleRepetition(habit: Habit, date: LocalDate, source: EntrySource = EntrySource.WIDGET) {
         val entry = habit.originalEntries.get(date)
         val currentValue = entry.value
         val newValue = nextToggleValue(
@@ -56,27 +57,43 @@ class WidgetBehavior(
             isSkipEnabled = preferences.isSkipEnabled,
             areQuestionMarksEnabled = preferences.areQuestionMarksEnabled
         )
-        setValue(habit, date, newValue, entry.notes)
+        setValue(habit, date, newValue, entry.notes, source)
         notificationTray.cancel(habit)
     }
 
-    fun onIncrement(habit: Habit, date: LocalDate, amount: Int) {
+    fun onIncrement(
+        habit: Habit,
+        date: LocalDate,
+        amount: Int,
+        source: EntrySource = EntrySource.WIDGET
+    ) {
         val entry = habit.computedEntries.get(date)
         val currentValue = entry.value
-        setValue(habit, date, currentValue + amount, entry.notes)
+        setValue(habit, date, currentValue + amount, entry.notes, source)
         notificationTray.cancel(habit)
     }
 
-    fun onDecrement(habit: Habit, date: LocalDate, amount: Int) {
+    fun onDecrement(
+        habit: Habit,
+        date: LocalDate,
+        amount: Int,
+        source: EntrySource = EntrySource.WIDGET
+    ) {
         val entry = habit.computedEntries.get(date)
         val currentValue = entry.value
-        setValue(habit, date, currentValue - amount, entry.notes)
+        setValue(habit, date, currentValue - amount, entry.notes, source)
         notificationTray.cancel(habit)
     }
 
-    fun setValue(habit: Habit, date: LocalDate, newValue: Int, notes: String) {
+    fun setValue(
+        habit: Habit,
+        date: LocalDate,
+        newValue: Int,
+        notes: String,
+        source: EntrySource = EntrySource.WIDGET
+    ) {
         commandRunner.run(
-            CreateRepetitionCommand(habitList, habit, date, newValue, notes)
+            CreateRepetitionCommand(habitList, habit, date, newValue, notes, source)
         )
     }
 }

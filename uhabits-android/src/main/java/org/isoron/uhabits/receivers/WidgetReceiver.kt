@@ -27,6 +27,7 @@ import org.isoron.platform.time.computeToday
 import org.isoron.platform.time.setFirstWeekday
 import org.isoron.platform.time.setToday
 import org.isoron.uhabits.HabitsApplication
+import org.isoron.uhabits.core.commands.EntrySource
 import org.isoron.uhabits.core.ui.widgets.WidgetBehavior
 import org.isoron.uhabits.inject.HabitsApplicationComponent
 import org.isoron.uhabits.intents.IntentParser.CheckmarkIntentData
@@ -60,6 +61,12 @@ class WidgetReceiver : BroadcastReceiver() {
             if (intent.action !== ACTION_UPDATE_WIDGETS_VALUE) {
                 data = parser.parseCheckmarkIntent(intent)
             }
+            // Only accept sources this receiver is actually used for, so that other apps
+            // cannot impersonate e.g. Home Assistant.
+            val source = when (intent.getStringExtra(EXTRA_SOURCE)) {
+                EntrySource.NOTIFICATION.key -> EntrySource.NOTIFICATION
+                else -> EntrySource.WIDGET
+            }
             when (intent.action) {
                 ACTION_ADD_REPETITION -> {
                     Log.d(
@@ -72,7 +79,8 @@ class WidgetReceiver : BroadcastReceiver() {
                     )
                     controller.onAddRepetition(
                         data.habit,
-                        data.date
+                        data.date,
+                        source
                     )
                 }
                 ACTION_TOGGLE_REPETITION -> {
@@ -86,7 +94,8 @@ class WidgetReceiver : BroadcastReceiver() {
                     )
                     controller.onToggleRepetition(
                         data.habit,
-                        data.date
+                        data.date,
+                        source
                     )
                 }
                 ACTION_REMOVE_REPETITION -> {
@@ -100,7 +109,8 @@ class WidgetReceiver : BroadcastReceiver() {
                     )
                     controller.onRemoveRepetition(
                         data.habit,
-                        data.date
+                        data.date,
+                        source
                     )
                 }
                 ACTION_UPDATE_WIDGETS_VALUE -> {
@@ -121,6 +131,7 @@ class WidgetReceiver : BroadcastReceiver() {
         const val ACTION_REMOVE_REPETITION = "org.isoron.uhabits.ACTION_REMOVE_REPETITION"
         const val ACTION_TOGGLE_REPETITION = "org.isoron.uhabits.ACTION_TOGGLE_REPETITION"
         const val ACTION_UPDATE_WIDGETS_VALUE = "org.isoron.uhabits.ACTION_UPDATE_WIDGETS_VALUE"
+        const val EXTRA_SOURCE = "org.isoron.uhabits.EXTRA_SOURCE"
         private const val TAG = "WidgetReceiver"
         var lastReceivedIntent: Intent? = null
             private set

@@ -34,6 +34,7 @@ import org.isoron.platform.time.LocalDate
 import org.isoron.uhabits.activities.habits.list.ListHabitsActivity
 import org.isoron.uhabits.activities.habits.show.ShowHabitActivity
 import org.isoron.uhabits.core.AppScope
+import org.isoron.uhabits.core.commands.EntrySource
 import org.isoron.uhabits.core.models.Habit
 import org.isoron.uhabits.inject.AppContext
 import org.isoron.uhabits.receivers.ReminderReceiver
@@ -46,7 +47,7 @@ class PendingIntentFactory(
     private val intentFactory: IntentFactory
 ) {
 
-    fun addCheckmark(habit: Habit, date: LocalDate?): PendingIntent =
+    fun addCheckmark(habit: Habit, date: LocalDate?, source: EntrySource): PendingIntent =
         getBroadcast(
             context,
             1,
@@ -54,6 +55,7 @@ class PendingIntentFactory(
                 data = Uri.parse(habit.uriString)
                 action = WidgetReceiver.ACTION_ADD_REPETITION
                 if (date != null) putExtra("timestamp", date.unixTime)
+                putExtra(WidgetReceiver.EXTRA_SOURCE, source.key)
             },
             FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT
         )
@@ -69,7 +71,7 @@ class PendingIntentFactory(
             FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT
         )
 
-    fun removeRepetition(habit: Habit, date: LocalDate?): PendingIntent =
+    fun removeRepetition(habit: Habit, date: LocalDate?, source: EntrySource): PendingIntent =
         getBroadcast(
             context,
             3,
@@ -77,6 +79,7 @@ class PendingIntentFactory(
                 action = WidgetReceiver.ACTION_REMOVE_REPETITION
                 data = Uri.parse(habit.uriString)
                 if (date != null) putExtra("timestamp", date.unixTime)
+                putExtra(WidgetReceiver.EXTRA_SOURCE, source.key)
             },
             FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT
         )

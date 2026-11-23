@@ -36,6 +36,7 @@ import me.tatarka.inject.annotations.Inject
 import org.isoron.platform.time.LocalDate
 import org.isoron.uhabits.R
 import org.isoron.uhabits.core.AppScope
+import org.isoron.uhabits.core.commands.EntrySource
 import org.isoron.uhabits.core.models.Habit
 import org.isoron.uhabits.core.preferences.Preferences
 import org.isoron.uhabits.core.ui.NotificationTray
@@ -99,13 +100,13 @@ class AndroidNotificationTray(
         val addRepetitionAction = Action(
             R.drawable.ic_action_check,
             context.getString(R.string.yes),
-            pendingIntents.addCheckmark(habit, date)
+            pendingIntents.addCheckmark(habit, date, EntrySource.NOTIFICATION)
         )
 
         val removeRepetitionAction = Action(
             R.drawable.ic_action_cancel,
             context.getString(R.string.no),
-            pendingIntents.removeRepetition(habit, date)
+            pendingIntents.removeRepetition(habit, date, EntrySource.NOTIFICATION)
         )
 
         val enterAction = Action(
