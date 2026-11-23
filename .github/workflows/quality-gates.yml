@@ -1,0 +1,119 @@
+name: Quality Gates
+
+on:
+  pull_request:
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'screenshots/**'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  GRADLE_OPTS: -Dorg.gradle.daemon=false
+
+jobs:
+  ktlint:
+    name: Code style (ktlint)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Run ktlint
+        run: ./gradlew ktlintCheck --stacktrace
+
+      - name: Upload ktlint reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ktlint-reports
+          path: '**/build/reports/ktlint/'
+
+  core:
+    name: Core (build & tests)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      # JS-Tests laufen über Karma mit ChromeHeadless (auf ubuntu-latest vorinstalliert)
+      - name: Build and test uhabits-core
+        run: ./gradlew kotlinUpgradeYarnLock :uhabits-core:build -x ktlintCheck --stacktrace
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: core-test-reports
+          path: uhabits-core/build/reports/
+          if-no-files-found: ignore
+
+  android:
+    name: Android (unit tests, lint, assemble)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      # Ein Gradle-Aufruf spart Konfigurationszeit; --continue meldet alle Fehler auf einmal.
+      - name: Unit tests, lint, assemble
+        run: >-
+          ./gradlew --continue --stacktrace
+          :uhabits-android:testDebugUnitTest
+          :uhabits-android:lintDebug
+          :uhabits-android:assembleDebug
+          :uhabits-android:assembleDebugAndroidTest
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-reports
+          path: |
+            uhabits-android/build/reports/
+            uhabits-android/build/test-results/
+          if-no-files-found: ignore
+
+  quality-gate:
+    name: Quality gate
+    if: always()
+    needs: [ktlint, core, android]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check results
+        run: |
+          echo "ktlint:  ${{ needs.ktlint.result }}"
+          echo "core:    ${{ needs.core.result }}"
+          echo "android: ${{ needs.android.result }}"
+          if [[ "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}" == "true" ]]; then
+            echo "::error::Mindestens ein Quality Gate ist fehlgeschlagen."
+            exit 1
+          fi
