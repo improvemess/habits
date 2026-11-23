@@ -137,7 +137,8 @@ class ListHabitsScreen(
                 primaryOrder = adapter.primaryOrder,
                 secondaryOrder = adapter.secondaryOrder,
                 checkmarkCount = MAX_CHECKMARK_COUNT,
-                theme = themeSwitcher.currentTheme!!
+                theme = themeSwitcher.currentTheme!!,
+                showStreak = preferences.isStreakFlameEnabled
             )
         )
     }

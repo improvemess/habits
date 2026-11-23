@@ -102,14 +102,15 @@ jobs:
 
       # Optional: Mit festem Debug-Keystore haben alle CI-Builds dieselbe Signatur,
       # neue APKs lassen sich also ohne Deinstallation über alte installieren.
-      # Ohne das Secret wird ein zufälliger Schlüssel erzeugt.
+      # Gradle liest den Pfad aus DEBUG_KEYSTORE (siehe uhabits-android/build.gradle.kts);
+      # ohne das Secret wird ein zufälliger Schlüssel erzeugt.
       - name: Restore debug keystore
         env:
           DEBUG_KEYSTORE_BASE64: ${{ secrets.DEBUG_KEYSTORE_BASE64 }}
         if: env.DEBUG_KEYSTORE_BASE64 != ''
         run: |
-          mkdir -p ~/.android
-          echo "$DEBUG_KEYSTORE_BASE64" | base64 --decode > ~/.android/debug.keystore
+          echo "$DEBUG_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/debug.keystore"
+          echo "DEBUG_KEYSTORE=$RUNNER_TEMP/debug.keystore" >> "$GITHUB_ENV"
 
       - name: Assemble
         run: >-
@@ -126,6 +127,14 @@ jobs:
           mkdir -p dist
           cp uhabits-android/build/outputs/apk/debug/uhabits-android-debug.apk "dist/${NAME}"
           echo "name=${NAME}" >> "$GITHUB_OUTPUT"
+
+      # Bleibt der Fingerprint über Builds gleich, lassen sich die APKs überinstallieren.
+      - name: Show signing certificate
+        run: |
+          APKSIGNER=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)/apksigner
+          CERT=$("$APKSIGNER" verify --print-certs "dist/${{ steps.apk.outputs.name }}" | grep 'certificate SHA-256')
+          echo "$CERT"
+          echo "**Signatur:** \`${CERT##*: }\`" >> "$GITHUB_STEP_SUMMARY"
 
       # Zwischenablage; bereitgestellt wird die APK erst vom Job "quality-gate".
       - name: Stash debug APK

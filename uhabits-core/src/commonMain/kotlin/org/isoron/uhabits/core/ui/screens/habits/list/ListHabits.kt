@@ -18,7 +18,10 @@
  */
 package org.isoron.uhabits.core.ui.screens.habits.list
 
+import org.isoron.platform.time.LocalDate
 import org.isoron.platform.time.getToday
+import org.isoron.uhabits.core.models.Entry
+import org.isoron.uhabits.core.models.Habit
 import org.isoron.uhabits.core.models.HabitList
 import org.isoron.uhabits.core.models.HabitList.Order
 import org.isoron.uhabits.core.models.HabitMatcher
@@ -32,7 +35,8 @@ data class ListHabitsState(
     val secondaryOrder: Order,
     val isSortable: Boolean,
     val checkmarkCount: Int,
-    val theme: Theme
+    val theme: Theme,
+    val showStreak: Boolean = false
 )
 
 object ListHabitsPresenter {
@@ -42,7 +46,8 @@ object ListHabitsPresenter {
         primaryOrder: Order,
         secondaryOrder: Order,
         checkmarkCount: Int,
-        theme: Theme
+        theme: Theme,
+        showStreak: Boolean = false
     ): ListHabitsState {
         val view = allHabits.getFiltered(filter)
         view.primaryOrder = primaryOrder
@@ -54,6 +59,9 @@ object ListHabitsPresenter {
         for (habit in view) {
             val id = habit.id ?: continue
             val score = habit.scores[today].value
+            val ongoing = habit.streaks.getOngoingStreak(today)
+            val streak = ongoing?.let { countPerformedDays(habit, it.start, it.end) } ?: 0
+            val streakDoneToday = ongoing != null && ongoing.end >= today
             val entries = habit.computedEntries.getByInterval(dateFrom, today)
             items.add(
                 HabitCardState(
@@ -67,7 +75,9 @@ object ListHabitsPresenter {
                     checkmarks = entries.map { it.value },
                     completed = entries.map { it.completed },
                     notes = entries.map { it.notes },
-                    category = habit.category
+                    category = habit.category,
+                    streak = streak,
+                    streakDoneToday = streakDoneToday
                 )
             )
         }
@@ -78,7 +88,8 @@ object ListHabitsPresenter {
             secondaryOrder = secondaryOrder,
             isSortable = primaryOrder == Order.BY_POSITION,
             checkmarkCount = checkmarkCount,
-            theme = theme
+            theme = theme,
+            showStreak = showStreak
         )
     }
 }
@@ -94,5 +105,21 @@ data class HabitCardState(
     val checkmarks: List<Int>,
     val completed: List<Boolean>,
     val notes: List<String>,
-    val category: String
+    val category: String,
+    val streak: Int = 0,
+    val streakDoneToday: Boolean = false
 )
+
+/**
+ * Counts the days in [from]..[to] on which the habit was actually performed. Days that are only
+ * covered because the frequency does not require a repetition (YES_AUTO) and skipped days keep
+ * a streak alive, but do not increase its number.
+ */
+internal fun countPerformedDays(habit: Habit, from: LocalDate, to: LocalDate): Int {
+    return habit.computedEntries.getByInterval(from, to).count {
+        when {
+            habit.isNumerical -> it.completed && it.value != Entry.SKIP
+            else -> it.value == Entry.YES_MANUAL
+        }
+    }
+}
