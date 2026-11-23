@@ -15,9 +15,12 @@ concurrency:
 permissions:
   contents: read
 
-env:
-  GRADLE_OPTS: -Dorg.gradle.daemon=false
-
+# Unabhängige Prüfungen laufen parallel; "Quality gate" sammelt die Ergebnisse
+# und stellt nur bei Erfolg die Debug-APK bereit:
+#
+#   ktlint ────────────────────────────────┐
+#   core ──────────────────────────────────┼──> quality-gate (+ APK)
+#   android: unit tests → lint → assemble ─┘
 jobs:
   ktlint:
     name: Code style (ktlint)
@@ -34,11 +37,11 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
 
       - name: Run ktlint
-        run: ./gradlew ktlintCheck --stacktrace
+        run: ./gradlew --stacktrace ktlintCheck
 
       - name: Upload ktlint reports
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ktlint-reports
           path: '**/build/reports/ktlint/'
@@ -59,20 +62,24 @@ jobs:
 
       # JS-Tests laufen über Karma mit ChromeHeadless (auf ubuntu-latest vorinstalliert)
       - name: Build and test uhabits-core
-        run: ./gradlew kotlinUpgradeYarnLock :uhabits-core:build -x ktlintCheck --stacktrace
+        run: ./gradlew --stacktrace kotlinUpgradeYarnLock :uhabits-core:build -x ktlintCheck
 
       - name: Upload test reports
-        if: always()
-        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
         with:
-          name: core-test-reports
+          name: core-reports
           path: uhabits-core/build/reports/
           if-no-files-found: ignore
 
+  # Die Schritte bauen aufeinander auf; der Gradle-Daemon bleibt zwischen ihnen
+  # erhalten, sodass jedes Modul nur einmal kompiliert wird.
   android:
     name: Android (unit tests, lint, assemble)
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    outputs:
+      apk-name: ${{ steps.apk.outputs.name }}
     steps:
       - uses: actions/checkout@v4
 
@@ -83,18 +90,55 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
-      # Ein Gradle-Aufruf spart Konfigurationszeit; --continue meldet alle Fehler auf einmal.
-      - name: Unit tests, lint, assemble
+      - name: Unit tests
+        id: tests
+        run: ./gradlew --stacktrace :uhabits-android:testDebugUnitTest
+
+      # Läuft auch bei roten Tests, damit beide Ergebnisse auf einmal sichtbar sind.
+      - name: Lint
+        id: lint
+        if: ${{ !cancelled() }}
+        run: ./gradlew --stacktrace :uhabits-android:lintDebug
+
+      # Optional: Mit festem Debug-Keystore haben alle CI-Builds dieselbe Signatur,
+      # neue APKs lassen sich also ohne Deinstallation über alte installieren.
+      # Ohne das Secret wird ein zufälliger Schlüssel erzeugt.
+      - name: Restore debug keystore
+        env:
+          DEBUG_KEYSTORE_BASE64: ${{ secrets.DEBUG_KEYSTORE_BASE64 }}
+        if: env.DEBUG_KEYSTORE_BASE64 != ''
+        run: |
+          mkdir -p ~/.android
+          echo "$DEBUG_KEYSTORE_BASE64" | base64 --decode > ~/.android/debug.keystore
+
+      - name: Assemble
         run: >-
-          ./gradlew --continue --stacktrace
-          :uhabits-android:testDebugUnitTest
-          :uhabits-android:lintDebug
+          ./gradlew --stacktrace
           :uhabits-android:assembleDebug
           :uhabits-android:assembleDebugAndroidTest
 
+      - name: Name debug APK
+        id: apk
+        run: |
+          VERSION=$(grep versionName uhabits-android/build.gradle.kts | sed -e 's/.*"\([^"]*\)".*/\1/')
+          SHORT_SHA=$(echo "${{ github.event.pull_request.head.sha || github.sha }}" | cut -c1-7)
+          NAME="loop-${VERSION}-debug-${SHORT_SHA}.apk"
+          mkdir -p dist
+          cp uhabits-android/build/outputs/apk/debug/uhabits-android-debug.apk "dist/${NAME}"
+          echo "name=${NAME}" >> "$GITHUB_OUTPUT"
+
+      # Zwischenablage; bereitgestellt wird die APK erst vom Job "quality-gate".
+      - name: Stash debug APK
+        uses: actions/upload-artifact@v7
+        with:
+          name: debug-apk-unverified
+          path: dist/${{ steps.apk.outputs.name }}
+          retention-days: 1
+          if-no-files-found: error
+
       - name: Upload reports
-        if: always()
-        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
         with:
           name: android-reports
           path: |
@@ -113,7 +157,23 @@ jobs:
           echo "ktlint:  ${{ needs.ktlint.result }}"
           echo "core:    ${{ needs.core.result }}"
           echo "android: ${{ needs.android.result }}"
-          if [[ "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}" == "true" ]]; then
+          if [[ "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped') }}" == "true" ]]; then
             echo "::error::Mindestens ein Quality Gate ist fehlgeschlagen."
             exit 1
           fi
+
+      - name: Fetch debug APK
+        uses: actions/download-artifact@v8
+        with:
+          name: debug-apk-unverified
+          path: dist
+
+      # archive: false lädt die APK direkt hoch statt als ZIP. Nur eine einzelne
+      # Datei ist erlaubt; ihr Dateiname wird zum Artifact-Namen.
+      - name: Publish debug APK
+        uses: actions/upload-artifact@v7
+        with:
+          path: dist/${{ needs.android.outputs.apk-name }}
+          archive: false
+          retention-days: 30
+          if-no-files-found: error
