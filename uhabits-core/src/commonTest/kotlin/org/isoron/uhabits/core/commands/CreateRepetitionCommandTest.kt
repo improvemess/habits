@@ -50,4 +50,9 @@ class CreateRepetitionCommandTest : BaseUnitTest() {
         entry = entries.get(today)
         assertEquals(100, entry.value.toLong())
     }
+
+    @Test
+    fun testDefaultSource() {
+        assertEquals(EntrySource.APP, command.source)
+    }
 }

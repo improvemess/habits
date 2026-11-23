@@ -28,7 +28,8 @@ data class CreateRepetitionCommand(
     val habit: Habit,
     val date: LocalDate,
     val value: Int,
-    val notes: String
+    val notes: String,
+    val source: EntrySource = EntrySource.APP
 ) : Command {
     override fun run() {
         val entries = habit.originalEntries

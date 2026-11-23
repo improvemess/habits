@@ -25,6 +25,7 @@ import android.content.Intent
 import me.tatarka.inject.annotations.Component
 import org.isoron.platform.time.getToday
 import org.isoron.uhabits.HabitsApplication
+import org.isoron.uhabits.core.commands.EntrySource.AUTOMATION
 import org.isoron.uhabits.core.models.HabitList
 import org.isoron.uhabits.core.ui.widgets.WidgetBehavior
 import org.isoron.uhabits.inject.HabitsApplicationComponent
@@ -60,11 +61,11 @@ class FireSettingReceiver : BroadcastReceiver() {
         val controller = component.widgetController
 
         when (args.action) {
-            ACTION_CHECK -> controller.onAddRepetition(args.habit, today)
-            ACTION_UNCHECK -> controller.onRemoveRepetition(args.habit, today)
-            ACTION_TOGGLE -> controller.onToggleRepetition(args.habit, today)
-            ACTION_INCREMENT -> controller.onIncrement(args.habit, today, 1000)
-            ACTION_DECREMENT -> controller.onDecrement(args.habit, today, 1000)
+            ACTION_CHECK -> controller.onAddRepetition(args.habit, today, AUTOMATION)
+            ACTION_UNCHECK -> controller.onRemoveRepetition(args.habit, today, AUTOMATION)
+            ACTION_TOGGLE -> controller.onToggleRepetition(args.habit, today, AUTOMATION)
+            ACTION_INCREMENT -> controller.onIncrement(args.habit, today, 1000, AUTOMATION)
+            ACTION_DECREMENT -> controller.onDecrement(args.habit, today, 1000, AUTOMATION)
         }
     }
 }

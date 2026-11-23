@@ -27,6 +27,8 @@ import org.isoron.platform.time.LocalDate
 import org.isoron.platform.time.getToday
 import org.isoron.uhabits.core.BaseUnitTest
 import org.isoron.uhabits.core.commands.CreateRepetitionCommand
+import org.isoron.uhabits.core.commands.EntrySource.AUTOMATION
+import org.isoron.uhabits.core.commands.EntrySource.WIDGET
 import org.isoron.uhabits.core.models.Entry
 import org.isoron.uhabits.core.models.Entry.Companion.nextToggleValue
 import org.isoron.uhabits.core.models.Habit
@@ -60,7 +62,7 @@ class WidgetBehaviorTest : BaseUnitTest() {
         behavior.onAddRepetition(habit, today)
         verify {
             commandRunner.run(
-                CreateRepetitionCommand(habitList, habit, today, Entry.YES_MANUAL, "")
+                CreateRepetitionCommand(habitList, habit, today, Entry.YES_MANUAL, "", WIDGET)
             )
         }
         verify { notificationTray.cancel(habit) }
@@ -72,7 +74,7 @@ class WidgetBehaviorTest : BaseUnitTest() {
         behavior.onRemoveRepetition(habit, today)
         verify {
             commandRunner.run(
-                CreateRepetitionCommand(habitList, habit, today, Entry.NO, "")
+                CreateRepetitionCommand(habitList, habit, today, Entry.NO, "", WIDGET)
             )
         }
         verify { notificationTray.cancel(habit) }
@@ -100,7 +102,7 @@ class WidgetBehaviorTest : BaseUnitTest() {
             verify { preferences.isSkipEnabled }
             verify {
                 commandRunner.run(
-                    CreateRepetitionCommand(habitList, habit, today, nextValue, "")
+                    CreateRepetitionCommand(habitList, habit, today, nextValue, "", WIDGET)
                 )
             }
             verify {
@@ -120,7 +122,7 @@ class WidgetBehaviorTest : BaseUnitTest() {
         behavior.onIncrement(habit, today, 100)
         verify {
             commandRunner.run(
-                CreateRepetitionCommand(habitList, habit, today, 600, "")
+                CreateRepetitionCommand(habitList, habit, today, 600, "", WIDGET)
             )
         }
         verify { notificationTray.cancel(habit) }
@@ -135,10 +137,20 @@ class WidgetBehaviorTest : BaseUnitTest() {
         behavior.onDecrement(habit, today, 100)
         verify {
             commandRunner.run(
-                CreateRepetitionCommand(habitList, habit, today, 400, "")
+                CreateRepetitionCommand(habitList, habit, today, 400, "", WIDGET)
             )
         }
         verify { notificationTray.cancel(habit) }
         verify(notCalled) { preferences.isSkipEnabled }
+    }
+
+    @Test
+    fun testCustomSource() {
+        behavior.onAddRepetition(habit, today, AUTOMATION)
+        verify {
+            commandRunner.run(
+                CreateRepetitionCommand(habitList, habit, today, Entry.YES_MANUAL, "", AUTOMATION)
+            )
+        }
     }
 }
