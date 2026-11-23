@@ -42,6 +42,7 @@ import org.isoron.uhabits.core.ui.NotificationTray
 import org.isoron.uhabits.core.utils.MidnightTimer
 import org.isoron.uhabits.database.AndroidDatabase
 import org.isoron.uhabits.database.AndroidDatabaseOpener
+import org.isoron.uhabits.homeassistant.CompanionAppTransport
 import org.isoron.uhabits.intents.IntentFactory
 import org.isoron.uhabits.intents.IntentParser
 import org.isoron.uhabits.intents.IntentScheduler
@@ -62,6 +63,7 @@ abstract class HabitsApplicationComponent(
     @get:Provides val dbFile: File
 ) {
     abstract val commandRunner: CommandRunner
+    abstract val companionAppTransport: CompanionAppTransport
 
     @get:AppContext
     abstract val context: Context

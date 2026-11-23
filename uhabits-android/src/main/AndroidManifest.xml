@@ -218,6 +218,16 @@
             </intent-filter>
         </receiver>
 
+        <!-- Commands from Home Assistant, sent via the Companion App. Exported, so it
+             authenticates every command with a shared secret. -->
+        <receiver
+            android:name=".homeassistant.HomeAssistantCommandReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="org.isoron.uhabits.SET_ENTRY" />
+            </intent-filter>
+        </receiver>
+
         <receiver android:name=".receivers.WidgetReceiver"
             android:exported="true"
             android:permission="false">
