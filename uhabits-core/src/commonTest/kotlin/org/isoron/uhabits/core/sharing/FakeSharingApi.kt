@@ -24,6 +24,10 @@ class FakeSharingApi : SharingApi {
     val metas = mutableMapOf<String, String>()
     val entries = mutableMapOf<String, MutableList<EntryUpload>>()
     var registrations = 0
+    var apiVersions = listOf("v1")
+    val readers = mutableMapOf<String, MutableList<Reader>>()
+    private var shareCount = 0
+    private var inviteCount = 0
     private val failures = ArrayDeque<Pair<String, Int?>>()
 
     /** The next call named [call] fails with [status] (null: no connection). */
@@ -39,6 +43,34 @@ class FakeSharingApi : SharingApi {
             throw SharingApiException(failure.second, "fake failure")
         }
         calls.add(call)
+    }
+
+    override suspend fun discover(serverUrl: String): ServerInfo {
+        record("discover")
+        return ServerInfo(apiVersions, "1.0.1")
+    }
+
+    override suspend fun createShare(serverUrl: String, deviceToken: String, meta: String): String {
+        record("createShare")
+        val id = "share-${++shareCount}"
+        metas[id] = meta
+        return id
+    }
+
+    override suspend fun createInvite(serverUrl: String, deviceToken: String, shareId: String): Invite {
+        record("createInvite")
+        val code = "code${++inviteCount}"
+        return Invite(code, "${serverUrl.trimEnd('/')}/invite/$code", "2026-12-01T10:00:00.000Z")
+    }
+
+    override suspend fun listReaders(serverUrl: String, deviceToken: String, shareId: String): List<Reader> {
+        record("listReaders")
+        return readers[shareId].orEmpty()
+    }
+
+    override suspend fun removeReader(serverUrl: String, deviceToken: String, shareId: String, readerId: String) {
+        record("removeReader")
+        readers[shareId]?.removeAll { it.readerId == readerId }
     }
 
     override suspend fun createOwner(serverUrl: String, identity: OwnerIdentity) = record("createOwner")

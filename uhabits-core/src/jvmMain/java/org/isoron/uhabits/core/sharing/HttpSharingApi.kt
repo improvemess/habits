@@ -39,6 +39,44 @@ class HttpSharingApi(
 
     private val json = Json { ignoreUnknownKeys = true }
 
+    override suspend fun discover(serverUrl: String): ServerInfo {
+        val response = request(serverUrl, "GET", "/.well-known/uhabits-server")
+        val info = decode(serverUrl) { json.decodeFromString(Discovery.serializer(), response) }
+        return ServerInfo(info.apiVersions, info.version)
+    }
+
+    override suspend fun createShare(serverUrl: String, deviceToken: String, meta: String): String {
+        val response = request(
+            serverUrl,
+            "POST",
+            "/api/v1/shares",
+            token = deviceToken,
+            body = json.encodeToString(Meta.serializer(), Meta(meta))
+        )
+        return decode(serverUrl) { json.decodeFromString(CreatedShare.serializer(), response).shareId }
+    }
+
+    override suspend fun createInvite(serverUrl: String, deviceToken: String, shareId: String): Invite {
+        val response = request(serverUrl, "POST", "/api/v1/shares/${path(shareId)}/invites", token = deviceToken)
+        val invite = decode(serverUrl) { json.decodeFromString(InviteResponse.serializer(), response) }
+        return Invite(invite.code, invite.url, invite.expiresAt)
+    }
+
+    override suspend fun listReaders(serverUrl: String, deviceToken: String, shareId: String): List<Reader> {
+        val response = request(serverUrl, "GET", "/api/v1/shares/${path(shareId)}/readers", token = deviceToken)
+        val readers = decode(serverUrl) { json.decodeFromString(Readers.serializer(), response).readers }
+        return readers.map { Reader(it.readerId, it.displayName, it.lastSeenAt) }
+    }
+
+    override suspend fun removeReader(serverUrl: String, deviceToken: String, shareId: String, readerId: String) {
+        request(
+            serverUrl,
+            "DELETE",
+            "/api/v1/shares/${path(shareId)}/readers/${path(readerId)}",
+            token = deviceToken
+        )
+    }
+
     override suspend fun createOwner(serverUrl: String, identity: OwnerIdentity) {
         request(
             serverUrl,
@@ -55,11 +93,7 @@ class HttpSharingApi(
             "/api/v1/owners/${path(identity.ownerId)}/devices",
             body = json.encodeToString(RegisterDevice.serializer(), RegisterDevice(identity.ownerSecret, deviceId))
         )
-        return try {
-            json.decodeFromString(DeviceToken.serializer(), response).deviceToken
-        } catch (e: IllegalArgumentException) {
-            throw SharingApiException(null, "Unexpected response from $serverUrl", e)
-        }
+        return decode(serverUrl) { json.decodeFromString(DeviceToken.serializer(), response).deviceToken }
     }
 
     override suspend fun putMeta(serverUrl: String, deviceToken: String, shareId: String, meta: String) {
@@ -149,6 +183,12 @@ class HttpSharingApi(
         }
     }
 
+    private inline fun <T> decode(serverUrl: String, block: () -> T): T = try {
+        block()
+    } catch (e: IllegalArgumentException) {
+        throw SharingApiException(null, "Unexpected response from $serverUrl", e)
+    }
+
     private fun errorMessage(body: String): String = try {
         json.decodeFromString(Error.serializer(), body).error
     } catch (e: IllegalArgumentException) {
@@ -174,6 +214,21 @@ class HttpSharingApi(
 
     @Serializable
     private data class Entries(val entries: List<Entry>)
+
+    @Serializable
+    private data class Discovery(val apiVersions: List<String>, val version: String = "")
+
+    @Serializable
+    private data class CreatedShare(val shareId: String)
+
+    @Serializable
+    private data class InviteResponse(val code: String, val url: String, val expiresAt: String)
+
+    @Serializable
+    private data class ReaderResponse(val readerId: String, val displayName: String? = null, val lastSeenAt: String)
+
+    @Serializable
+    private data class Readers(val readers: List<ReaderResponse>)
 
     @Serializable
     private data class Error(val error: String = "")
