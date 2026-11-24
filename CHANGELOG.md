@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.11.0](https://github.com/oliverlorenz/uhabits/compare/v2.10.0...v2.11.0) (2026-11-24)
+
+### Features
+
+* Zähler mit wählbarer Schrittweite für messbare Gewohnheiten ([#13](https://github.com/oliverlorenz/uhabits/issues/13)) ([#50](https://github.com/oliverlorenz/uhabits/issues/50)) ([83c36b6](https://github.com/oliverlorenz/uhabits/commit/83c36b6c582b98994bd0445793e7b6f1cd5787ca)), references [#43](https://github.com/oliverlorenz/uhabits/issues/43) [#14](https://github.com/oliverlorenz/uhabits/issues/14)
+
 ## [2.10.0](https://github.com/oliverlorenz/uhabits/compare/v2.9.0...v2.10.0) (2026-11-24)
 
 ### Features
