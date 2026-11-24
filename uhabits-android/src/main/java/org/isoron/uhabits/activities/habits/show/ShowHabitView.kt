@@ -91,7 +91,12 @@ class ShowHabitView(context: Context) : FrameLayout(context) {
                 setPadding((16 * dp).toInt(), (4 * dp).toInt(), (8 * dp).toInt(), (4 * dp).toInt())
             }
             val label = TextView(context).apply {
-                text = context.getString(R.string.pause_period, fmt(pause.start), fmt(pause.end))
+                text = context.getString(
+                    R.string.pause_period,
+                    pause.title.ifBlank { context.getString(R.string.pause_default_title) },
+                    fmt(pause.start),
+                    fmt(pause.end)
+                )
                 setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
             }
             row.addView(label, LinearLayout.LayoutParams(0, LayoutParams.WRAP_CONTENT, 1f))

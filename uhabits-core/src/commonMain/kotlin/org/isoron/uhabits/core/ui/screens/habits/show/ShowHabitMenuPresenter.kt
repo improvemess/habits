@@ -68,12 +68,12 @@ class ShowHabitMenuPresenter(
     }
 
     fun onPauseHabit() {
-        screen.showPauseDialog { from, to ->
+        screen.showPauseDialog { from, to, title ->
             if (habit.pauses.overlaps(from, to)) {
                 screen.showMessage(Message.PAUSE_OVERLAPS)
                 return@showPauseDialog
             }
-            commandRunner.run(AddPauseCommand(habitList, habit, from, to))
+            commandRunner.run(AddPauseCommand(habitList, habit, from, to, title))
             screen.showMessage(Message.HABIT_PAUSED)
             screen.refresh()
         }
@@ -147,7 +147,7 @@ class ShowHabitMenuPresenter(
         fun showMessage(m: Message?)
         fun showSendFileScreen(filename: String)
         fun showDeleteConfirmationScreen(callback: OnConfirmedCallback)
-        fun showPauseDialog(onPicked: (from: LocalDate, to: LocalDate) -> Unit)
+        fun showPauseDialog(onPicked: (from: LocalDate, to: LocalDate, title: String) -> Unit)
         fun close()
         fun refresh()
     }

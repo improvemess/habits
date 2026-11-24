@@ -30,8 +30,8 @@ class SQLitePauseList(private val repository: PauseRepository) : PauseList() {
     private fun load() {
         if (isLoaded) return
         val habitId = habitId ?: throw IllegalStateException("habitId must be set")
-        for ((start, end) in repository.findAllByHabitId(habitId)) {
-            super.add(Pause(LocalDate.fromUnixTime(start), LocalDate.fromUnixTime(end)))
+        for ((start, end, title) in repository.findAllByHabitId(habitId)) {
+            super.add(Pause(LocalDate.fromUnixTime(start), LocalDate.fromUnixTime(end), title))
         }
         isLoaded = true
     }
@@ -44,7 +44,7 @@ class SQLitePauseList(private val repository: PauseRepository) : PauseList() {
     override fun add(pause: Pause) {
         load()
         if (pause in super.getAll()) return
-        repository.insert(habitId!!, pause.start.unixTime, pause.end.unixTime)
+        repository.insert(habitId!!, pause.start.unixTime, pause.end.unixTime, pause.title)
         super.add(pause)
     }
 

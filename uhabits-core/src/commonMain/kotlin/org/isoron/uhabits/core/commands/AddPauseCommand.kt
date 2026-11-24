@@ -25,18 +25,20 @@ import org.isoron.uhabits.core.models.HabitList
 import org.isoron.uhabits.core.models.Pause
 
 /**
- * Pauses a habit from [from] to [to] (both inclusive). Pauses cannot start in the past and cannot overlap existing pauses.
+ * Pauses a habit from [from] to [to] (both inclusive), with an optional [title]. Pauses cannot
+ * start in the past and cannot overlap existing pauses.
  */
 data class AddPauseCommand(
     val habitList: HabitList,
     val habit: Habit,
     val from: LocalDate,
-    val to: LocalDate
+    val to: LocalDate,
+    val title: String = ""
 ) : Command {
     override fun run() {
         require(!from.isOlderThan(getToday())) { "cannot pause a habit retroactively" }
         require(!habit.pauses.overlaps(from, to)) { "pauses must not overlap" }
-        habit.pauses.add(Pause(from, to))
+        habit.pauses.add(Pause(from, to, title))
         habit.recompute()
         habitList.resort()
     }

@@ -47,11 +47,14 @@
     <string name="pause">Pausieren</string>
     <string name="toast_habit_paused">Pause hinzugefügt</string>
     <string name="toast_pause_removed">Pause entfernt</string>
-    <string name="pause_period">Pausiert: %1$s – %2$s</string>
+    <string name="pause_period">%1$s: %2$s – %3$s</string>
     <string name="pause_remove_title">Pause entfernen?</string>
     <string name="pause_remove_message">Die bereits vergangenen Tage dieser Pause zählen danach wieder als normale Tage.</string>
     <string name="pause_remove_message_future">Möchtest du diese Pause wirklich entfernen?</string>
     <string name="toast_pause_overlaps">Pausen dürfen sich nicht überlappen</string>
+    <string name="pause_default_title">Pause</string>
+    <string name="pause_title_dialog">Grund der Pause</string>
+    <string name="pause_title_hint">z. B. Urlaub (optional)</string>
     <string name="pause_remove_confirm">Entfernen</string>
     <string name="pause_remove_description">Pause entfernen</string>
     <string name="overview">Übersicht</string>

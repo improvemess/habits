@@ -48,8 +48,10 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.FileProvider
+import androidx.core.graphics.ColorUtils
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.snackbar.Snackbar
 import org.isoron.platform.gui.toInt
 import org.isoron.uhabits.HabitsApplication
@@ -108,7 +110,10 @@ fun View.showMessage(msg: String) {
         val snackbar = Snackbar.make(this, msg, Snackbar.LENGTH_SHORT)
         val tvId = R.id.snackbar_text
         val tv = snackbar.view.findViewById<TextView>(tvId)
-        tv?.setTextColor(Color.WHITE)
+        // The snackbar background follows the theme (light in dark mode, dark in light mode), so
+        // pick whichever text color contrasts with it instead of always using white.
+        val background = MaterialColors.getColor(this, com.google.android.material.R.attr.colorOnSurface)
+        tv?.setTextColor(if (ColorUtils.calculateLuminance(background) > 0.5) Color.BLACK else Color.WHITE)
         snackbar.show()
     } catch (e: IllegalArgumentException) {
         return

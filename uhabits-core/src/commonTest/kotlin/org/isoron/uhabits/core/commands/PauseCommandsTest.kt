@@ -24,6 +24,13 @@ class PauseCommandsTest : BaseUnitTest() {
     }
 
     @Test
+    fun testPauseKeepsTitle() {
+        val habit = fixtures.createEmptyHabit()
+        AddPauseCommand(habitList, habit, today.plus(1), today.plus(3), "Vacation").run()
+        assertEquals("Vacation", habit.pauses.getAll().single().title)
+    }
+
+    @Test
     fun testCannotPauseRetroactively() {
         val habit = fixtures.createEmptyHabit()
         assertFailsWith<IllegalArgumentException> {

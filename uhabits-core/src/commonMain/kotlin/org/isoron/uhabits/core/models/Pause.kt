@@ -22,9 +22,9 @@ import org.isoron.platform.time.LocalDate
 
 /**
  * A period during which a habit is paused (for example, during a vacation). Both [start] and
- * [end] are inclusive.
+ * [end] are inclusive. The [title] is an optional reason, such as "Vacation".
  */
-data class Pause(val start: LocalDate, val end: LocalDate) {
+data class Pause(val start: LocalDate, val end: LocalDate, val title: String = "") {
     init {
         require(!end.isOlderThan(start)) { "end of pause must not be before its start" }
     }

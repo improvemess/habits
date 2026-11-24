@@ -127,12 +127,7 @@ class ShowHabitActivity : AppCompatActivity(), CommandRunner.Listener {
             } else {
                 R.string.pause_remove_message
             }
-            val dialogTheme = if (themeSwitcher.currentTheme is DarkTheme) {
-                R.style.PauseDialogDark
-            } else {
-                0
-            }
-            MaterialAlertDialogBuilder(this, dialogTheme)
+            MaterialAlertDialogBuilder(this, dialogTheme())
                 .setTitle(R.string.pause_remove_title)
                 .setMessage(message)
                 .setPositiveButton(R.string.pause_remove_confirm) { _, _ ->
@@ -143,6 +138,28 @@ class ShowHabitActivity : AppCompatActivity(), CommandRunner.Listener {
         }
         view.applyRootViewInsets()
         setContentView(view)
+    }
+
+    private fun dialogTheme(): Int =
+        if (themeSwitcher.currentTheme is DarkTheme) R.style.PauseDialogDark else 0
+
+    /** Asks for an optional reason for a new pause. An empty title is fine. */
+    private fun askForPauseTitle(onConfirmed: (String) -> Unit) {
+        val input = EditText(this).apply {
+            setSingleLine()
+            hint = getString(R.string.pause_title_hint)
+        }
+        val padding = (20 * resources.displayMetrics.density).toInt()
+        val container = FrameLayout(this).apply {
+            setPadding(padding, padding / 2, padding, 0)
+            addView(input)
+        }
+        MaterialAlertDialogBuilder(this, dialogTheme())
+            .setTitle(R.string.pause_title_dialog)
+            .setView(container)
+            .setPositiveButton(android.R.string.ok) { _, _ -> onConfirmed(input.text.toString().trim()) }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
     }
 
     override fun onCreateOptionsMenu(m: Menu): Boolean {
@@ -280,7 +297,7 @@ class ShowHabitActivity : AppCompatActivity(), CommandRunner.Listener {
             }
         }
 
-        override fun showPauseDialog(onPicked: (LocalDate, LocalDate) -> Unit) {
+        override fun showPauseDialog(onPicked: (LocalDate, LocalDate, String) -> Unit) {
             // Pauses can only start today or later.
             // Days that already belong to a pause are disabled, so pauses cannot overlap.
             val pausedRanges = habit.pauses.getAll()
@@ -303,10 +320,9 @@ class ShowHabitActivity : AppCompatActivity(), CommandRunner.Listener {
                 val first = range.first ?: return@addOnPositiveButtonClickListener
                 val second = range.second ?: first
                 // The picker returns UTC midnight timestamps in milliseconds.
-                onPicked(
-                    LocalDate((first / 86_400_000L).toInt() - 10957),
-                    LocalDate((second / 86_400_000L).toInt() - 10957)
-                )
+                val from = LocalDate((first / 86_400_000L).toInt() - 10957)
+                val to = LocalDate((second / 86_400_000L).toInt() - 10957)
+                askForPauseTitle { title -> onPicked(from, to, title) }
             }
             picker.show(supportFragmentManager, "pausePicker")
         }

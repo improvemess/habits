@@ -24,13 +24,13 @@ import org.isoron.platform.io.StepResult
 class PauseRepository(private val db: Database) {
     private val findAllByHabitStmt by lazy {
         db.prepareStatement(
-            "SELECT startTimestamp, endTimestamp FROM HabitPauses WHERE habit = ? ORDER BY startTimestamp"
+            "SELECT startTimestamp, endTimestamp, title FROM HabitPauses WHERE habit = ? ORDER BY startTimestamp"
         )
     }
 
     private val insertStmt by lazy {
         db.prepareStatement(
-            "INSERT INTO HabitPauses(habit, startTimestamp, endTimestamp) VALUES (?, ?, ?)"
+            "INSERT INTO HabitPauses(habit, startTimestamp, endTimestamp, title) VALUES (?, ?, ?, ?)"
         )
     }
 
@@ -44,22 +44,29 @@ class PauseRepository(private val db: Database) {
         db.prepareStatement("DELETE FROM HabitPauses WHERE habit = ?")
     }
 
-    /** Returns pairs of (start, end) unix timestamps. */
-    fun findAllByHabitId(habitId: Long): List<Pair<Long, Long>> {
+    /** Returns triples of (start, end, title); start and end are unix timestamps. */
+    fun findAllByHabitId(habitId: Long): List<Triple<Long, Long, String>> {
         findAllByHabitStmt.reset()
         findAllByHabitStmt.bindLong(1, habitId)
-        val results = mutableListOf<Pair<Long, Long>>()
+        val results = mutableListOf<Triple<Long, Long, String>>()
         while (findAllByHabitStmt.step() == StepResult.ROW) {
-            results.add(Pair(findAllByHabitStmt.getLong(0), findAllByHabitStmt.getLong(1)))
+            results.add(
+                Triple(
+                    findAllByHabitStmt.getLong(0),
+                    findAllByHabitStmt.getLong(1),
+                    findAllByHabitStmt.getTextOrNull(2) ?: ""
+                )
+            )
         }
         return results
     }
 
-    fun insert(habitId: Long, start: Long, end: Long) {
+    fun insert(habitId: Long, start: Long, end: Long, title: String) {
         insertStmt.reset()
         insertStmt.bindLong(1, habitId)
         insertStmt.bindLong(2, start)
         insertStmt.bindLong(3, end)
+        insertStmt.bindText(4, title)
         insertStmt.step()
     }
 
