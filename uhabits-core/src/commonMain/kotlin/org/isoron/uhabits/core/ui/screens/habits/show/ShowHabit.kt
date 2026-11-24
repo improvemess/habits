@@ -23,8 +23,8 @@ import org.isoron.platform.time.getToday
 import org.isoron.uhabits.core.commands.CommandRunner
 import org.isoron.uhabits.core.models.Habit
 import org.isoron.uhabits.core.models.HabitList
-import org.isoron.uhabits.core.models.Pause
 import org.isoron.uhabits.core.models.PaletteColor
+import org.isoron.uhabits.core.models.Pause
 import org.isoron.uhabits.core.preferences.Preferences
 import org.isoron.uhabits.core.ui.screens.habits.show.views.BarCardPresenter
 import org.isoron.uhabits.core.ui.screens.habits.show.views.BarCardState
