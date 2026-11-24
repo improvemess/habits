@@ -27,6 +27,7 @@ import org.isoron.uhabits.acceptance.steps.CommonSteps.Screen.LIST_HABITS
 import org.isoron.uhabits.acceptance.steps.CommonSteps.Screen.SELECT_HABIT_TYPE
 import org.isoron.uhabits.acceptance.steps.CommonSteps.changeFrequencyToDaily
 import org.isoron.uhabits.acceptance.steps.CommonSteps.changeFrequencyToMonthly
+import org.isoron.uhabits.acceptance.steps.CommonSteps.chooseYesOrNoHabitToBuild
 import org.isoron.uhabits.acceptance.steps.CommonSteps.clickText
 import org.isoron.uhabits.acceptance.steps.CommonSteps.createHabit
 import org.isoron.uhabits.acceptance.steps.CommonSteps.launchApp
@@ -64,7 +65,7 @@ class ListHabitsRegressionTest : BaseUserInterfaceTest() {
         clickText("Yes")
         clickMenu(ADD)
         verifyShowsScreen(SELECT_HABIT_TYPE)
-        clickText("Yes or No")
+        chooseYesOrNoHabitToBuild()
         verifyShowsScreen(EDIT_HABIT)
         typeName("Hello world")
         clickSave()

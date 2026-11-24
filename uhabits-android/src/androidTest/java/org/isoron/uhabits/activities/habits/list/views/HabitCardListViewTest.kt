@@ -69,7 +69,8 @@ class HabitCardListViewTest : BaseViewTest() {
                     checkmarks = List(checkmarkCount) { -1 },
                     completed = List(checkmarkCount) { false },
                     notes = List(checkmarkCount) { "" },
-                    category = "Health"
+                    // Two groups, so that the divider between categories is rendered.
+                    category = if (id < 6) "Health" else "Mind"
                 )
             },
             hasHabits = true,
