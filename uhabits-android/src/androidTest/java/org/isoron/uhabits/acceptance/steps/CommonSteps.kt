@@ -156,8 +156,9 @@ object CommonSteps : BaseUserInterfaceTest() {
                 Espresso.onView(ViewMatchers.withId(R.id.questionInput))
                     .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
 
+            // First step of the dialog: build or quit a habit (#16).
             Screen.SELECT_HABIT_TYPE ->
-                Espresso.onView(ViewMatchers.withText(R.string.yes_or_no_example))
+                Espresso.onView(ViewMatchers.withText(R.string.goal_build))
                     .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
 
             else -> throw IllegalStateException()
@@ -174,10 +175,18 @@ object CommonSteps : BaseUserInterfaceTest() {
         ).check(HasButtonsViewAssertion(vals))
     }
 
+    /** In the habit type dialog: a habit to build, answered with yes or no. */
+    fun chooseYesOrNoHabitToBuild() {
+        clickText(R.string.goal_build)
+        device.waitForIdle()
+        clickText(R.string.yes_or_no)
+        device.waitForIdle()
+    }
+
     fun createHabit(habitName: String) {
         ListHabitsSteps.clickMenu(ListHabitsSteps.MenuItem.ADD)
         verifyShowsScreen(Screen.SELECT_HABIT_TYPE)
-        clickText("Yes or No")
+        chooseYesOrNoHabitToBuild()
         verifyShowsScreen(Screen.EDIT_HABIT)
         EditHabitSteps.typeName(habitName)
         EditHabitSteps.clickSave()

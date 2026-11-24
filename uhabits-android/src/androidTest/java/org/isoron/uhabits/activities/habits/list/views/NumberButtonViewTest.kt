@@ -38,6 +38,7 @@ class NumberButtonViewTest : BaseViewTest() {
     private var color: Int = 0
     private lateinit var units: String
     var edited = false
+    var incremented = false
 
     @Before
     override fun setUp() {
@@ -46,6 +47,7 @@ class NumberButtonViewTest : BaseViewTest() {
         units = "steps"
         view = component.getNumberButtonViewFactory().create().apply {
             onEdit = { edited = true }
+            onIncrement = { incremented = true }
             setState(NumberButtonState(color, 0.0, false, units, ""))
         }
         measureView(view, dpToPixels(48), dpToPixels(48))
@@ -113,8 +115,10 @@ class NumberButtonViewTest : BaseViewTest() {
 
     @Test
     fun testClick() {
+        // A tap counts up by the step size; the input dialog is on long press (#13).
         view.performClick()
-        assertTrue(edited)
+        assertTrue(incremented)
+        assertFalse(edited)
     }
 
     @Test

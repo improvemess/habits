@@ -25,6 +25,7 @@ import org.isoron.uhabits.acceptance.steps.CommonSteps.Screen.EDIT_HABIT
 import org.isoron.uhabits.acceptance.steps.CommonSteps.Screen.LIST_HABITS
 import org.isoron.uhabits.acceptance.steps.CommonSteps.Screen.SELECT_HABIT_TYPE
 import org.isoron.uhabits.acceptance.steps.CommonSteps.Screen.SHOW_HABIT
+import org.isoron.uhabits.acceptance.steps.CommonSteps.chooseYesOrNoHabitToBuild
 import org.isoron.uhabits.acceptance.steps.CommonSteps.clickText
 import org.isoron.uhabits.acceptance.steps.CommonSteps.launchApp
 import org.isoron.uhabits.acceptance.steps.CommonSteps.longClickText
@@ -75,7 +76,7 @@ class HabitsTest : BaseUserInterfaceTest() {
         verifyShowsScreen(LIST_HABITS)
         clickMenu(ADD)
         verifyShowsScreen(SELECT_HABIT_TYPE)
-        clickText("Yes or No")
+        chooseYesOrNoHabitToBuild()
         verifyShowsScreen(EDIT_HABIT)
         val testName = "Hello world"
         typeName(testName)
