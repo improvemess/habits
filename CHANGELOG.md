@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.5.0](https://github.com/oliverlorenz/uhabits/compare/v2.4.0...v2.5.0) (2026-11-24)
+
+### Features
+
+* publish events when habits are edited, archived or deleted ([#38](https://github.com/oliverlorenz/uhabits/issues/38)) ([be52e3b](https://github.com/oliverlorenz/uhabits/commit/be52e3bac201f27f3fd71b3887d25014d00c6b59)), closes [#31](https://github.com/oliverlorenz/uhabits/issues/31) [#36](https://github.com/oliverlorenz/uhabits/issues/36)
+
 ## [2.4.0](https://github.com/oliverlorenz/uhabits/compare/v2.3.2...v2.4.0) (2026-11-24)
 
 * release APKs via semantic-release on merges to dev ([#18](https://github.com/oliverlorenz/uhabits/issues/18)) ([c4c9d24](https://github.com/oliverlorenz/uhabits/commit/c4c9d242411659a062abe5d5e868944a7efa737a))
