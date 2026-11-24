@@ -35,8 +35,10 @@ import org.isoron.uhabits.core.commands.CreateHabitCommand
 import org.isoron.uhabits.core.commands.EditHabitCommand
 import org.isoron.uhabits.core.database.HabitData
 import org.isoron.uhabits.core.models.Entry
+import org.isoron.uhabits.core.models.Habit
 import org.isoron.uhabits.core.models.HabitList
 import org.isoron.uhabits.core.models.ModelFactory
+import org.isoron.uhabits.core.models.Pause
 import org.isoron.uhabits.core.models.sqlite.SQLiteHabitList
 import org.isoron.uhabits.core.sharing.OwnerIdentityStore
 import org.isoron.uhabits.core.utils.isSQLite3File
@@ -114,11 +116,33 @@ class LoopDBImporter(
                     entries.add(Entry(date, value, notes))
                 }
             }
+            importPauses(db, habitData.id, habit)
             habit.recompute()
         }
         habitList.resort()
         importOwnerIdentity(db)
         db.close()
+    }
+
+    /**
+     * Adds the pauses of the backup to [habit]. Pauses that overlap days already paused
+     * are skipped, so importing the same backup twice does not duplicate anything. Backups
+     * from versions without pauses simply have none.
+     */
+    private fun importPauses(db: Database, backupHabitId: Long?, habit: Habit) {
+        if (backupHabitId == null) return
+        db.query(
+            "SELECT startTimestamp, endTimestamp, title FROM HabitPauses WHERE habit = ? " +
+                "ORDER BY startTimestamp",
+            backupHabitId.toString()
+        ) { stmt ->
+            val start = stmt.getLongOrNull(0) ?: return@query
+            val end = stmt.getLongOrNull(1) ?: return@query
+            val title = stmt.getTextOrNull(2) ?: ""
+            if (end < start) return@query
+            val pause = Pause(LocalDate.fromUnixTime(start), LocalDate.fromUnixTime(end), title)
+            if (!habit.pauses.overlaps(pause.start, pause.end)) habit.pauses.add(pause)
+        }
     }
 
     /**
