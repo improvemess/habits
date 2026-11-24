@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.14.0](https://github.com/oliverlorenz/uhabits/compare/v2.13.0...v2.14.0) (2026-11-24)
+
+### Features
+
+* share habits with friends from the habit screen ([#53](https://github.com/oliverlorenz/uhabits/issues/53)) ([b95f496](https://github.com/oliverlorenz/uhabits/commit/b95f496e93dff9423b8964207a091a06df6ae223)), closes [#34](https://github.com/oliverlorenz/uhabits/issues/34) [#45](https://github.com/oliverlorenz/uhabits/issues/45) [#36](https://github.com/oliverlorenz/uhabits/issues/36), references [#26](https://github.com/oliverlorenz/uhabits/issues/26) [#22](https://github.com/oliverlorenz/uhabits/issues/22) [#42](https://github.com/oliverlorenz/uhabits/issues/42) [#35](https://github.com/oliverlorenz/uhabits/issues/35)
+
 ## [2.13.0](https://github.com/oliverlorenz/uhabits/compare/v2.12.0...v2.13.0) (2026-11-24)
 
 ### Features
