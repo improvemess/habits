@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.4.0](https://github.com/oliverlorenz/uhabits/compare/v2.3.2...v2.4.0) (2026-11-24)
+
+* release APKs via semantic-release on merges to dev ([#18](https://github.com/oliverlorenz/uhabits/issues/18)) ([c4c9d24](https://github.com/oliverlorenz/uhabits/commit/c4c9d242411659a062abe5d5e868944a7efa737a))
+
+### Features
+
+* create owner and device identity for sharing habits ([#37](https://github.com/oliverlorenz/uhabits/issues/37)) ([a9b05a9](https://github.com/oliverlorenz/uhabits/commit/a9b05a9ebc829bcc72380e6c084eee3430dbd8fd)), closes [#26](https://github.com/oliverlorenz/uhabits/issues/26) [#36](https://github.com/oliverlorenz/uhabits/issues/36), references [#34](https://github.com/oliverlorenz/uhabits/issues/34)
+
 ## [Unreleased]
 
 ### Added
