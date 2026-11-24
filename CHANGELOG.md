@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.9.0](https://github.com/oliverlorenz/uhabits/compare/v2.8.1...v2.9.0) (2026-11-24)
+
+### Features
+
+* queue changes of shared habits and sync them to the server ([#42](https://github.com/oliverlorenz/uhabits/issues/42)) ([91cd48f](https://github.com/oliverlorenz/uhabits/commit/91cd48f503e0c52054ca121b3ecfe4a3be391ed6)), references [#33](https://github.com/oliverlorenz/uhabits/issues/33) [#36](https://github.com/oliverlorenz/uhabits/issues/36) [#26](https://github.com/oliverlorenz/uhabits/issues/26) [#32](https://github.com/oliverlorenz/uhabits/issues/32) [#33](https://github.com/oliverlorenz/uhabits/issues/33) [22/#25](https://github.com/oliverlorenz/uhabits/issues/25)
+
 ## [2.8.1](https://github.com/oliverlorenz/uhabits/compare/v2.8.0...v2.8.1) (2026-11-24)
 
 ### Bug Fixes
