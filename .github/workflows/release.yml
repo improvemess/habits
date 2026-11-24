@@ -1,0 +1,75 @@
+name: Release
+
+# Jeder Merge auf dev (Squash, Commit-Titel = PR-Titel) startet semantic-release:
+# Version aus den Conventional-Commit-Titeln ableiten, CHANGELOG.md und
+# versionName/versionCode aktualisieren, APK bauen und als GitHub-Release
+# veröffentlichen. Konfiguration: .releaserc.json, Build: tools/release/prepare.sh
+on:
+  push:
+    branches: [dev]
+  workflow_dispatch:
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  release:
+    name: Semantic release
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    # Der Release-Commit selbst trägt [skip ci]; das hier ist nur die Absicherung.
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') }}
+    steps:
+      # Gepusht wird per Deploy-Key: Er darf die Ruleset auf dev (Pflicht-Checks)
+      # umgehen, GITHUB_TOKEN dagegen nicht.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ssh-key: ${{ secrets.RELEASE_DEPLOY_KEY }}
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Restore debug keystore
+        env:
+          DEBUG_KEYSTORE_BASE64: ${{ secrets.DEBUG_KEYSTORE_BASE64 }}
+        run: |
+          if [[ -z "$DEBUG_KEYSTORE_BASE64" ]]; then
+            echo "::error::Secret DEBUG_KEYSTORE_BASE64 fehlt."
+            exit 1
+          fi
+          echo "$DEBUG_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/debug.keystore"
+          echo "DEBUG_KEYSTORE=$RUNNER_TEMP/debug.keystore" >> "$GITHUB_ENV"
+
+      - name: Semantic release
+        id: release
+        uses: cycjimmy/semantic-release-action@v8
+        with:
+          semantic_version: 26
+          extra_plugins: |
+            @semantic-release/changelog@7
+            @semantic-release/exec@7
+            @semantic-release/git@11
+            conventional-changelog-conventionalcommits@10
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Summary
+        if: steps.release.outputs.new_release_published == 'true'
+        run: |
+          APKSIGNER=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)/apksigner
+          CERT=$("$APKSIGNER" verify --print-certs dist/*.apk | grep 'certificate SHA-256')
+          {
+            echo "### Release ${{ steps.release.outputs.new_release_git_tag }}"
+            echo "**Signatur:** \`${CERT##*: }\`"
+          } >> "$GITHUB_STEP_SUMMARY"

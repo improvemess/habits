@@ -1,11 +1,9 @@
 name: Quality Gates
 
+# Kein paths-ignore: "Quality gate" ist Pflicht-Check auf dev und muss daher
+# bei jedem PR laufen, sonst bliebe er dauerhaft ausstehend.
 on:
   pull_request:
-    paths-ignore:
-      - '**.md'
-      - 'docs/**'
-      - 'screenshots/**'
   workflow_dispatch:
 
 concurrency:
