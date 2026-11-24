@@ -21,13 +21,17 @@ package org.isoron.uhabits.activities.habits.show
 
 import android.content.Context
 import android.content.res.ColorStateList
+import android.graphics.drawable.GradientDrawable
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
+import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.graphics.ColorUtils
 import org.isoron.platform.time.LocalDate
 import org.isoron.uhabits.R
 import org.isoron.uhabits.core.models.Pause
@@ -94,7 +98,7 @@ class ShowHabitView(context: Context) : FrameLayout(context) {
             val row = LinearLayout(context).apply {
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.CENTER_VERTICAL
-                setPadding((16 * dp).toInt(), (4 * dp).toInt(), (8 * dp).toInt(), (4 * dp).toInt())
+                setPadding((12 * dp).toInt(), (2 * dp).toInt(), (4 * dp).toInt(), (2 * dp).toInt())
             }
             val label = TextView(context).apply {
                 text = context.getString(
@@ -105,6 +109,11 @@ class ShowHabitView(context: Context) : FrameLayout(context) {
                 )
                 setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
             }
+            // A light frame shows that the buttons belong to this pause
+            row.background = GradientDrawable().apply {
+                cornerRadius = 8 * dp
+                setStroke((1 * dp).toInt().coerceAtLeast(1), ColorUtils.setAlphaComponent(label.currentTextColor, 80))
+            }
             row.addView(label, LinearLayout.LayoutParams(0, LayoutParams.WRAP_CONTENT, 1f))
             // The stock icons are not theme aware, so tint them with the text color. Otherwise
             // they can be (almost) black on a dark background.
@@ -112,12 +121,15 @@ class ShowHabitView(context: Context) : FrameLayout(context) {
                 setImageResource(icon)
                 imageTintList = ColorStateList.valueOf(label.currentTextColor)
                 setBackgroundResource(android.R.color.transparent)
+                val pad = (10 * dp).toInt()
+                setPadding(pad, pad, pad, pad)
+                scaleType = ImageView.ScaleType.FIT_CENTER
                 contentDescription = context.getString(description)
                 setOnClickListener { onClick() }
             }
             val size = (40 * dp).toInt()
             row.addView(
-                iconButton(android.R.drawable.ic_menu_edit, R.string.pause_edit_description) { onEditPause(pause) },
+                iconButton(R.drawable.ic_action_edit_dark, R.string.pause_edit_description) { onEditPause(pause) },
                 LinearLayout.LayoutParams(size, size)
             )
             row.addView(
@@ -126,7 +138,13 @@ class ShowHabitView(context: Context) : FrameLayout(context) {
                 },
                 LinearLayout.LayoutParams(size, size)
             )
-            container.addView(row)
+            container.addView(
+                row,
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                ).apply { setMargins((16 * dp).toInt(), (4 * dp).toInt(), (16 * dp).toInt(), (4 * dp).toInt()) }
+            )
         }
     }
 

@@ -180,7 +180,19 @@ class CheckmarkButtonView(
 
             rect.set(0f, 0f, width.toFloat(), height.toFloat())
             rect.offset(0f, 0.4f * em)
-            canvas.drawText(label, rect.centerX(), rect.centerY(), paint)
+            if (isPaused) {
+                // Comic style: a normal "z" with a smaller, raised "z" to its upper right
+                val big = paint.textSize
+                val gap = 0.35f * em
+                val smallSize = 0.7f * big
+                paint.textAlign = Paint.Align.CENTER
+                canvas.drawText("z", rect.centerX() - gap, rect.centerY() + 0.1f * em, paint)
+                paint.textSize = smallSize
+                canvas.drawText("z", rect.centerX() + gap, rect.centerY() - 0.5f * em, paint)
+                paint.textSize = big
+            } else {
+                canvas.drawText(label, rect.centerX(), rect.centerY(), paint)
+            }
 
             if (state.value == YES_AUTO) {
                 paint.color = bgColor
