@@ -95,9 +95,10 @@ class IntentFactory() {
         return intent
     }
 
-    fun startEditActivity(context: Context, habitType: Int): Intent {
+    fun startEditActivity(context: Context, habitType: Int, negative: Boolean = false): Intent {
         val intent = startEditActivity(context)
         intent.putExtra("habitType", habitType)
+        intent.putExtra("negative", negative)
         return intent
     }
 }

@@ -36,6 +36,7 @@ import org.isoron.uhabits.core.ui.callbacks.CheckMarkDialogCallback
 import org.isoron.uhabits.core.ui.callbacks.NumberPickerCallback
 import org.isoron.uhabits.core.ui.views.HistoryChart
 import org.isoron.uhabits.core.ui.views.HistoryChart.Square.DIMMED
+import org.isoron.uhabits.core.ui.views.HistoryChart.Square.FAILED
 import org.isoron.uhabits.core.ui.views.HistoryChart.Square.GREY
 import org.isoron.uhabits.core.ui.views.HistoryChart.Square.HATCHED
 import org.isoron.uhabits.core.ui.views.HistoryChart.Square.OFF
@@ -93,7 +94,8 @@ class HistoryCardPresenter(
         screen.showCheckmarkPopup(
             entry.value,
             entry.notes,
-            habit.color
+            habit.color,
+            habit.isNegative
         ) { newValue, newNotes ->
             commandRunner.run(
                 CreateRepetitionCommand(
@@ -162,6 +164,7 @@ class HistoryCardPresenter(
                 entries.map {
                     when {
                         it.value == SKIP -> HATCHED
+                        habit.isNegative && !it.completed && it.value > 0 -> FAILED
                         (it.completed && it.value > 0) -> ON
                         it.completed -> DIMMED
                         it.value > 0 -> GREY
@@ -174,6 +177,7 @@ class HistoryCardPresenter(
                         YES_MANUAL -> ON
                         YES_AUTO -> DIMMED
                         SKIP -> HATCHED
+                        Entry.NO -> if (habit.isNegative) FAILED else OFF
                         else -> OFF
                     }
                 }
@@ -210,6 +214,7 @@ class HistoryCardPresenter(
             selectedValue: Int,
             notes: String,
             color: PaletteColor,
+            isNegative: Boolean = false,
             callback: CheckMarkDialogCallback
         )
     }

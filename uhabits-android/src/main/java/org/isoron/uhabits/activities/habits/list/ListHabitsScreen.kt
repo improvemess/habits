@@ -341,6 +341,7 @@ class ListHabitsScreen(
         selectedValue: Int,
         notes: String,
         color: PaletteColor,
+        isNegative: Boolean,
         callback: CheckMarkDialogCallback
     ) {
         val theme = rootView.value.currentTheme()
@@ -350,6 +351,7 @@ class ListHabitsScreen(
             putInt("color", theme.color(color).toInt())
             putInt("value", selectedValue)
             putString("notes", notes)
+            putBoolean("negative", isNegative)
         }
         dialog.onToggle = { v, n -> callback.onNotesSaved(v, n) }
         dialog.dismissCurrentAndShow(fm, "checkmarkDialog")

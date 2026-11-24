@@ -24,6 +24,7 @@ import android.view.LayoutInflater
 import android.widget.LinearLayout
 import org.isoron.platform.gui.toInt
 import org.isoron.uhabits.core.ui.screens.habits.show.views.FrequencyCardState
+import org.isoron.uhabits.core.ui.views.FAILED_RED
 import org.isoron.uhabits.databinding.ShowHabitFrequencyBinding
 
 class FrequencyCardView(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
@@ -36,6 +37,7 @@ class FrequencyCardView(context: Context, attrs: AttributeSet) : LinearLayout(co
         binding.frequencyChart.setIsNumerical(state.isNumerical)
         binding.frequencyChart.setFirstWeekday(state.firstWeekday)
         binding.title.setTextColor(androidColor)
-        binding.frequencyChart.setColor(androidColor)
+        // Relapses of a habit the user wants to quit are shown in red
+        binding.frequencyChart.setColor(if (state.isNegative) FAILED_RED.toInt() else androidColor)
     }
 }

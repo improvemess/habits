@@ -25,6 +25,7 @@ import org.isoron.platform.time.LocalDate
 import org.isoron.platform.time.TruncateField
 import org.isoron.platform.time.getFirstWeekday
 import org.isoron.platform.time.getToday
+import org.isoron.uhabits.core.models.Entry.Companion.NO
 import org.isoron.uhabits.core.models.Entry.Companion.SKIP
 import org.isoron.uhabits.core.models.Entry.Companion.UNKNOWN
 import org.isoron.uhabits.core.models.Entry.Companion.YES_AUTO
@@ -216,7 +217,10 @@ open class EntryList {
      * @return total number of checkmarks by month versus day of week
      */
     @Synchronized
-    fun computeWeekdayFrequency(isNumerical: Boolean): HashMap<LocalDate, Array<Int>> {
+    fun computeWeekdayFrequency(
+        isNumerical: Boolean,
+        countRelapses: Boolean = false
+    ): HashMap<LocalDate, Array<Int>> {
         val entries = getKnown()
         val map = hashMapOf<LocalDate, Array<Int>>()
         for (entry in entries) {
@@ -231,6 +235,8 @@ open class EntryList {
 
             if (isNumerical) {
                 list[weekday] += entry.value
+            } else if (countRelapses) {
+                if (entry.value == NO) list[weekday] += 1
             } else if (entry.value == YES_MANUAL) {
                 list[weekday] += 1
             }
@@ -430,6 +436,26 @@ fun List<Entry>.countSkippedDays(
         } else {
             Entry(date, 0)
         }
+    }.groupBy { entry ->
+        truncateDate(entry.date, truncateField, firstWeekdayEnum)
+    }.entries.map { (date, entries) ->
+        Entry(date, entries.sumOf { it.value })
+    }.sortedBy { (date, _) ->
+        -date.daysSince2000
+    }
+}
+
+/**
+ * Counts the days with value NO (relapses of a habit the user wants to quit) in each period. The
+ * result has the same shape as [countSkippedDays].
+ */
+fun List<Entry>.countRelapses(
+    truncateField: TruncateField,
+    firstWeekday: Int = 7
+): List<Entry> {
+    val firstWeekdayEnum = DayOfWeek.values()[firstWeekday - 1]
+    return this.map { (date, value) ->
+        Entry(date, if (value == NO) 1 else 0)
     }.groupBy { entry ->
         truncateDate(entry.date, truncateField, firstWeekdayEnum)
     }.entries.map { (date, entries) ->

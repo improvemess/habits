@@ -21,6 +21,7 @@ package org.isoron.uhabits.core.models.sqlite
 import dev.mokkery.mock
 import dev.mokkery.verify
 import kotlinx.coroutines.test.runTest
+import org.isoron.platform.time.LocalDate
 import org.isoron.uhabits.core.BaseUnitTest
 import org.isoron.uhabits.core.database.HabitRepository
 import org.isoron.uhabits.core.models.Habit
@@ -238,5 +239,22 @@ class SQLiteHabitListTest : BaseUnitTest() {
         assertFailsWith<IllegalStateException> {
             habitList.moveAfter(habitList.getById(1)!!, habitList.getById(2)!!)
         }
+    }
+
+    @Test
+    fun testNegativeSince_isPersistedAndRestored() = dbTest {
+        val habit = habitsArray[2]
+        habit.negativeSince = LocalDate(2015, 1, 10)
+        habitList.update(habit)
+        val data = repository.findAll().first { it.id == habit.id }
+        assertEquals(LocalDate(2015, 1, 10).unixTime, data.negativeSince)
+        val restored = modelFactory.buildHabit()
+        SQLiteHabitList.copyTo(data, restored)
+        assertEquals(LocalDate(2015, 1, 10), restored.negativeSince)
+        assertEquals(true, restored.isNegative)
+
+        habit.negativeSince = null
+        habitList.update(habit)
+        assertNull(repository.findAll().first { it.id == habit.id }.negativeSince)
     }
 }

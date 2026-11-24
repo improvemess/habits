@@ -26,6 +26,7 @@ import android.widget.TextView
 import org.isoron.uhabits.HabitsApplication
 import org.isoron.uhabits.R
 import org.isoron.uhabits.activities.common.views.RingView
+import org.isoron.uhabits.activities.habits.list.views.NEGATIVE_RED
 import org.isoron.uhabits.activities.habits.list.views.toShortString
 import org.isoron.uhabits.core.models.Entry.Companion.NO
 import org.isoron.uhabits.core.models.Entry.Companion.SKIP
@@ -51,6 +52,7 @@ class CheckmarkWidgetView : HabitWidgetView {
     var entryValue = 0
     var entryState = 0
     var isNumerical = false
+    var isNegative = false
     private var preferences: Preferences? = null
 
     constructor(context: Context?) : super(context) {
@@ -76,7 +78,7 @@ class CheckmarkWidgetView : HabitWidgetView {
             }
             NO, UNKNOWN -> {
                 bgColor = res.getColor(R.attr.cardBgColor)
-                fgColor = res.getColor(R.attr.contrast60)
+                fgColor = if (isNegative && entryState == NO) NEGATIVE_RED else res.getColor(R.attr.contrast60)
             }
             else -> {
                 bgColor = res.getColor(R.attr.cardBgColor)

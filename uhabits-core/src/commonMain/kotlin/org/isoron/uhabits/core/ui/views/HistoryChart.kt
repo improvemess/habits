@@ -32,6 +32,9 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.round
 
+/** Muted red that marks a failure of a habit the user wants to quit. */
+val FAILED_RED = Color(0xD32F2F)
+
 interface OnDateClickedListener {
     fun onDateShortPress(date: LocalDate) {}
     fun onDateLongPress(date: LocalDate) {}
@@ -55,7 +58,10 @@ class HistoryChart(
         OFF,
         GREY,
         DIMMED,
-        HATCHED
+        HATCHED,
+
+        /** A relapse or an exceeded limit of a habit the user wants to quit. */
+        FAILED
     }
 
     var squareSpacing = 1.0
@@ -247,6 +253,9 @@ class HistoryChart(
             Square.GREY -> {
                 theme.mediumContrastTextColor
             }
+            Square.FAILED -> {
+                FAILED_RED
+            }
             Square.DIMMED, Square.HATCHED -> {
                 color.blendWith(theme.cardBackgroundColor, 0.5)
             }
@@ -285,7 +294,7 @@ class HistoryChart(
 
         if (hasNotes) {
             circleColor = when (value) {
-                Square.ON, Square.GREY -> theme.lowContrastTextColor
+                Square.ON, Square.GREY, Square.FAILED -> theme.lowContrastTextColor
                 else -> color
             }
             canvas.setColor(circleColor)

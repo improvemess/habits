@@ -33,6 +33,8 @@ data class TargetCardState(
     val values: List<Double> = listOf(),
     val targets: List<Double> = listOf(),
     val intervals: List<Int> = listOf(),
+    /** One flag per row: the value is over the limit of a habit the user wants to quit. */
+    val exceeded: List<Boolean> = listOf(),
     val theme: Theme
 )
 
@@ -160,6 +162,11 @@ class TargetCardPresenter {
                 values = values,
                 targets = targets,
                 intervals = intervals,
+                exceeded = if (habit.isNegative && habit.isNumerical) {
+                    values.indices.map { values[it] > targets[it] }
+                } else {
+                    emptyList()
+                },
                 theme = theme
             )
         }

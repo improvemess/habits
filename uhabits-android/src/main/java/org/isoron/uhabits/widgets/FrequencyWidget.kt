@@ -26,6 +26,7 @@ import org.isoron.platform.gui.toInt
 import org.isoron.platform.time.DayOfWeek
 import org.isoron.uhabits.activities.common.views.FrequencyChart
 import org.isoron.uhabits.core.models.Habit
+import org.isoron.uhabits.core.ui.views.FAILED_RED
 import org.isoron.uhabits.core.ui.views.WidgetTheme
 import org.isoron.uhabits.widgets.views.GraphWidgetView
 
@@ -49,9 +50,11 @@ class FrequencyWidget(
         if (preferedBackgroundAlpha >= 255) widgetView.setShadowAlpha(0x4f)
         (widgetView.dataView as FrequencyChart).apply {
             setFirstWeekday(firstWeekday)
-            setColor(WidgetTheme().color(habit.color).toInt())
+            // Relapses of a habit the user wants to quit are counted and shown in red
+            val relapses = habit.isNegative && !habit.isNumerical
+            setColor(if (relapses) FAILED_RED.toInt() else WidgetTheme().color(habit.color).toInt())
             setIsNumerical(habit.isNumerical)
-            setFrequency(habit.originalEntries.computeWeekdayFrequency(habit.isNumerical))
+            setFrequency(habit.originalEntries.computeWeekdayFrequency(habit.isNumerical, relapses))
         }
     }
 
