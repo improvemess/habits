@@ -19,10 +19,12 @@
 package org.isoron.uhabits.core.ui.screens.habits.show
 
 import org.isoron.platform.io.UserFile
+import org.isoron.platform.time.LocalDate
 import org.isoron.platform.time.getToday
 import org.isoron.uhabits.core.commands.ArchiveHabitsCommand
 import org.isoron.uhabits.core.commands.CommandRunner
 import org.isoron.uhabits.core.commands.DeleteHabitsCommand
+import org.isoron.uhabits.core.commands.PauseHabitCommand
 import org.isoron.uhabits.core.commands.UnarchiveHabitsCommand
 import org.isoron.uhabits.core.models.Entry
 import org.isoron.uhabits.core.models.Habit
@@ -62,6 +64,27 @@ class ShowHabitMenuPresenter(
         commandRunner.run(ArchiveHabitsCommand(habitList, listOf(habit)))
         screen.showMessage(Message.HABIT_ARCHIVED)
     }
+
+    fun onPauseHabit() {
+        screen.showPauseDialog { from, to ->
+            commandRunner.run(PauseHabitCommand(habitList, habit, from, to))
+            screen.showMessage(Message.HABIT_PAUSED)
+            screen.refresh()
+        }
+    }
+
+    fun onResumeHabit() {
+        val today = getToday()
+        var from = today
+        while (habit.originalEntries.get(from.minus(1)).value == Entry.SKIP) from = from.minus(1)
+        var to = today
+        while (habit.originalEntries.get(to.plus(1)).value == Entry.SKIP) to = to.plus(1)
+        commandRunner.run(PauseHabitCommand(habitList, habit, from, to, paused = false))
+        screen.showMessage(Message.HABIT_RESUMED)
+        screen.refresh()
+    }
+
+    fun isPausedToday(): Boolean = habit.originalEntries.get(getToday()).value == Entry.SKIP
 
     fun onExportCSV() {
         val outputDir = system.getCSVOutputDir()
@@ -114,7 +137,9 @@ class ShowHabitMenuPresenter(
     enum class Message {
         COULD_NOT_EXPORT,
         HABIT_ARCHIVED,
-        HABIT_UNARCHIVED
+        HABIT_UNARCHIVED,
+        HABIT_PAUSED,
+        HABIT_RESUMED
     }
 
     interface Screen {
@@ -122,6 +147,7 @@ class ShowHabitMenuPresenter(
         fun showMessage(m: Message?)
         fun showSendFileScreen(filename: String)
         fun showDeleteConfirmationScreen(callback: OnConfirmedCallback)
+        fun showPauseDialog(onPicked: (from: LocalDate, to: LocalDate) -> Unit)
         fun close()
         fun refresh()
     }

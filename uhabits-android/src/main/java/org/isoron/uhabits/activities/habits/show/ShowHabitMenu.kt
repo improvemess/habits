@@ -37,6 +37,8 @@ class ShowHabitMenu(
         }
         menu.findItem(R.id.action_archive_habit).isVisible = presenter.canArchive()
         menu.findItem(R.id.action_unarchive_habit).isVisible = presenter.canUnarchive()
+        menu.findItem(R.id.action_pause_habit).isVisible = !presenter.isPausedToday()
+        menu.findItem(R.id.action_resume_habit).isVisible = presenter.isPausedToday()
 
         return true
     }
@@ -54,6 +56,14 @@ class ShowHabitMenu(
 
             R.id.action_unarchive_habit -> {
                 presenter.onUnarchiveHabits()
+                return true
+            }
+            R.id.action_pause_habit -> {
+                presenter.onPauseHabit()
+                return true
+            }
+            R.id.action_resume_habit -> {
+                presenter.onResumeHabit()
                 return true
             }
             R.id.action_delete -> {

@@ -25,10 +25,12 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.datepicker.MaterialDatePicker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.isoron.platform.gui.toInt
+import org.isoron.platform.time.LocalDate
 import org.isoron.uhabits.AndroidDirFinder
 import org.isoron.uhabits.HabitsApplication
 import org.isoron.uhabits.R
@@ -237,8 +239,30 @@ class ShowHabitActivity : AppCompatActivity(), CommandRunner.Listener {
                     )
                 }
 
+                ShowHabitMenuPresenter.Message.HABIT_PAUSED ->
+                    showMessage(resources.getString(R.string.toast_habit_paused))
+
+                ShowHabitMenuPresenter.Message.HABIT_RESUMED ->
+                    showMessage(resources.getString(R.string.toast_habit_resumed))
+
                 else -> {}
             }
+        }
+
+        override fun showPauseDialog(onPicked: (LocalDate, LocalDate) -> Unit) {
+            val picker = MaterialDatePicker.Builder.dateRangePicker()
+                .setTitleText(R.string.pause)
+                .build()
+            picker.addOnPositiveButtonClickListener { range ->
+                val first = range.first ?: return@addOnPositiveButtonClickListener
+                val second = range.second ?: first
+                // The picker returns UTC midnight timestamps in milliseconds.
+                onPicked(
+                    LocalDate((first / 86_400_000L).toInt() - 10957),
+                    LocalDate((second / 86_400_000L).toInt() - 10957)
+                )
+            }
+            picker.show(supportFragmentManager, "pausePicker")
         }
 
         override fun showSendFileScreen(filename: String) {
