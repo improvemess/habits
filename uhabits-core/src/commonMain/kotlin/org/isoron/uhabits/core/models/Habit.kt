@@ -115,8 +115,8 @@ data class Habit(
     }
 
     /**
-     * Returns the original entries, where every paused day that has no entry of its own is
-     * marked as SKIP. Paused days far in the future are ignored until they come closer.
+     * Returns the original entries, where every paused day that has no entry of its own (or only
+     * a NO) is marked as SKIP. Paused days far in the future are ignored until they come closer.
      */
     private fun entriesWithPauses(): EntryList {
         val pauseList = pauses.getAll()
@@ -128,7 +128,8 @@ data class Habit(
             var day = pause.start
             while (!day.isNewerThan(pause.end) && !day.isNewerThan(limit)) {
                 val existing = originalEntries.get(day)
-                if (existing.value == Entry.UNKNOWN) {
+                // A paused day replaces "unknown" and "no", but never a manual "yes"
+                if (existing.value == Entry.UNKNOWN || existing.value == Entry.NO) {
                     result.add(Entry(day, Entry.SKIP, existing.notes))
                 }
                 day = day.plus(1)

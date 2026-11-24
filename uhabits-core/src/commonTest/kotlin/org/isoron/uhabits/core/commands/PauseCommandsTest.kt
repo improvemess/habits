@@ -11,7 +11,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class PauseCommandsTest : BaseUnitTest() {
-    private val today = getToday()
+    private val today get() = getToday()
 
     @Test
     fun testAddPauseMarksFutureDaysAsSkip() {
@@ -28,6 +28,16 @@ class PauseCommandsTest : BaseUnitTest() {
         val habit = fixtures.createEmptyHabit()
         AddPauseCommand(habitList, habit, today.plus(1), today.plus(3), "Vacation").run()
         assertEquals("Vacation", habit.pauses.getAll().single().title)
+    }
+
+    @Test
+    fun testPauseStartingTodayMarksTodayAsSkip() {
+        for (habit in listOf(fixtures.createEmptyHabit(), fixtures.createShortHabit())) {
+            habit.originalEntries.add(Entry(today, Entry.NO, "note"))
+            AddPauseCommand(habitList, habit, today, today.plus(2)).run()
+            assertEquals(Entry.SKIP, habit.computedEntries.get(today).value)
+            assertEquals(Entry.SKIP, habit.computedEntries.get(today.plus(1)).value)
+        }
     }
 
     @Test
