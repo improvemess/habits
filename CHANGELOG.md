@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.10.0](https://github.com/oliverlorenz/uhabits/compare/v2.9.0...v2.10.0) (2026-11-24)
+
+### Features
+
+* sync shared habits in the background ([#44](https://github.com/oliverlorenz/uhabits/issues/44)) ([677d1be](https://github.com/oliverlorenz/uhabits/commit/677d1be540238e54d0890cf37ac1646d0be35784)), closes [#33](https://github.com/oliverlorenz/uhabits/issues/33) [#42](https://github.com/oliverlorenz/uhabits/issues/42) [#36](https://github.com/oliverlorenz/uhabits/issues/36), references [#42](https://github.com/oliverlorenz/uhabits/issues/42) [uhabits-server#3](https://github.com/uhabits-server/issues/3) [#7](https://github.com/oliverlorenz/uhabits/issues/7) [#34](https://github.com/oliverlorenz/uhabits/issues/34) [#40](https://github.com/oliverlorenz/uhabits/issues/40) [#34](https://github.com/oliverlorenz/uhabits/issues/34)
+
 ## [2.9.0](https://github.com/oliverlorenz/uhabits/compare/v2.8.1...v2.9.0) (2026-11-24)
 
 ### Features
