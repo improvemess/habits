@@ -19,12 +19,14 @@
 package org.isoron.uhabits.core.sharing
 
 import kotlinx.coroutines.test.runTest
+import org.isoron.platform.io.Database
 import org.isoron.platform.io.TestDatabaseHelper
 import org.isoron.platform.time.LocalDate
 import org.isoron.uhabits.core.commands.EntrySource
 import org.isoron.uhabits.core.events.HabitEvent
 import org.isoron.uhabits.core.events.HabitLifecycleEvent
 import org.isoron.uhabits.core.events.HabitSnapshot
+import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -32,9 +34,16 @@ import kotlin.test.assertTrue
 class FriendsTransportTest {
     private val start = LocalDate(2026, 11, 20)
     private var changes = 0
+    private val databases = mutableListOf<Database>()
+
+    // sql.js keeps every open database in one WebAssembly heap; close them, or later tests run out of memory.
+    @AfterTest
+    fun closeDatabases() {
+        databases.forEach { it.close() }
+    }
 
     private suspend fun setup(): Pair<ShareStore, FriendsTransport> {
-        val store = ShareStore(TestDatabaseHelper.createEmptyDatabase())
+        val store = ShareStore(TestDatabaseHelper.createEmptyDatabase().also { databases.add(it) })
         store.insert("s1", "h1", "https://a", ShareKey.generate(), start, 0)
         return store to FriendsTransport(store, { 42 }, { changes++ })
     }

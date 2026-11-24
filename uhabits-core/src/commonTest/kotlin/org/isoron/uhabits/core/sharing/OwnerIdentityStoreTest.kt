@@ -19,23 +19,35 @@
 package org.isoron.uhabits.core.sharing
 
 import kotlinx.coroutines.test.runTest
+import org.isoron.platform.io.Database
 import org.isoron.platform.io.TestDatabaseHelper
 import org.isoron.platform.io.queryInt
 import org.isoron.platform.io.run
+import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 class OwnerIdentityStoreTest {
+    private val databases = mutableListOf<Database>()
+
+    private suspend fun database(): Database = TestDatabaseHelper.createEmptyDatabase().also { databases.add(it) }
+
+    // sql.js keeps every open database in one WebAssembly heap; close them, or later tests run out of memory.
+    @AfterTest
+    fun closeDatabases() {
+        databases.forEach { it.close() }
+    }
+
     @Test
     fun testLoadReturnsNullWhenEmpty() = runTest {
-        val store = OwnerIdentityStore(TestDatabaseHelper.createEmptyDatabase())
+        val store = OwnerIdentityStore(database())
         assertNull(store.load())
     }
 
     @Test
     fun testGetOrCreateIsStable() = runTest {
-        val db = TestDatabaseHelper.createEmptyDatabase()
+        val db = database()
         val first = OwnerIdentityStore(db).getOrCreate()
         val second = OwnerIdentityStore(db).getOrCreate()
         assertEquals(first, second)
@@ -45,7 +57,7 @@ class OwnerIdentityStoreTest {
 
     @Test
     fun testSaveReplacesExistingIdentity() = runTest {
-        val db = TestDatabaseHelper.createEmptyDatabase()
+        val db = database()
         val store = OwnerIdentityStore(db)
         store.getOrCreate()
         val other = OwnerIdentity.generate()
@@ -56,7 +68,7 @@ class OwnerIdentityStoreTest {
 
     @Test
     fun testMalformedRowIsIgnored() = runTest {
-        val db = TestDatabaseHelper.createEmptyDatabase()
+        val db = database()
         db.run("INSERT INTO OwnerIdentity(id, owner_id, owner_secret) VALUES (1, 'x', 'y')")
         val store = OwnerIdentityStore(db)
         assertNull(store.load())

@@ -19,8 +19,10 @@
 package org.isoron.uhabits.core.sharing
 
 import kotlinx.coroutines.test.runTest
+import org.isoron.platform.io.Database
 import org.isoron.platform.io.TestDatabaseHelper
 import org.isoron.platform.time.LocalDate
+import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -29,7 +31,15 @@ import kotlin.test.assertTrue
 class ShareStoreTest {
     private val day = LocalDate(2026, 11, 24)
 
-    private suspend fun store() = ShareStore(TestDatabaseHelper.createEmptyDatabase())
+    private val databases = mutableListOf<Database>()
+
+    private suspend fun store() = ShareStore(TestDatabaseHelper.createEmptyDatabase().also { databases.add(it) })
+
+    // sql.js keeps every open database in one WebAssembly heap; close them, or later tests run out of memory.
+    @AfterTest
+    fun closeDatabases() {
+        databases.forEach { it.close() }
+    }
 
     private fun ShareStore.add(shareId: String = "s1", habit: String = "h1", server: String = "https://a") =
         insert(shareId, habit, server, ShareKey.generate(), day, 1000)

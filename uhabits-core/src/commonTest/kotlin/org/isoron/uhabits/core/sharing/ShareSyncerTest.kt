@@ -19,11 +19,13 @@
 package org.isoron.uhabits.core.sharing
 
 import kotlinx.coroutines.test.runTest
+import org.isoron.platform.io.Database
 import org.isoron.platform.time.LocalDate
 import org.isoron.uhabits.core.BaseUnitTest
 import org.isoron.uhabits.core.io.StandardLogging
 import org.isoron.uhabits.core.models.Entry
 import org.isoron.uhabits.core.models.Habit
+import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -31,6 +33,7 @@ import kotlin.test.assertTrue
 
 class ShareSyncerTest : BaseUnitTest() {
     private val start = LocalDate(2026, 11, 20)
+    private lateinit var db: Database
     private lateinit var store: ShareStore
     private lateinit var api: FakeSharingApi
     private lateinit var tokens: MemoryDeviceTokenStore
@@ -45,8 +48,14 @@ class ShareSyncerTest : BaseUnitTest() {
         }
     }
 
+    // sql.js keeps every open database in one WebAssembly heap; close them, or later tests run out of memory.
+    @AfterTest
+    fun closeDatabase() {
+        if (::db.isInitialized) db.close()
+    }
+
     private suspend fun init() {
-        val db = buildMemoryDatabase()
+        db = buildMemoryDatabase()
         store = ShareStore(db)
         api = FakeSharingApi()
         tokens = MemoryDeviceTokenStore()
