@@ -30,6 +30,7 @@ import org.isoron.uhabits.core.reminders.ReminderScheduler
 import org.isoron.uhabits.core.ui.NotificationTray
 import org.isoron.uhabits.inject.HabitsApplicationComponent
 import org.isoron.uhabits.inject.create
+import org.isoron.uhabits.sharing.ShareSyncWork
 import org.isoron.uhabits.utils.DatabaseUtils
 import org.isoron.uhabits.widgets.WidgetUpdater
 import java.io.File
@@ -44,6 +45,7 @@ class HabitsApplication : Application() {
     private lateinit var reminderScheduler: ReminderScheduler
     private lateinit var notificationTray: NotificationTray
     private lateinit var habitEventPublisher: HabitEventPublisher
+    private lateinit var friendsEventPublisher: HabitEventPublisher
 
     override fun onCreate() {
         super.onCreate()
@@ -99,6 +101,17 @@ class HabitsApplication : Application() {
         )
         habitEventPublisher.startListening()
 
+        // Sends nothing until a habit is shared with friends.
+        friendsEventPublisher = HabitEventPublisher(
+            component.commandRunner,
+            component.friendsTransport
+        )
+        friendsEventPublisher.startListening()
+        if (!isTestMode()) {
+            ShareSyncWork.scheduleHeartbeat(this)
+            if (component.shareStore.sharesWithPending().isNotEmpty()) ShareSyncWork.scheduleSync(this)
+        }
+
         val taskRunner = component.taskRunner
         taskRunner.execute {
             reminderScheduler.scheduleAll()
@@ -111,6 +124,7 @@ class HabitsApplication : Application() {
         widgetUpdater.stopListening()
         notificationTray.stopListening()
         habitEventPublisher.stopListening()
+        friendsEventPublisher.stopListening()
         super.onTerminate()
     }
 

@@ -274,6 +274,7 @@ class SQLiteHabitList(private val modelFactory: ModelFactory) : HabitList() {
                 unit = habit.unit,
                 uuid = habit.uuid,
                 category = habit.category,
+                stepSize = habit.stepSize,
                 negativeSince = habit.negativeSince?.unixTime
             )
         }
@@ -293,6 +294,7 @@ class SQLiteHabitList(private val modelFactory: ModelFactory) : HabitList() {
             habit.position = data.position
             habit.uuid = data.uuid
             habit.category = data.category
+            habit.stepSize = data.stepSize
             habit.negativeSince = data.negativeSince?.let { LocalDate.fromUnixTime(it) }
             if (data.reminderHour != null && data.reminderMin != null) {
                 habit.reminder = Reminder(

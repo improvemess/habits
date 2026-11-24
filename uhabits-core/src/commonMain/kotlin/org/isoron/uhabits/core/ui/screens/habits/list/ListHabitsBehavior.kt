@@ -27,6 +27,7 @@ import org.isoron.uhabits.core.commands.CreateRepetitionCommand
 import org.isoron.uhabits.core.commands.RenameCategoryCommand
 import org.isoron.uhabits.core.commands.ReorderHabitCommand
 import org.isoron.uhabits.core.commands.ReorderTarget
+import org.isoron.uhabits.core.models.Entry
 import org.isoron.uhabits.core.models.Entry.Companion.YES_MANUAL
 import org.isoron.uhabits.core.models.HabitList
 import org.isoron.uhabits.core.models.HabitType
@@ -76,6 +77,29 @@ open class ListHabitsBehavior(
                 if (newValue != entry.value && newValue == YES_MANUAL) screen.showConfetti(habit.color, x, y)
                 commandRunner.run(CreateRepetitionCommand(habitList, habit, date, newValue, newNotes))
             }
+        }
+    }
+
+    /**
+     * Adds one step (see [org.isoron.uhabits.core.models.Habit.stepSize]) to the value of a numerical
+     * habit on the given day and offers to undo it.
+     */
+    open fun onIncrement(habitId: Long, date: LocalDate, x: Float, y: Float) {
+        val habit = habitList.getById(habitId) ?: return
+        if (habit.type != HabitType.NUMERICAL) return
+        val entry = habit.computedEntries.get(date)
+        val oldRaw = entry.value
+        val oldValue = if (oldRaw < 0 || oldRaw == Entry.SKIP) 0.0 else oldRaw.toDouble() / 1000
+        val step = if (habit.stepSize > 0) habit.stepSize else 1.0
+        val newValue = oldValue + step
+        commandRunner.run(
+            CreateRepetitionCommand(habitList, habit, date, (newValue * 1000).roundToInt(), entry.notes)
+        )
+        if (habit.targetType == AT_LEAST && oldValue < habit.targetValue && newValue >= habit.targetValue) {
+            screen.showConfetti(habit.color, x, y)
+        }
+        screen.showIncrementUndo(newValue, habit.unit) {
+            commandRunner.run(CreateRepetitionCommand(habitList, habit, date, oldRaw, entry.notes))
         }
     }
 
@@ -190,5 +214,6 @@ open class ListHabitsBehavior(
         fun showSendBugReportToDeveloperScreen(log: String)
         fun showSendFileScreen(filename: String)
         fun showConfetti(color: PaletteColor, x: Float, y: Float)
+        fun showIncrementUndo(newValue: Double, unit: String, onUndo: () -> Unit)
     }
 }

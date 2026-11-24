@@ -76,6 +76,8 @@ class NumberButtonView(
 
     var onEdit: () -> Unit = { }
 
+    var onIncrement: () -> Unit = { }
+
     private var drawer: Drawer = Drawer(context)
 
     fun setState(newState: NumberButtonState) {
@@ -89,7 +91,7 @@ class NumberButtonView(
     }
 
     override fun onClick(v: View) {
-        onEdit()
+        onIncrement()
     }
 
     override fun onLongClick(v: View): Boolean {

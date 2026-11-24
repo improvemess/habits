@@ -10,13 +10,13 @@ import org.isoron.uhabits.core.BaseUnitTest
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
-class Version30Test : BaseUnitTest() {
+class Version32Test : BaseUnitTest() {
     private lateinit var db: Database
 
     @Test
-    fun testMigrateTo30AddsNullableNegativeSinceColumn() = runTest {
+    fun testMigrateTo32AddsNullableNegativeSinceColumn() = runTest {
         db = openDatabaseResource("/databases/022.db")
-        db.migrateTo(30) { v ->
+        db.migrateTo(32) { v ->
             val path = "migrations/${format("%02d.sql", v)}"
             fileOpener.openResourceFile(path).lines().joinToString("\n")
         }

@@ -25,6 +25,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.snackbar.Snackbar
 import me.tatarka.inject.annotations.Inject
 import nl.dionsegijn.konfetti.core.Party
 import nl.dionsegijn.konfetti.core.Position
@@ -39,6 +40,7 @@ import org.isoron.uhabits.activities.common.dialogs.ConfirmDeleteDialog
 import org.isoron.uhabits.activities.common.dialogs.NumberDialog
 import org.isoron.uhabits.activities.habits.edit.HabitTypeDialog
 import org.isoron.uhabits.activities.habits.list.views.HabitCardListAdapter
+import org.isoron.uhabits.activities.habits.list.views.toShortString
 import org.isoron.uhabits.core.commands.ArchiveHabitsCommand
 import org.isoron.uhabits.core.commands.ChangeHabitColorCommand
 import org.isoron.uhabits.core.commands.Command
@@ -305,6 +307,19 @@ class ListHabitsScreen(
         }
         dialog.onConfirmed = onConfirmed
         dialog.dismissCurrentAndShow(fm, "categoryDialog")
+    }
+
+    override fun showIncrementUndo(newValue: Double, unit: String, onUndo: () -> Unit) {
+        val text = "${newValue.toShortString()} $unit".trim()
+        try {
+            Snackbar.make(
+                activity.findViewById(android.R.id.content),
+                activity.getString(R.string.counter_now_at, text),
+                Snackbar.LENGTH_LONG
+            ).setAction(R.string.undo) { onUndo() }.show()
+        } catch (e: IllegalArgumentException) {
+            return
+        }
     }
 
     override fun showNumberPopup(

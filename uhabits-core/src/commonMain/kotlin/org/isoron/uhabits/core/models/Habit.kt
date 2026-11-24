@@ -35,6 +35,7 @@ data class Habit(
     var position: Int = 0,
     var question: String = "",
     var reminder: Reminder? = null,
+    var stepSize: Double = 1.0,
     var targetType: NumericalHabitType = NumericalHabitType.AT_LEAST,
     var targetValue: Double = 0.0,
     var type: HabitType = HabitType.YES_NO,
@@ -180,6 +181,7 @@ data class Habit(
         this.position = other.position
         this.question = other.question
         this.reminder = other.reminder
+        this.stepSize = other.stepSize
         this.targetType = other.targetType
         this.targetValue = other.targetValue
         this.type = other.type
@@ -202,6 +204,7 @@ data class Habit(
         if (position != other.position) return false
         if (question != other.question) return false
         if (reminder != other.reminder) return false
+        if (stepSize != other.stepSize) return false
         if (targetType != other.targetType) return false
         if (targetValue != other.targetValue) return false
         if (type != other.type) return false
@@ -223,6 +226,7 @@ data class Habit(
         result = 31 * result + position
         result = 31 * result + question.hashCode()
         result = 31 * result + (reminder?.hashCode() ?: 0)
+        result = 31 * result + stepSize.hashCode()
         result = 31 * result + targetType.value
         result = 31 * result + targetValue.hashCode()
         result = 31 * result + type.value

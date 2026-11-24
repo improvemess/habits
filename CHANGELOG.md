@@ -1,5 +1,29 @@
 # Changelog
 
+## [2.11.0](https://github.com/oliverlorenz/uhabits/compare/v2.10.0...v2.11.0) (2026-11-24)
+
+### Features
+
+* Zähler mit wählbarer Schrittweite für messbare Gewohnheiten ([#13](https://github.com/oliverlorenz/uhabits/issues/13)) ([#50](https://github.com/oliverlorenz/uhabits/issues/50)) ([83c36b6](https://github.com/oliverlorenz/uhabits/commit/83c36b6c582b98994bd0445793e7b6f1cd5787ca)), references [#43](https://github.com/oliverlorenz/uhabits/issues/43) [#14](https://github.com/oliverlorenz/uhabits/issues/14)
+
+## [2.10.0](https://github.com/oliverlorenz/uhabits/compare/v2.9.0...v2.10.0) (2026-11-24)
+
+### Features
+
+* sync shared habits in the background ([#44](https://github.com/oliverlorenz/uhabits/issues/44)) ([677d1be](https://github.com/oliverlorenz/uhabits/commit/677d1be540238e54d0890cf37ac1646d0be35784)), closes [#33](https://github.com/oliverlorenz/uhabits/issues/33) [#42](https://github.com/oliverlorenz/uhabits/issues/42) [#36](https://github.com/oliverlorenz/uhabits/issues/36), references [#42](https://github.com/oliverlorenz/uhabits/issues/42) [uhabits-server#3](https://github.com/uhabits-server/issues/3) [#7](https://github.com/oliverlorenz/uhabits/issues/7) [#34](https://github.com/oliverlorenz/uhabits/issues/34) [#40](https://github.com/oliverlorenz/uhabits/issues/40) [#34](https://github.com/oliverlorenz/uhabits/issues/34)
+
+## [2.9.0](https://github.com/oliverlorenz/uhabits/compare/v2.8.1...v2.9.0) (2026-11-24)
+
+### Features
+
+* queue changes of shared habits and sync them to the server ([#42](https://github.com/oliverlorenz/uhabits/issues/42)) ([91cd48f](https://github.com/oliverlorenz/uhabits/commit/91cd48f503e0c52054ca121b3ecfe4a3be391ed6)), references [#33](https://github.com/oliverlorenz/uhabits/issues/33) [#36](https://github.com/oliverlorenz/uhabits/issues/36) [#26](https://github.com/oliverlorenz/uhabits/issues/26) [#32](https://github.com/oliverlorenz/uhabits/issues/32) [#33](https://github.com/oliverlorenz/uhabits/issues/33) [22/#25](https://github.com/oliverlorenz/uhabits/issues/25)
+
+## [2.8.1](https://github.com/oliverlorenz/uhabits/compare/v2.8.0...v2.8.1) (2026-11-24)
+
+### Bug Fixes
+
+* import habit pauses from backups ([#41](https://github.com/oliverlorenz/uhabits/issues/41)) ([41b5709](https://github.com/oliverlorenz/uhabits/commit/41b57090c79467f148284f115c85c359fccbd4c8))
+
 ## [2.8.0](https://github.com/oliverlorenz/uhabits/compare/v2.7.0...v2.8.0) (2026-11-24)
 
 ### Features

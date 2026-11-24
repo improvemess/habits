@@ -37,7 +37,13 @@ import org.isoron.uhabits.core.preferences.Preferences
 import org.isoron.uhabits.core.preferences.WidgetPreferences
 import org.isoron.uhabits.core.reminders.ReminderScheduler
 import org.isoron.uhabits.core.sharing.DeviceIdentity
+import org.isoron.uhabits.core.sharing.DeviceTokenStore
+import org.isoron.uhabits.core.sharing.FriendsTransport
+import org.isoron.uhabits.core.sharing.HttpSharingApi
 import org.isoron.uhabits.core.sharing.OwnerIdentityStore
+import org.isoron.uhabits.core.sharing.ShareStore
+import org.isoron.uhabits.core.sharing.ShareSyncer
+import org.isoron.uhabits.core.sharing.SharingApi
 import org.isoron.uhabits.core.tasks.CoroutineTaskRunner
 import org.isoron.uhabits.core.tasks.TaskRunner
 import org.isoron.uhabits.core.ui.NotificationTray
@@ -53,7 +59,9 @@ import org.isoron.uhabits.io.AndroidLogging
 import org.isoron.uhabits.notifications.AndroidNotificationTray
 import org.isoron.uhabits.preferences.SharedPreferencesStorage
 import org.isoron.uhabits.receivers.ReminderController
+import org.isoron.uhabits.sharing.ShareSyncWork
 import org.isoron.uhabits.sharing.SharedPreferencesDeviceIdStorage
+import org.isoron.uhabits.sharing.SharedPreferencesDeviceTokenStore
 import org.isoron.uhabits.utils.DatabaseUtils
 import org.isoron.uhabits.widgets.WidgetUpdater
 import java.io.File
@@ -71,6 +79,7 @@ abstract class HabitsApplicationComponent(
     @get:AppContext
     abstract val context: Context
     abstract val deviceIdentity: DeviceIdentity
+    abstract val friendsTransport: FriendsTransport
     abstract val genericImporter: GenericImporter
     abstract val habitList: HabitList
     abstract val intentFactory: IntentFactory
@@ -84,6 +93,8 @@ abstract class HabitsApplicationComponent(
     abstract val preferences: Preferences
     abstract val reminderScheduler: ReminderScheduler
     abstract val reminderController: ReminderController
+    abstract val shareStore: ShareStore
+    abstract val shareSyncer: ShareSyncer
     abstract val taskRunner: TaskRunner
     abstract val widgetPreferences: WidgetPreferences
     abstract val widgetUpdater: WidgetUpdater
@@ -132,6 +143,43 @@ abstract class HabitsApplicationComponent(
     @AppScope
     @Provides
     open fun ownerIdentityStore(): OwnerIdentityStore = OwnerIdentityStore(providedDb)
+
+    @AppScope
+    @Provides
+    open fun shareStore(): ShareStore = ShareStore(providedDb)
+
+    @AppScope
+    @Provides
+    open fun sharingApi(): SharingApi = HttpSharingApi()
+
+    @AppScope
+    @Provides
+    open fun deviceTokenStore(store: SharedPreferencesDeviceTokenStore): DeviceTokenStore = store
+
+    @AppScope
+    @Provides
+    open fun shareSyncer(
+        shareStore: ShareStore,
+        habitList: HabitList,
+        sharingApi: SharingApi,
+        deviceTokenStore: DeviceTokenStore,
+        ownerIdentityStore: OwnerIdentityStore,
+        deviceIdentity: DeviceIdentity,
+        logging: Logging
+    ): ShareSyncer = ShareSyncer(
+        shareStore,
+        habitList,
+        sharingApi,
+        deviceTokenStore,
+        ownerIdentityStore,
+        deviceIdentity,
+        logging
+    )
+
+    @AppScope
+    @Provides
+    open fun friendsTransport(shareStore: ShareStore): FriendsTransport =
+        FriendsTransport(shareStore, { System.currentTimeMillis() }) { ShareSyncWork.scheduleSync(appContext) }
 
     @AppScope
     @Provides

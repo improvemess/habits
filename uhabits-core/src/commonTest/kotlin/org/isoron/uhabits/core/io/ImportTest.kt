@@ -27,6 +27,7 @@ import org.isoron.uhabits.core.models.Frequency
 import org.isoron.uhabits.core.models.Habit
 import org.isoron.uhabits.core.models.HabitType
 import org.isoron.uhabits.core.sharing.OwnerIdentityStore
+import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -37,6 +38,11 @@ class ImportTest : BaseUnitTest() {
 
     private lateinit var localDb: Database
     private lateinit var ownerIdentityStore: OwnerIdentityStore
+
+    @AfterTest
+    fun closeLocalDatabase() {
+        if (::localDb.isInitialized) localDb.close()
+    }
 
     private suspend fun initOwnerIdentityStore() {
         localDb = buildMemoryDatabase()

@@ -187,6 +187,13 @@ class HabitCardView(
 
         numberPanel = numberPanelFactory.create().apply {
             visibility = GONE
+            onIncrement = { date ->
+                triggerRipple(date)
+                val location = getAbsoluteButtonLocation(date)
+                state?.record?.id?.let { habitId ->
+                    controller.onIncrement(habitId, date, location.x, location.y)
+                }
+            }
             onEdit = { date ->
                 triggerRipple(date)
                 val location = getAbsoluteButtonLocation(date)

@@ -125,6 +125,7 @@ class EditHabitActivity : AppCompatActivity() {
             binding.notesInput.setText(habit.description)
             binding.categoryInput.setText(habit.category)
             binding.unitInput.setText(habit.unit)
+            binding.stepInput.setText(habit.stepSize.toString())
             binding.targetInput.setText(habit.targetValue.toString())
         } else {
             habitType = HabitType.fromInt(intent.getIntExtra("habitType", HabitType.YES_NO.value))
@@ -149,6 +150,7 @@ class EditHabitActivity : AppCompatActivity() {
         when (habitType) {
             HabitType.YES_NO -> {
                 binding.unitOuterBox.visibility = View.GONE
+                binding.stepOuterBox.visibility = View.GONE
                 binding.targetOuterBox.visibility = View.GONE
                 binding.targetTypeOuterBox.visibility = View.GONE
             }
@@ -298,6 +300,7 @@ class EditHabitActivity : AppCompatActivity() {
             habit.targetValue = binding.targetInput.text.toString().toDouble()
             habit.targetType = targetType
             habit.unit = binding.unitInput.text.trim().toString()
+            habit.stepSize = binding.stepInput.text.toString().toDoubleOrNull()?.takeIf { it > 0 } ?: 1.0
         }
         habit.type = habitType
         habit.negativeSince = if (isNegative) negativeSince ?: initialNegativeSince(original) else null

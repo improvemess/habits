@@ -172,6 +172,23 @@
                 </LinearLayout>
             </FrameLayout>
 
+            <FrameLayout
+                android:id="@+id/stepOuterBox"
+                style="@style/FormOuterBox">
+                <LinearLayout style="@style/FormInnerBox">
+                    <TextView
+                        style="@style/FormLabel"
+                        android:text="@string/step_size" />
+                    <EditText
+                        style="@style/FormInput"
+                        android:id="@+id/stepInput"
+                        android:maxLines="1"
+                        android:inputType="numberDecimal"
+                        android:text="1"
+                        android:hint="@string/step_size_example"/>
+                </LinearLayout>
+            </FrameLayout>
+
             <LinearLayout
                 android:id="@+id/targetOuterBox"
                 android:layout_width="match_parent"
