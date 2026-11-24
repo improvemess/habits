@@ -61,9 +61,12 @@ object ListHabitsPresenter {
             val score = habit.scores[today].value
             val ongoing = habit.streaks.getOngoingStreak(today)
             val streak = ongoing?.let { countPerformedDays(habit, it.start, it.end) } ?: 0
-            // A paused (skipped) day keeps the streak alive, but it is not "done"
+            // A manually skipped day keeps the streak alive, but it is not "done". During a pause
+            // the flame stays colored (if there is a streak); on the first day after the pause it
+            // is gray again until the streak is continued or lapses.
+            val skippedToday = habit.computedEntries.get(today).value == Entry.SKIP
             val streakDoneToday = ongoing != null && ongoing.end >= today &&
-                habit.computedEntries.get(today).value != Entry.SKIP
+                (!skippedToday || (streak > 0 && habit.pauses.isPaused(today)))
             val entries = habit.computedEntries.getByInterval(dateFrom, today)
             items.add(
                 HabitCardState(
