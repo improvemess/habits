@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.12.0](https://github.com/oliverlorenz/uhabits/compare/v2.11.0...v2.12.0) (2026-11-24)
+
+* rewrite README for the fork and document differences from upstream ([#46](https://github.com/oliverlorenz/uhabits/issues/46)) ([3f5ee43](https://github.com/oliverlorenz/uhabits/commit/3f5ee43dbc06505fb18c78cfb1f86f062f5061e6)), references [#44](https://github.com/oliverlorenz/uhabits/issues/44)
+
+### Features
+
+* negative Gewohnheiten (abgewöhnen) mit Auto-Haken und Kreuz bei Rückfall ([#16](https://github.com/oliverlorenz/uhabits/issues/16)) ([#52](https://github.com/oliverlorenz/uhabits/issues/52)) ([d06c7dd](https://github.com/oliverlorenz/uhabits/commit/d06c7ddc8b590f0fc86ad18ac5651fa442e25b9d))
+
 ## [2.11.0](https://github.com/oliverlorenz/uhabits/compare/v2.10.0...v2.11.0) (2026-11-24)
 
 ### Features
