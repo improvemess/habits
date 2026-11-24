@@ -19,38 +19,23 @@
 package org.isoron.uhabits.core.commands
 
 import org.isoron.platform.time.LocalDate
-import org.isoron.uhabits.core.models.Entry
+import org.isoron.platform.time.getToday
 import org.isoron.uhabits.core.models.Habit
 import org.isoron.uhabits.core.models.HabitList
+import org.isoron.uhabits.core.models.Pause
 
 /**
- * Pauses a habit for the period [from]..[to] (inclusive) by marking each day as SKIP, or, if
- * [paused] is false, resumes it by clearing the SKIP marks in that period.
- *
- * Days that already contain a real entry (a check mark or a numerical value) are left untouched.
+ * Pauses a habit from [from] to [to] (both inclusive). Pauses cannot start in the past.
  */
-data class PauseHabitCommand(
+data class AddPauseCommand(
     val habitList: HabitList,
     val habit: Habit,
     val from: LocalDate,
-    val to: LocalDate,
-    val paused: Boolean = true
+    val to: LocalDate
 ) : Command {
     override fun run() {
-        require(!to.isOlderThan(from)) { "end of pause must not be before its start" }
-        val entries = habit.originalEntries
-        var day = from
-        while (!day.isNewerThan(to)) {
-            val current = entries.get(day)
-            if (paused) {
-                if (current.value == Entry.UNKNOWN || current.value == Entry.NO) {
-                    entries.add(Entry(day, Entry.SKIP, current.notes))
-                }
-            } else if (current.value == Entry.SKIP) {
-                entries.add(Entry(day, Entry.UNKNOWN, current.notes))
-            }
-            day = day.plus(1)
-        }
+        require(!from.isOlderThan(getToday())) { "cannot pause a habit retroactively" }
+        habit.pauses.add(Pause(from, to))
         habit.recompute()
         habitList.resort()
     }

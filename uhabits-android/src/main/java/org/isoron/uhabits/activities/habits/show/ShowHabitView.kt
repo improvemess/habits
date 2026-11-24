@@ -21,7 +21,15 @@ package org.isoron.uhabits.activities.habits.show
 
 import android.content.Context
 import android.view.LayoutInflater
+import android.util.TypedValue
+import android.view.Gravity
 import android.widget.FrameLayout
+import android.widget.ImageButton
+import android.widget.LinearLayout
+import android.widget.TextView
+import org.isoron.platform.time.LocalDate
+import org.isoron.uhabits.R
+import org.isoron.uhabits.core.models.Pause
 import org.isoron.uhabits.core.ui.screens.habits.show.ShowHabitPresenter
 import org.isoron.uhabits.core.ui.screens.habits.show.ShowHabitState
 import org.isoron.uhabits.databinding.ShowHabitBinding
@@ -31,6 +39,7 @@ import org.isoron.uhabits.utils.setupToolbar
 
 class ShowHabitView(context: Context) : FrameLayout(context) {
     private val binding = ShowHabitBinding.inflate(LayoutInflater.from(context))
+    private var onRemovePause: (Pause) -> Unit = {}
 
     init {
         binding.toolbar.applyToolbarInsets()
@@ -58,7 +67,43 @@ class ShowHabitView(context: Context) : FrameLayout(context) {
         } else {
             binding.targetCard.visibility = GONE
         }
+        setPauses(data.pauses)
         binding.linearLayout.applyBottomInset()
+    }
+
+    fun setOnRemovePauseListener(listener: (Pause) -> Unit) {
+        onRemovePause = listener
+    }
+
+    private fun setPauses(pauses: List<Pause>) {
+        val container = binding.pauseList
+        container.removeAllViews()
+        val dp = resources.displayMetrics.density
+        val format = java.text.DateFormat.getDateInstance(java.text.DateFormat.MEDIUM).apply {
+            // LocalDate.unixTime is midnight UTC
+            timeZone = java.util.TimeZone.getTimeZone("UTC")
+        }
+        fun fmt(d: LocalDate) = format.format(java.util.Date(d.unixTime))
+        for (pause in pauses) {
+            val row = LinearLayout(context).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+                setPadding((16 * dp).toInt(), (4 * dp).toInt(), (8 * dp).toInt(), (4 * dp).toInt())
+            }
+            val label = TextView(context).apply {
+                text = context.getString(R.string.pause_period, fmt(pause.start), fmt(pause.end))
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
+            }
+            row.addView(label, LinearLayout.LayoutParams(0, LayoutParams.WRAP_CONTENT, 1f))
+            val close = ImageButton(context).apply {
+                setImageResource(android.R.drawable.ic_menu_close_clear_cancel)
+                setBackgroundResource(android.R.color.transparent)
+                contentDescription = context.getString(R.string.pause_remove_description)
+                setOnClickListener { onRemovePause(pause) }
+            }
+            row.addView(close, LinearLayout.LayoutParams((40 * dp).toInt(), (40 * dp).toInt()))
+            container.addView(row)
+        }
     }
 
     fun setListener(presenter: ShowHabitPresenter) {

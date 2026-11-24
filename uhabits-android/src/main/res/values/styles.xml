@@ -426,4 +426,12 @@
         <item name="android:windowAnimationStyle">@null</item>
     </style>
 
+
+    <!-- The default calendar uses colorPrimary for the selected day, which is almost black in the
+         dark themes: the selected circle disappears and its number becomes unreadable. -->
+    <style name="PauseDatePickerDark" parent="@style/ThemeOverlay.MaterialComponents.MaterialCalendar">
+        <item name="colorPrimary">#E0E0E0</item>
+        <item name="colorOnPrimary">#121212</item>
+    </style>
+
 </resources>

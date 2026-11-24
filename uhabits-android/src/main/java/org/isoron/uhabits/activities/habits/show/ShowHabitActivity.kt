@@ -25,7 +25,10 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.datepicker.CalendarConstraints
+import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -50,6 +53,7 @@ import org.isoron.uhabits.core.ui.callbacks.NumberPickerCallback
 import org.isoron.uhabits.core.ui.callbacks.OnConfirmedCallback
 import org.isoron.uhabits.core.ui.screens.habits.show.ShowHabitMenuPresenter
 import org.isoron.uhabits.core.ui.screens.habits.show.ShowHabitPresenter
+import org.isoron.uhabits.core.ui.views.DarkTheme
 import org.isoron.uhabits.core.ui.views.OnDateClickedListener
 import org.isoron.uhabits.intents.IntentFactory
 import org.isoron.uhabits.utils.applyRootViewInsets
@@ -113,6 +117,16 @@ class ShowHabitActivity : AppCompatActivity(), CommandRunner.Listener {
         )
 
         view.setListener(presenter)
+        view.setOnRemovePauseListener { pause ->
+            MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.pause_remove_title)
+                .setMessage(R.string.pause_remove_message)
+                .setPositiveButton(R.string.pause_remove_confirm) { _, _ ->
+                    menuPresenter.onRemovePause(pause)
+                }
+                .setNegativeButton(android.R.string.cancel, null)
+                .show()
+        }
         view.applyRootViewInsets()
         setContentView(view)
     }
@@ -242,17 +256,25 @@ class ShowHabitActivity : AppCompatActivity(), CommandRunner.Listener {
                 ShowHabitMenuPresenter.Message.HABIT_PAUSED ->
                     showMessage(resources.getString(R.string.toast_habit_paused))
 
-                ShowHabitMenuPresenter.Message.HABIT_RESUMED ->
-                    showMessage(resources.getString(R.string.toast_habit_resumed))
+                ShowHabitMenuPresenter.Message.PAUSE_REMOVED ->
+                    showMessage(resources.getString(R.string.toast_pause_removed))
 
                 else -> {}
             }
         }
 
         override fun showPauseDialog(onPicked: (LocalDate, LocalDate) -> Unit) {
-            val picker = MaterialDatePicker.Builder.dateRangePicker()
-                .setTitleText(R.string.pause)
+            // Pauses can only start today or later.
+            val constraints = CalendarConstraints.Builder()
+                .setValidator(DateValidatorPointForward.now())
                 .build()
+            val builder = MaterialDatePicker.Builder.dateRangePicker()
+                .setTitleText(R.string.pause)
+                .setCalendarConstraints(constraints)
+            if (themeSwitcher.currentTheme is DarkTheme) {
+                builder.setTheme(R.style.PauseDatePickerDark)
+            }
+            val picker = builder.build()
             picker.addOnPositiveButtonClickListener { range ->
                 val first = range.first ?: return@addOnPositiveButtonClickListener
                 val second = range.second ?: first

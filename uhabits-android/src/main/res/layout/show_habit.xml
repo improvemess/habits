@@ -43,6 +43,12 @@
             android:id="@+id/linearLayout"
             android:clipToPadding="false">
 
+            <LinearLayout
+                android:id="@+id/pauseList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
             <org.isoron.uhabits.activities.habits.show.views.SubtitleCardView
                 android:id="@+id/subtitleCard"
                 style="@style/ShowHabit.Subtitle" />

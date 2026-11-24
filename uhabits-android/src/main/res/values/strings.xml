@@ -30,9 +30,13 @@
     <string name="archive">Archive</string>
     <string name="unarchive">Unarchive</string>
     <string name="pause">Pause</string>
-    <string name="resume">Resume</string>
-    <string name="toast_habit_paused">Habit paused</string>
-    <string name="toast_habit_resumed">Habit resumed</string>
+    <string name="toast_habit_paused">Pause added</string>
+    <string name="toast_pause_removed">Pause removed</string>
+    <string name="pause_period">Paused: %1$s – %2$s</string>
+    <string name="pause_remove_title">Remove pause?</string>
+    <string name="pause_remove_message">Days up to today stay paused. Only the days after today become active again.</string>
+    <string name="pause_remove_confirm">Remove</string>
+    <string name="pause_remove_description">Remove pause</string>
     <string name="categorize">Categorize</string>
     <string name="add_habit">Add habit</string>
     <string name="color_picker_default_title">Change color</string>

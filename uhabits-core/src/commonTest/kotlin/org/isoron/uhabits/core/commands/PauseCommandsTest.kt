@@ -1,0 +1,87 @@
+package org.isoron.uhabits.core.commands
+
+import org.isoron.platform.time.getToday
+import org.isoron.uhabits.core.BaseUnitTest
+import org.isoron.uhabits.core.models.Entry
+import org.isoron.uhabits.core.models.Pause
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
+
+class PauseCommandsTest : BaseUnitTest() {
+    private val today = getToday()
+
+    @Test
+    fun testAddPauseMarksFutureDaysAsSkip() {
+        val habit = fixtures.createEmptyHabit()
+        AddPauseCommand(habitList, habit, today.plus(1), today.plus(3)).run()
+        assertEquals(listOf(Pause(today.plus(1), today.plus(3))), habit.pauses.getAll())
+        assertEquals(Entry.SKIP, habit.computedEntries.get(today.plus(2)).value)
+        // The pause is not stored as entries
+        assertEquals(Entry.UNKNOWN, habit.originalEntries.get(today.plus(2)).value)
+    }
+
+    @Test
+    fun testCannotPauseRetroactively() {
+        val habit = fixtures.createEmptyHabit()
+        assertFailsWith<IllegalArgumentException> {
+            AddPauseCommand(habitList, habit, today.minus(1), today.plus(1)).run()
+        }
+    }
+
+    @Test
+    fun testMultiplePauses() {
+        val habit = fixtures.createEmptyHabit()
+        AddPauseCommand(habitList, habit, today.plus(1), today.plus(2)).run()
+        AddPauseCommand(habitList, habit, today.plus(10), today.plus(12)).run()
+        assertEquals(2, habit.pauses.getAll().size)
+        assertTrue(habit.pauses.isPaused(today.plus(11)))
+        assertFalse(habit.pauses.isPaused(today.plus(5)))
+    }
+
+    @Test
+    fun testRemoveRunningPauseKeepsDaysUpToToday() {
+        val habit = fixtures.createEmptyHabit()
+        val pause = Pause(today.minus(2), today.plus(2))
+        habit.pauses.add(pause)
+        habit.recompute()
+        RemovePauseCommand(habitList, habit, pause).run()
+        assertEquals(listOf(Pause(today.minus(2), today)), habit.pauses.getAll())
+        assertEquals(Entry.SKIP, habit.computedEntries.get(today).value)
+        assertEquals(Entry.UNKNOWN, habit.computedEntries.get(today.plus(1)).value)
+    }
+
+    @Test
+    fun testRemoveFuturePauseDeletesIt() {
+        val habit = fixtures.createEmptyHabit()
+        val pause = Pause(today.plus(3), today.plus(5))
+        habit.pauses.add(pause)
+        RemovePauseCommand(habitList, habit, pause).run()
+        assertTrue(habit.pauses.isEmpty())
+    }
+
+    @Test
+    fun testRemovePastPauseDoesNothing() {
+        val habit = fixtures.createEmptyHabit()
+        val pause = Pause(today.minus(5), today.minus(3))
+        habit.pauses.add(pause)
+        RemovePauseCommand(habitList, habit, pause).run()
+        assertEquals(listOf(pause), habit.pauses.getAll())
+    }
+
+    @Test
+    fun testUncheckingOnPausedDayRestoresPause() {
+        val habit = fixtures.createEmptyHabit()
+        habit.pauses.add(Pause(today, today.plus(2)))
+        habit.recompute()
+        // tapping the dash checks the day
+        CreateRepetitionCommand(habitList, habit, today, Entry.NO, "").run()
+        assertEquals(Entry.YES_MANUAL, habit.originalEntries.get(today).value)
+        // tapping again removes the check, which brings back the dash (no cross)
+        CreateRepetitionCommand(habitList, habit, today, Entry.NO, "").run()
+        assertEquals(Entry.UNKNOWN, habit.originalEntries.get(today).value)
+        assertEquals(Entry.SKIP, habit.computedEntries.get(today).value)
+    }
+}

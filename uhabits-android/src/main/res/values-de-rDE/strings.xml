@@ -44,6 +44,14 @@
         <item quantity="one">Gewohnheit wiederhergestellt</item>
         <item quantity="other">Gewohnheiten wiederhergestellt</item>
     </plurals>
+    <string name="pause">Pausieren</string>
+    <string name="toast_habit_paused">Pause hinzugefügt</string>
+    <string name="toast_pause_removed">Pause entfernt</string>
+    <string name="pause_period">Pausiert: %1$s – %2$s</string>
+    <string name="pause_remove_title">Pause entfernen?</string>
+    <string name="pause_remove_message">Die Tage bis einschließlich heute bleiben pausiert. Nur die Tage nach heute werden wieder aktiv.</string>
+    <string name="pause_remove_confirm">Entfernen</string>
+    <string name="pause_remove_description">Pause entfernen</string>
     <string name="overview">Übersicht</string>
     <string name="habit_strength">Wertung</string>
     <string name="history">Verlauf</string>

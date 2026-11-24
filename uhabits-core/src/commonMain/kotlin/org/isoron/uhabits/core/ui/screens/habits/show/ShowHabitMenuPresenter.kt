@@ -21,14 +21,16 @@ package org.isoron.uhabits.core.ui.screens.habits.show
 import org.isoron.platform.io.UserFile
 import org.isoron.platform.time.LocalDate
 import org.isoron.platform.time.getToday
+import org.isoron.uhabits.core.commands.AddPauseCommand
 import org.isoron.uhabits.core.commands.ArchiveHabitsCommand
 import org.isoron.uhabits.core.commands.CommandRunner
 import org.isoron.uhabits.core.commands.DeleteHabitsCommand
-import org.isoron.uhabits.core.commands.PauseHabitCommand
+import org.isoron.uhabits.core.commands.RemovePauseCommand
 import org.isoron.uhabits.core.commands.UnarchiveHabitsCommand
 import org.isoron.uhabits.core.models.Entry
 import org.isoron.uhabits.core.models.Habit
 import org.isoron.uhabits.core.models.HabitList
+import org.isoron.uhabits.core.models.Pause
 import org.isoron.uhabits.core.tasks.ExportCSVTask
 import org.isoron.uhabits.core.tasks.TaskRunner
 import org.isoron.uhabits.core.ui.callbacks.OnConfirmedCallback
@@ -67,24 +69,17 @@ class ShowHabitMenuPresenter(
 
     fun onPauseHabit() {
         screen.showPauseDialog { from, to ->
-            commandRunner.run(PauseHabitCommand(habitList, habit, from, to))
+            commandRunner.run(AddPauseCommand(habitList, habit, from, to))
             screen.showMessage(Message.HABIT_PAUSED)
             screen.refresh()
         }
     }
 
-    fun onResumeHabit() {
-        val today = getToday()
-        var from = today
-        while (habit.originalEntries.get(from.minus(1)).value == Entry.SKIP) from = from.minus(1)
-        var to = today
-        while (habit.originalEntries.get(to.plus(1)).value == Entry.SKIP) to = to.plus(1)
-        commandRunner.run(PauseHabitCommand(habitList, habit, from, to, paused = false))
-        screen.showMessage(Message.HABIT_RESUMED)
+    fun onRemovePause(pause: Pause) {
+        commandRunner.run(RemovePauseCommand(habitList, habit, pause))
+        screen.showMessage(Message.PAUSE_REMOVED)
         screen.refresh()
     }
-
-    fun isPausedToday(): Boolean = habit.originalEntries.get(getToday()).value == Entry.SKIP
 
     fun onExportCSV() {
         val outputDir = system.getCSVOutputDir()
@@ -139,7 +134,7 @@ class ShowHabitMenuPresenter(
         HABIT_ARCHIVED,
         HABIT_UNARCHIVED,
         HABIT_PAUSED,
-        HABIT_RESUMED
+        PAUSE_REMOVED
     }
 
     interface Screen {
