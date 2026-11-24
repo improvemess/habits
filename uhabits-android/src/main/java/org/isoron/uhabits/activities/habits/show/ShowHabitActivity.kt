@@ -26,6 +26,7 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.datepicker.CalendarConstraints
+import com.google.android.material.datepicker.CompositeDateValidator
 import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -120,7 +121,7 @@ class ShowHabitActivity : AppCompatActivity(), CommandRunner.Listener {
         view.setListener(presenter)
         view.setOnRemovePauseListener { pause ->
             // A pause that has not started yet only needs a plain confirmation. For a running
-            // pause, also explain that the days up to today stay paused.
+            // pause, also explain that its past days become normal days again.
             val message = if (pause.start.isNewerThan(getToday())) {
                 R.string.pause_remove_message_future
             } else {
@@ -281,8 +282,15 @@ class ShowHabitActivity : AppCompatActivity(), CommandRunner.Listener {
 
         override fun showPauseDialog(onPicked: (LocalDate, LocalDate) -> Unit) {
             // Pauses can only start today or later.
+            // Days that already belong to a pause are disabled, so pauses cannot overlap.
+            val pausedRanges = habit.pauses.getAll()
+                .flatMap { listOf(it.start.unixTime, it.end.unixTime) }
+                .toLongArray()
+            val validator = CompositeDateValidator.allOf(
+                listOf(DateValidatorPointForward.now(), PausedDaysValidator(pausedRanges))
+            )
             val constraints = CalendarConstraints.Builder()
-                .setValidator(DateValidatorPointForward.now())
+                .setValidator(validator)
                 .build()
             val builder = MaterialDatePicker.Builder.dateRangePicker()
                 .setTitleText(R.string.pause)

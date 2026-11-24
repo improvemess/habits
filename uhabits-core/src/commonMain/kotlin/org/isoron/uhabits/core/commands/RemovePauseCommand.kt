@@ -18,14 +18,13 @@
  */
 package org.isoron.uhabits.core.commands
 
-import org.isoron.platform.time.getToday
 import org.isoron.uhabits.core.models.Habit
 import org.isoron.uhabits.core.models.HabitList
 import org.isoron.uhabits.core.models.Pause
 
 /**
- * Ends a pause. The past is never changed: days up to and including today remain paused, and
- * only the days after today are released. A pause that lies entirely in the past is kept as is.
+ * Removes a pause completely. Unlike adding a pause, this may also affect the past: days that
+ * were paused count as normal days again. That is stricter, so it is allowed.
  */
 data class RemovePauseCommand(
     val habitList: HabitList,
@@ -33,12 +32,7 @@ data class RemovePauseCommand(
     val pause: Pause
 ) : Command {
     override fun run() {
-        val today = getToday()
-        if (pause.end.isOlderThan(today)) return
         habit.pauses.remove(pause)
-        if (!pause.start.isNewerThan(today)) {
-            habit.pauses.add(Pause(pause.start, today))
-        }
         habit.recompute()
         habitList.resort()
     }

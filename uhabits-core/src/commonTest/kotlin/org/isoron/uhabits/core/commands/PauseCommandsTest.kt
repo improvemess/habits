@@ -57,14 +57,15 @@ class PauseCommandsTest : BaseUnitTest() {
     }
 
     @Test
-    fun testRemoveRunningPauseKeepsDaysUpToToday() {
+    fun testRemoveRunningPauseReleasesAllItsDays() {
         val habit = fixtures.createEmptyHabit()
         val pause = Pause(today.minus(2), today.plus(2))
         habit.pauses.add(pause)
         habit.recompute()
+        assertEquals(Entry.SKIP, habit.computedEntries.get(today.minus(1)).value)
         RemovePauseCommand(habitList, habit, pause).run()
-        assertEquals(listOf(Pause(today.minus(2), today)), habit.pauses.getAll())
-        assertEquals(Entry.SKIP, habit.computedEntries.get(today).value)
+        assertTrue(habit.pauses.isEmpty())
+        assertEquals(Entry.UNKNOWN, habit.computedEntries.get(today.minus(1)).value)
         assertEquals(Entry.UNKNOWN, habit.computedEntries.get(today.plus(1)).value)
     }
 
@@ -78,12 +79,12 @@ class PauseCommandsTest : BaseUnitTest() {
     }
 
     @Test
-    fun testRemovePastPauseDoesNothing() {
+    fun testRemovePastPauseIsAllowed() {
         val habit = fixtures.createEmptyHabit()
         val pause = Pause(today.minus(5), today.minus(3))
         habit.pauses.add(pause)
         RemovePauseCommand(habitList, habit, pause).run()
-        assertEquals(listOf(pause), habit.pauses.getAll())
+        assertTrue(habit.pauses.isEmpty())
     }
 
     @Test

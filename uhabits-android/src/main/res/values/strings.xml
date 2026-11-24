@@ -34,7 +34,7 @@
     <string name="toast_pause_removed">Pause removed</string>
     <string name="pause_period">Paused: %1$s – %2$s</string>
     <string name="pause_remove_title">Remove pause?</string>
-    <string name="pause_remove_message">Days up to today stay paused. Only the days after today become active again.</string>
+    <string name="pause_remove_message">The days of this pause that have already passed will count as normal days again.</string>
     <string name="pause_remove_message_future">Do you really want to remove this pause?</string>
     <string name="toast_pause_overlaps">Pauses must not overlap</string>
     <string name="pause_remove_confirm">Remove</string>
