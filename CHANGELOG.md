@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.6.0](https://github.com/oliverlorenz/uhabits/compare/v2.5.0...v2.6.0) (2026-11-24)
+
+### Features
+
+* encrypt shared habit data end to end ([#39](https://github.com/oliverlorenz/uhabits/issues/39)) ([1b1c281](https://github.com/oliverlorenz/uhabits/commit/1b1c281f8e7345476cf5599a5c56a96fddcdddfe)), closes [#30](https://github.com/oliverlorenz/uhabits/issues/30) [#36](https://github.com/oliverlorenz/uhabits/issues/36), references [#33](https://github.com/oliverlorenz/uhabits/issues/33) [#34](https://github.com/oliverlorenz/uhabits/issues/34)
+
 ## [2.5.0](https://github.com/oliverlorenz/uhabits/compare/v2.4.0...v2.5.0) (2026-11-24)
 
 ### Features
