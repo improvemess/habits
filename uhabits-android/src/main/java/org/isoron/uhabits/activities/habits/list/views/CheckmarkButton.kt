@@ -24,6 +24,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
+import android.graphics.Typeface
 import android.text.TextPaint
 import android.view.HapticFeedbackConstants
 import android.view.View
@@ -47,7 +48,8 @@ import org.isoron.uhabits.utils.toMeasureSpec
 data class CheckmarkButtonState(
     val color: Int,
     val value: Int,
-    val notes: String
+    val notes: String,
+    val paused: Boolean = false
 )
 
 class CheckmarkButtonView(
@@ -78,11 +80,16 @@ class CheckmarkButtonView(
     }
 
     fun performToggle() {
-        val v = Entry.nextToggleValue(
-            value = state.value,
-            isSkipEnabled = preferences.isSkipEnabled,
-            areQuestionMarksEnabled = preferences.areQuestionMarksEnabled
-        )
+        // Tapping a paused day ("zz") checks it; unchecking returns it to the paused state
+        val v = if (state.value == SKIP && state.paused) {
+            Entry.YES_MANUAL
+        } else {
+            Entry.nextToggleValue(
+                value = state.value,
+                isSkipEnabled = preferences.isSkipEnabled,
+                areQuestionMarksEnabled = preferences.areQuestionMarksEnabled
+            )
+        }
         state = state.copy(value = v)
         onToggle(v, state.notes)
         performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
@@ -157,6 +164,7 @@ class CheckmarkButtonView(
                 }
                 else -> R.string.fa_check
             }
+            paint.typeface = if (state.value == SKIP && state.paused) Typeface.DEFAULT_BOLD else getFontAwesome()
             paint.textSize = when {
                 id == R.string.fa_question -> sp(12.0f)
                 state.value == YES_AUTO -> sp(13.0f)
@@ -170,12 +178,26 @@ class CheckmarkButtonView(
                 paint.style = Paint.Style.FILL
             }
 
-            val label = resources.getString(id)
+            // A day that belongs to a pause shows "zz" (sleeping) instead of the skip symbol
+            val isPaused = state.value == SKIP && state.paused
+            val label = if (isPaused) "zz" else resources.getString(id)
             val em = paint.measureText("m")
 
             rect.set(0f, 0f, width.toFloat(), height.toFloat())
             rect.offset(0f, 0.4f * em)
-            canvas.drawText(label, rect.centerX(), rect.centerY(), paint)
+            if (isPaused) {
+                // Comic style: a normal "z" with a smaller, raised "z" to its upper right
+                val big = paint.textSize
+                val gap = 0.35f * em
+                val smallSize = 0.7f * big
+                paint.textAlign = Paint.Align.CENTER
+                canvas.drawText("z", rect.centerX() - gap, rect.centerY() + 0.1f * em, paint)
+                paint.textSize = smallSize
+                canvas.drawText("z", rect.centerX() + gap, rect.centerY() - 0.5f * em, paint)
+                paint.textSize = big
+            } else {
+                canvas.drawText(label, rect.centerX(), rect.centerY(), paint)
+            }
 
             if (state.value == YES_AUTO) {
                 paint.color = bgColor

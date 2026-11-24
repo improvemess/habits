@@ -20,12 +20,14 @@ package org.isoron.uhabits.core.models.memory
 
 import org.isoron.uhabits.core.models.EntryList
 import org.isoron.uhabits.core.models.ModelFactory
+import org.isoron.uhabits.core.models.PauseList
 import org.isoron.uhabits.core.models.ScoreList
 import org.isoron.uhabits.core.models.StreakList
 
 class MemoryModelFactory : ModelFactory {
     override fun buildComputedEntries() = EntryList()
     override fun buildOriginalEntries() = EntryList()
+    override fun buildPauseList() = PauseList()
     override fun buildHabitList() = MemoryHabitList()
     override fun buildScoreList() = ScoreList()
     override fun buildStreakList() = StreakList()

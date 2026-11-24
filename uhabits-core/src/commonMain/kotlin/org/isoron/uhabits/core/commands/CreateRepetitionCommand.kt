@@ -33,7 +33,13 @@ data class CreateRepetitionCommand(
 ) : Command {
     override fun run() {
         val entries = habit.originalEntries
-        entries.add(Entry(date, value, notes))
+        var newValue = value
+        if (value == Entry.NO && habit.pauses.isPaused(date)) {
+            // On a paused day, "not done" means "still paused": the day returns to the paused
+            // state instead of showing a cross.
+            newValue = Entry.UNKNOWN
+        }
+        entries.add(Entry(date, newValue, notes))
         habit.recompute()
         habitList.resort()
     }

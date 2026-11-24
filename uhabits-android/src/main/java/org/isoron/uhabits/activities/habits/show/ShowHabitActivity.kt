@@ -24,11 +24,21 @@ import android.view.HapticFeedbackConstants
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.EditText
+import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.datepicker.CalendarConstraints
+import com.google.android.material.datepicker.CompositeDateValidator
+import com.google.android.material.datepicker.DateValidatorPointBackward
+import com.google.android.material.datepicker.DateValidatorPointForward
+import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.isoron.platform.gui.toInt
+import org.isoron.platform.time.LocalDate
+import org.isoron.platform.time.getToday
 import org.isoron.uhabits.AndroidDirFinder
 import org.isoron.uhabits.HabitsApplication
 import org.isoron.uhabits.R
@@ -42,12 +52,15 @@ import org.isoron.uhabits.core.commands.Command
 import org.isoron.uhabits.core.commands.CommandRunner
 import org.isoron.uhabits.core.models.Habit
 import org.isoron.uhabits.core.models.PaletteColor
+import org.isoron.uhabits.core.models.Pause
+import org.isoron.uhabits.core.models.PauseList
 import org.isoron.uhabits.core.preferences.Preferences
 import org.isoron.uhabits.core.ui.callbacks.CheckMarkDialogCallback
 import org.isoron.uhabits.core.ui.callbacks.NumberPickerCallback
 import org.isoron.uhabits.core.ui.callbacks.OnConfirmedCallback
 import org.isoron.uhabits.core.ui.screens.habits.show.ShowHabitMenuPresenter
 import org.isoron.uhabits.core.ui.screens.habits.show.ShowHabitPresenter
+import org.isoron.uhabits.core.ui.views.DarkTheme
 import org.isoron.uhabits.core.ui.views.OnDateClickedListener
 import org.isoron.uhabits.intents.IntentFactory
 import org.isoron.uhabits.utils.applyRootViewInsets
@@ -111,8 +124,48 @@ class ShowHabitActivity : AppCompatActivity(), CommandRunner.Listener {
         )
 
         view.setListener(presenter)
+        view.setOnEditPauseListener { pause -> menuPresenter.onEditPauseEnd(pause) }
+        view.setOnRemovePauseListener { pause ->
+            // A pause that has not started yet only needs a plain confirmation. For a running
+            // pause, also explain that its past days become normal days again.
+            val message = if (pause.start.isNewerThan(getToday())) {
+                R.string.pause_remove_message_future
+            } else {
+                R.string.pause_remove_message
+            }
+            MaterialAlertDialogBuilder(this, dialogTheme())
+                .setTitle(R.string.pause_remove_title)
+                .setMessage(message)
+                .setPositiveButton(R.string.pause_remove_confirm) { _, _ ->
+                    menuPresenter.onRemovePause(pause)
+                }
+                .setNegativeButton(android.R.string.cancel, null)
+                .show()
+        }
         view.applyRootViewInsets()
         setContentView(view)
+    }
+
+    private fun dialogTheme(): Int =
+        if (themeSwitcher.currentTheme is DarkTheme) R.style.PauseDialogDark else 0
+
+    /** Asks for an optional reason for a new pause. An empty title is fine. */
+    private fun askForPauseTitle(onConfirmed: (String) -> Unit) {
+        val input = EditText(this).apply {
+            setSingleLine()
+            hint = getString(R.string.pause_title_hint)
+        }
+        val padding = (20 * resources.displayMetrics.density).toInt()
+        val container = FrameLayout(this).apply {
+            setPadding(padding, padding / 2, padding, 0)
+            addView(input)
+        }
+        MaterialAlertDialogBuilder(this, dialogTheme())
+            .setTitle(R.string.pause_title_dialog)
+            .setView(container)
+            .setPositiveButton(android.R.string.ok) { _, _ -> onConfirmed(input.text.toString().trim()) }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
     }
 
     override fun onCreateOptionsMenu(m: Menu): Boolean {
@@ -237,8 +290,80 @@ class ShowHabitActivity : AppCompatActivity(), CommandRunner.Listener {
                     )
                 }
 
+                ShowHabitMenuPresenter.Message.HABIT_PAUSED ->
+                    showMessage(resources.getString(R.string.toast_habit_paused))
+
+                ShowHabitMenuPresenter.Message.PAUSE_OVERLAPS ->
+                    showMessage(resources.getString(R.string.toast_pause_overlaps))
+
+                ShowHabitMenuPresenter.Message.PAUSE_REMOVED ->
+                    showMessage(resources.getString(R.string.toast_pause_removed))
+
                 else -> {}
             }
+        }
+
+        override fun showEditPauseEndDialog(
+            pause: Pause,
+            earliest: LocalDate,
+            latest: LocalDate,
+            onPicked: (LocalDate) -> Unit
+        ) {
+            val validator = CompositeDateValidator.allOf(
+                listOf(
+                    DateValidatorPointForward.from(earliest.unixTime),
+                    DateValidatorPointBackward.before(latest.unixTime)
+                )
+            )
+            val builder = MaterialDatePicker.Builder.datePicker()
+                .setTitleText(R.string.pause_edit_end_title)
+                .setSelection(pause.end.unixTime)
+                .setCalendarConstraints(CalendarConstraints.Builder().setValidator(validator).build())
+            if (themeSwitcher.currentTheme is DarkTheme) {
+                builder.setTheme(R.style.PauseDatePickerDark)
+            }
+            val picker = builder.build()
+            picker.addOnPositiveButtonClickListener { selection ->
+                // The picker returns UTC midnight timestamps in milliseconds.
+                onPicked(LocalDate((selection / 86_400_000L).toInt() - 10957))
+            }
+            picker.show(supportFragmentManager, "pauseEndPicker")
+        }
+
+        override fun showPauseDialog(onPicked: (LocalDate, LocalDate, String) -> Unit) {
+            // Pauses can only start today or later.
+            // Days that already belong to a pause are disabled, so pauses cannot overlap.
+            val pausedRanges = habit.pauses.getAll()
+                .flatMap { listOf(it.start.unixTime, it.end.unixTime) }
+                .toLongArray()
+            // ... and pauses can only be planned about a month ahead.
+            val latest = getToday().plus(PauseList.MAX_DAYS_AHEAD).unixTime
+            val validator = CompositeDateValidator.allOf(
+                listOf(
+                    DateValidatorPointForward.now(),
+                    DateValidatorPointBackward.before(latest),
+                    PausedDaysValidator(pausedRanges)
+                )
+            )
+            val constraints = CalendarConstraints.Builder()
+                .setValidator(validator)
+                .build()
+            val builder = MaterialDatePicker.Builder.dateRangePicker()
+                .setTitleText(R.string.pause)
+                .setCalendarConstraints(constraints)
+            if (themeSwitcher.currentTheme is DarkTheme) {
+                builder.setTheme(R.style.PauseDatePickerDark)
+            }
+            val picker = builder.build()
+            picker.addOnPositiveButtonClickListener { range ->
+                val first = range.first ?: return@addOnPositiveButtonClickListener
+                val second = range.second ?: first
+                // The picker returns UTC midnight timestamps in milliseconds.
+                val from = LocalDate((first / 86_400_000L).toInt() - 10957)
+                val to = LocalDate((second / 86_400_000L).toInt() - 10957)
+                askForPauseTitle { title -> onPicked(from, to, title) }
+            }
+            picker.show(supportFragmentManager, "pausePicker")
         }
 
         override fun showSendFileScreen(filename: String) {

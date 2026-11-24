@@ -56,6 +56,10 @@ class ShowHabitMenu(
                 presenter.onUnarchiveHabits()
                 return true
             }
+            R.id.action_pause_habit -> {
+                presenter.onPauseHabit()
+                return true
+            }
             R.id.action_delete -> {
                 presenter.onDeleteHabit()
                 return true

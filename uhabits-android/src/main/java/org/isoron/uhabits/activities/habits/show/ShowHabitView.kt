@@ -20,8 +20,21 @@
 package org.isoron.uhabits.activities.habits.show
 
 import android.content.Context
+import android.content.res.ColorStateList
+import android.graphics.drawable.GradientDrawable
+import android.util.TypedValue
+import android.view.Gravity
 import android.view.LayoutInflater
+import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.core.graphics.ColorUtils
+import org.isoron.platform.time.LocalDate
+import org.isoron.uhabits.R
+import org.isoron.uhabits.core.models.Pause
 import org.isoron.uhabits.core.ui.screens.habits.show.ShowHabitPresenter
 import org.isoron.uhabits.core.ui.screens.habits.show.ShowHabitState
 import org.isoron.uhabits.databinding.ShowHabitBinding
@@ -31,6 +44,8 @@ import org.isoron.uhabits.utils.setupToolbar
 
 class ShowHabitView(context: Context) : FrameLayout(context) {
     private val binding = ShowHabitBinding.inflate(LayoutInflater.from(context))
+    private var onRemovePause: (Pause) -> Unit = {}
+    private var onEditPause: (Pause) -> Unit = {}
 
     init {
         binding.toolbar.applyToolbarInsets()
@@ -58,7 +73,79 @@ class ShowHabitView(context: Context) : FrameLayout(context) {
         } else {
             binding.targetCard.visibility = GONE
         }
+        setPauses(data.pauses)
         binding.linearLayout.applyBottomInset()
+    }
+
+    fun setOnRemovePauseListener(listener: (Pause) -> Unit) {
+        onRemovePause = listener
+    }
+
+    fun setOnEditPauseListener(listener: (Pause) -> Unit) {
+        onEditPause = listener
+    }
+
+    private fun setPauses(pauses: List<Pause>) {
+        val container = binding.pauseList
+        container.removeAllViews()
+        val dp = resources.displayMetrics.density
+        val format = java.text.DateFormat.getDateInstance(java.text.DateFormat.MEDIUM).apply {
+            // LocalDate.unixTime is midnight UTC
+            timeZone = java.util.TimeZone.getTimeZone("UTC")
+        }
+        fun fmt(d: LocalDate) = format.format(java.util.Date(d.unixTime))
+        for (pause in pauses) {
+            val row = LinearLayout(context).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+                setPadding((12 * dp).toInt(), (2 * dp).toInt(), (4 * dp).toInt(), (2 * dp).toInt())
+            }
+            val label = TextView(context).apply {
+                text = context.getString(
+                    R.string.pause_period,
+                    pause.title.ifBlank { context.getString(R.string.pause_default_title) },
+                    fmt(pause.start),
+                    fmt(pause.end)
+                )
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
+            }
+            // A light frame shows that the buttons belong to this pause
+            row.background = GradientDrawable().apply {
+                cornerRadius = 8 * dp
+                setStroke((1 * dp).toInt().coerceAtLeast(1), ColorUtils.setAlphaComponent(label.currentTextColor, 80))
+            }
+            row.addView(label, LinearLayout.LayoutParams(0, LayoutParams.WRAP_CONTENT, 1f))
+            // The stock icons are not theme aware, so tint them with the text color. Otherwise
+            // they can be (almost) black on a dark background.
+            fun iconButton(icon: Int, description: Int, onClick: () -> Unit) = ImageButton(context).apply {
+                setImageResource(icon)
+                imageTintList = ColorStateList.valueOf(label.currentTextColor)
+                setBackgroundResource(android.R.color.transparent)
+                val pad = (10 * dp).toInt()
+                setPadding(pad, pad, pad, pad)
+                scaleType = ImageView.ScaleType.FIT_CENTER
+                contentDescription = context.getString(description)
+                setOnClickListener { onClick() }
+            }
+            val size = (40 * dp).toInt()
+            row.addView(
+                iconButton(R.drawable.ic_action_edit_dark, R.string.pause_edit_description) { onEditPause(pause) },
+                LinearLayout.LayoutParams(size, size)
+            )
+            row.addView(
+                iconButton(android.R.drawable.ic_menu_close_clear_cancel, R.string.pause_remove_description) {
+                    onRemovePause(pause)
+                },
+                LinearLayout.LayoutParams(size, size)
+            )
+            container.addView(
+                row,
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                ).apply { setMargins((16 * dp).toInt(), (4 * dp).toInt(), (16 * dp).toInt(), (4 * dp).toInt()) }
+            )
+        }
     }
 
     fun setListener(presenter: ShowHabitPresenter) {

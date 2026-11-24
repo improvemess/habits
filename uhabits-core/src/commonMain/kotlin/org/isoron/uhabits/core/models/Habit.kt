@@ -43,7 +43,8 @@ data class Habit(
     val computedEntries: EntryList,
     val originalEntries: EntryList,
     val scores: ScoreList,
-    val streaks: StreakList
+    val streaks: StreakList,
+    val pauses: PauseList = PauseList()
 ) {
     init {
         if (uuid == null) this.uuid = Uuid.random().toHexString()
@@ -75,7 +76,7 @@ data class Habit(
 
     fun recompute() {
         computedEntries.recomputeFrom(
-            originalEntries = originalEntries,
+            originalEntries = entriesWithPauses(),
             frequency = frequency,
             isNumerical = isNumerical
         )
@@ -111,6 +112,30 @@ data class Habit(
             targetValue,
             targetType
         )
+    }
+
+    /**
+     * Returns the original entries, where every paused day that has no entry of its own (or only
+     * a NO) is marked as SKIP. Paused days far in the future are ignored until they come closer.
+     */
+    private fun entriesWithPauses(): EntryList {
+        val pauseList = pauses.getAll()
+        if (pauseList.isEmpty()) return originalEntries
+        val result = EntryList()
+        originalEntries.getKnown().forEach { result.add(it) }
+        val limit = getToday().plus(PauseList.MAX_DAYS_AHEAD)
+        for (pause in pauseList) {
+            var day = pause.start
+            while (!day.isNewerThan(pause.end) && !day.isNewerThan(limit)) {
+                val existing = originalEntries.get(day)
+                // A paused day replaces "unknown" and "no", but never a manual "yes"
+                if (existing.value == Entry.UNKNOWN || existing.value == Entry.NO) {
+                    result.add(Entry(day, Entry.SKIP, existing.notes))
+                }
+                day = day.plus(1)
+            }
+        }
+        return result
     }
 
     fun copyFrom(other: Habit) {

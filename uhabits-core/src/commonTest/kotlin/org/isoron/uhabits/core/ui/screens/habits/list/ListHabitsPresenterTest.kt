@@ -26,6 +26,7 @@ import org.isoron.uhabits.core.models.Habit
 import org.isoron.uhabits.core.models.HabitList.Order
 import org.isoron.uhabits.core.models.HabitMatcher
 import org.isoron.uhabits.core.models.PaletteColor
+import org.isoron.uhabits.core.models.Pause
 import org.isoron.uhabits.core.ui.views.LightTheme
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -214,5 +215,50 @@ class ListHabitsPresenterTest : BaseUnitTest() {
         // The streak range also covers the days in between, but they are not counted
         val range = habit.streaks.getOngoingStreak(today)!!
         assertEquals(true, range.length > 3)
+    }
+
+    private fun streakCard(habit: Habit): HabitCardState {
+        habitList.add(habit)
+        return ListHabitsPresenter.buildState(
+            allHabits = habitList,
+            filter = null,
+            primaryOrder = Order.BY_POSITION,
+            secondaryOrder = Order.BY_NAME_ASC,
+            checkmarkCount = checkmarkCount,
+            theme = theme
+        ).items.single()
+    }
+
+    @Test
+    fun testFlameStaysColoredDuringPause() {
+        val habit = fixtures.createEmptyHabit()
+        val today = getToday()
+        habit.originalEntries.add(Entry(today.minus(2), Entry.YES_MANUAL))
+        habit.originalEntries.add(Entry(today.minus(1), Entry.YES_MANUAL))
+        habit.pauses.add(Pause(today, today.plus(3)))
+        habit.recompute()
+        val card = streakCard(habit)
+        assertEquals(2, card.streak)
+        assertEquals(true, card.streakDoneToday)
+    }
+
+    @Test
+    fun testFlameIsGrayOnFirstDayAfterPause() {
+        val habit = fixtures.createEmptyHabit()
+        val today = getToday()
+        habit.originalEntries.add(Entry(today.minus(3), Entry.YES_MANUAL))
+        habit.pauses.add(Pause(today.minus(2), today.minus(1)))
+        habit.recompute()
+        val card = streakCard(habit)
+        assertEquals(1, card.streak)
+        assertEquals(false, card.streakDoneToday)
+    }
+
+    @Test
+    fun testPauseWithoutStreakKeepsFlameGray() {
+        val habit = fixtures.createEmptyHabit()
+        habit.pauses.add(Pause(getToday(), getToday().plus(3)))
+        habit.recompute()
+        assertEquals(false, streakCard(habit).streakDoneToday)
     }
 }

@@ -19,14 +19,19 @@
 package org.isoron.uhabits.core.ui.screens.habits.show
 
 import org.isoron.platform.io.UserFile
+import org.isoron.platform.time.LocalDate
 import org.isoron.platform.time.getToday
+import org.isoron.uhabits.core.commands.AddPauseCommand
 import org.isoron.uhabits.core.commands.ArchiveHabitsCommand
+import org.isoron.uhabits.core.commands.ChangePauseEndCommand
 import org.isoron.uhabits.core.commands.CommandRunner
 import org.isoron.uhabits.core.commands.DeleteHabitsCommand
+import org.isoron.uhabits.core.commands.RemovePauseCommand
 import org.isoron.uhabits.core.commands.UnarchiveHabitsCommand
 import org.isoron.uhabits.core.models.Entry
 import org.isoron.uhabits.core.models.Habit
 import org.isoron.uhabits.core.models.HabitList
+import org.isoron.uhabits.core.models.Pause
 import org.isoron.uhabits.core.tasks.ExportCSVTask
 import org.isoron.uhabits.core.tasks.TaskRunner
 import org.isoron.uhabits.core.ui.callbacks.OnConfirmedCallback
@@ -61,6 +66,32 @@ class ShowHabitMenuPresenter(
     fun onArchiveHabits() {
         commandRunner.run(ArchiveHabitsCommand(habitList, listOf(habit)))
         screen.showMessage(Message.HABIT_ARCHIVED)
+    }
+
+    fun onPauseHabit() {
+        screen.showPauseDialog { from, to, title ->
+            if (habit.pauses.overlaps(from, to)) {
+                screen.showMessage(Message.PAUSE_OVERLAPS)
+                return@showPauseDialog
+            }
+            commandRunner.run(AddPauseCommand(habitList, habit, from, to, title))
+            screen.showMessage(Message.HABIT_PAUSED)
+            screen.refresh()
+        }
+    }
+
+    fun onEditPauseEnd(pause: Pause) {
+        val range = habit.pauses.allowedEndRange(pause)
+        screen.showEditPauseEndDialog(pause, range.start, range.endInclusive) { newEnd ->
+            commandRunner.run(ChangePauseEndCommand(habitList, habit, pause, newEnd))
+            screen.refresh()
+        }
+    }
+
+    fun onRemovePause(pause: Pause) {
+        commandRunner.run(RemovePauseCommand(habitList, habit, pause))
+        screen.showMessage(Message.PAUSE_REMOVED)
+        screen.refresh()
     }
 
     fun onExportCSV() {
@@ -114,7 +145,10 @@ class ShowHabitMenuPresenter(
     enum class Message {
         COULD_NOT_EXPORT,
         HABIT_ARCHIVED,
-        HABIT_UNARCHIVED
+        HABIT_UNARCHIVED,
+        HABIT_PAUSED,
+        PAUSE_REMOVED,
+        PAUSE_OVERLAPS
     }
 
     interface Screen {
@@ -122,6 +156,14 @@ class ShowHabitMenuPresenter(
         fun showMessage(m: Message?)
         fun showSendFileScreen(filename: String)
         fun showDeleteConfirmationScreen(callback: OnConfirmedCallback)
+        fun showEditPauseEndDialog(
+            pause: Pause,
+            earliest: LocalDate,
+            latest: LocalDate,
+            onPicked: (newEnd: LocalDate) -> Unit
+        )
+
+        fun showPauseDialog(onPicked: (from: LocalDate, to: LocalDate, title: String) -> Unit)
         fun close()
         fun refresh()
     }
