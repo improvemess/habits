@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.13.0](https://github.com/oliverlorenz/uhabits/compare/v2.12.0...v2.13.0) (2026-11-24)
+
+### Features
+
+* share a habit, invite friends and stop sharing ([#45](https://github.com/oliverlorenz/uhabits/issues/45)) ([e7b3a44](https://github.com/oliverlorenz/uhabits/commit/e7b3a44e12c38604a64054f34679a12b2c9ab067)), closes [#32](https://github.com/oliverlorenz/uhabits/issues/32) [#34](https://github.com/oliverlorenz/uhabits/issues/34) [#36](https://github.com/oliverlorenz/uhabits/issues/36), references [#34](https://github.com/oliverlorenz/uhabits/issues/34) [#32](https://github.com/oliverlorenz/uhabits/issues/32) [#39](https://github.com/oliverlorenz/uhabits/issues/39)
+
 ## [2.12.0](https://github.com/oliverlorenz/uhabits/compare/v2.11.0...v2.12.0) (2026-11-24)
 
 * rewrite README for the fork and document differences from upstream ([#46](https://github.com/oliverlorenz/uhabits/issues/46)) ([3f5ee43](https://github.com/oliverlorenz/uhabits/commit/3f5ee43dbc06505fb18c78cfb1f86f062f5061e6)), references [#44](https://github.com/oliverlorenz/uhabits/issues/44)
