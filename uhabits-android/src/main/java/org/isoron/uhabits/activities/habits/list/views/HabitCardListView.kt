@@ -164,6 +164,7 @@ class HabitCardListView(
         fun onItemLongClick(pos: Int) {}
         fun onToggle(habitId: Long, date: LocalDate, value: Int, notes: String, x: Float, y: Float) {}
         fun onEdit(habitId: Long, date: LocalDate, x: Float, y: Float) {}
+        fun onIncrement(habitId: Long, date: LocalDate, x: Float, y: Float) {}
     }
 
     private inner class CardViewGestureDetector(

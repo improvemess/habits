@@ -84,6 +84,10 @@ class HabitCardListController(
         behavior.onEdit(habitId, date, x, y)
     }
 
+    override fun onIncrement(habitId: Long, date: LocalDate, x: Float, y: Float) {
+        behavior.onIncrement(habitId, date, x, y)
+    }
+
     override fun onModelChange() {
         if (adapter.isSelectionEmpty) {
             activeMode = NormalMode()

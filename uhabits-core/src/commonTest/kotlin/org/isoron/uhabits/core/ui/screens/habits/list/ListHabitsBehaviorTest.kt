@@ -92,6 +92,39 @@ class ListHabitsBehaviorTest : BaseUnitTest() {
     }
 
     @Test
+    fun testOnIncrement_addsStepAndUndoRestoresValue() {
+        val today = getToday()
+        habit2.stepSize = 0.2
+        var undo: (() -> Unit)? = null
+        every { screen.showIncrementUndo(any(), any(), any()) } calls { args ->
+            undo = args.arg<() -> Unit>(2)
+            Unit
+        }
+        behavior.onIncrement(habit2.id!!, today, 0f, 0f)
+        assertEquals(300, habit2.computedEntries.get(today).value)
+        behavior.onIncrement(habit2.id!!, today, 0f, 0f)
+        assertEquals(500, habit2.computedEntries.get(today).value)
+        undo!!.invoke()
+        assertEquals(300, habit2.computedEntries.get(today).value)
+    }
+
+    @Test
+    fun testOnIncrement_startsFromZeroOnEmptyDay() {
+        val day = getToday().minus(30)
+        every { screen.showIncrementUndo(any(), any(), any()) } returns Unit
+        behavior.onIncrement(habit2.id!!, day, 0f, 0f)
+        assertEquals(1000, habit2.computedEntries.get(day).value)
+    }
+
+    @Test
+    fun testOnIncrement_ignoresYesNoHabits() {
+        val today = getToday()
+        val before = habit1.computedEntries.get(today).value
+        behavior.onIncrement(habit1.id!!, today, 0f, 0f)
+        assertEquals(before, habit1.computedEntries.get(today).value)
+    }
+
+    @Test
     fun testOnExportCSV() = runTest {
         val outputDir = createTempDir()
         every { dirFinder.getCSVOutputDir() } returns outputDir

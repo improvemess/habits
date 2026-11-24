@@ -203,6 +203,10 @@
     <string name="value">Value</string>
     <string name="calendar">Calendar</string>
     <string name="unit">Unit</string>
+    <string name="step_size">Step size</string>
+    <string name="step_size_example">e.g. 200</string>
+    <string name="counter_now_at">Now at %1$s</string>
+    <string name="undo">Undo</string>
     <string name="target_type">Target Type</string>
     <string name="target_type_at_least">At least</string>
     <string name="target_type_at_most">At most</string>
