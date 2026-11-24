@@ -41,6 +41,7 @@ import org.isoron.uhabits.core.models.ModelFactory
 import org.isoron.uhabits.core.models.Pause
 import org.isoron.uhabits.core.models.sqlite.SQLiteHabitList
 import org.isoron.uhabits.core.sharing.OwnerIdentityStore
+import org.isoron.uhabits.core.sharing.ShareStore
 import org.isoron.uhabits.core.utils.isSQLite3File
 
 /**
@@ -54,7 +55,8 @@ class LoopDBImporter(
     @AppScope val runner: CommandRunner,
     @AppScope logging: Logging,
     @AppScope val fileOpener: FileOpener,
-    @AppScope val ownerIdentityStore: OwnerIdentityStore
+    @AppScope val ownerIdentityStore: OwnerIdentityStore,
+    @AppScope val shareStore: ShareStore
 ) : AbstractImporter() {
 
     private val logger = logging.getLogger("LoopDBImporter")
@@ -149,11 +151,19 @@ class LoopDBImporter(
      * Takes over the owner identity of the backup, so that restoring a backup
      * on a new device keeps the same owner. Backups without an identity (older
      * versions) or with a malformed one leave the local identity unchanged.
+     *
+     * While this device has active shares under another identity, that
+     * identity is kept: replacing it would orphan the shares on their servers.
      */
     private fun importOwnerIdentity(db: Database) {
         val imported = OwnerIdentityStore(db).load()
         if (imported == null) {
             logger.info("Backup has no valid owner identity, keeping the local one")
+            return
+        }
+        val local = ownerIdentityStore.load()
+        if (local != null && local.ownerId != imported.ownerId && shareStore.activeServers().isNotEmpty()) {
+            logger.info("Keeping the local owner identity: this device has active shares")
             return
         }
         ownerIdentityStore.save(imported)

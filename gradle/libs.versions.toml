@@ -23,6 +23,7 @@ ktor = "1.6.8"
 ktxCoroutine = "1.10.1"
 ktxSerialization = "1.10.0"
 work = "2.11.2"
+zxing = "3.5.4"
 legacy-support = "1.0.0"
 material = "1.12.0"
 mokkery = "3.3.0"
@@ -56,6 +57,7 @@ kotlin-stdlib-jdk8 = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "ktxCoroutine" }
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "ktxCoroutine" }
 kotlinx-coroutines-core-jvm = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm", version.ref = "ktxCoroutine" }
+zxing-core = { module = "com.google.zxing:core", version.ref = "zxing" }
 work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "ktxSerialization" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "ktxCoroutine" }

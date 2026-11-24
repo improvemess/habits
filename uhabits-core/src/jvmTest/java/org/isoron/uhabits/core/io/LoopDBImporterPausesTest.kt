@@ -30,6 +30,7 @@ import org.isoron.uhabits.core.BaseUnitTest
 import org.isoron.uhabits.core.DATABASE_VERSION
 import org.isoron.uhabits.core.models.Pause
 import org.isoron.uhabits.core.sharing.OwnerIdentityStore
+import org.isoron.uhabits.core.sharing.ShareStore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -79,7 +80,8 @@ class LoopDBImporterPausesTest : BaseUnitTest() {
             commandRunner,
             StandardLogging(),
             fileOpener,
-            OwnerIdentityStore(buildMemoryDatabase())
+            OwnerIdentityStore(buildMemoryDatabase()),
+            ShareStore(buildMemoryDatabase())
         )
         importer.importHabitsFromFile(userFile)
         userFile.delete()

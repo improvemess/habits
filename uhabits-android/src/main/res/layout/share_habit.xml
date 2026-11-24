@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (C) 2016-2025 Álinson Santos Xavier <git@axavier.org>
+  ~
+  ~ This file is part of Loop Habit Tracker.
+  ~
+  ~ Loop Habit Tracker is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by the
+  ~ Free Software Foundation, either version 3 of the License, or (at your
+  ~ option) any later version.
+  ~
+  ~ Loop Habit Tracker is distributed in the hope that it will be useful, but
+  ~ WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+  ~ or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+  ~ more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License along
+  ~ with this program. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?windowBackgroundColor">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        style="@style/Toolbar"
+        app:popupTheme="?toolbarPopupTheme" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/toolbar">
+
+        <LinearLayout
+            android:id="@+id/outerLinearLayout"
+            style="@style/CardList">
+
+            <!-- Not shared yet -->
+            <LinearLayout
+                android:id="@+id/notSharedCard"
+                style="@style/Card">
+
+                <TextView
+                    style="@style/About.Item"
+                    android:text="@string/share_intro" />
+
+                <RadioGroup
+                    android:id="@+id/historyGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp">
+
+                    <RadioButton
+                        android:id="@+id/historyToday"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="@string/share_history_today" />
+
+                    <RadioButton
+                        android:id="@+id/historyAll"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/share_history_all" />
+                </RadioGroup>
+
+                <TextView
+                    style="@style/About.Item"
+                    android:text="@string/share_notes_private" />
+
+                <TextView
+                    android:id="@+id/newShareServer"
+                    style="@style/About.Item"
+                    android:textColor="?contrast60" />
+
+                <Button
+                    android:id="@+id/shareButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:text="@string/share_start" />
+            </LinearLayout>
+
+            <!-- Shared -->
+            <LinearLayout
+                android:id="@+id/sharedCard"
+                style="@style/Card"
+                android:visibility="gone">
+
+                <TextView
+                    style="@style/About.Item"
+                    android:text="@string/shared_with_friends"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/shareServer"
+                    style="@style/About.Item"
+                    android:textColor="?contrast60" />
+
+                <Button
+                    android:id="@+id/inviteButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:text="@string/share_invite" />
+
+                <LinearLayout
+                    android:id="@+id/invitePanel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <ImageView
+                        android:id="@+id/inviteQr"
+                        android:layout_width="220dp"
+                        android:layout_height="220dp"
+                        android:layout_gravity="center"
+                        android:layout_margin="8dp"
+                        android:background="@android:color/white"
+                        android:contentDescription="@string/share_invite_qr"
+                        android:padding="8dp" />
+
+                    <TextView
+                        android:id="@+id/inviteLink"
+                        style="@style/About.Item"
+                        android:textIsSelectable="true"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/inviteHint"
+                        style="@style/About.Item"
+                        android:textColor="?contrast60" />
+
+                    <Button
+                        android:id="@+id/sendLinkButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:text="@string/share_send_link" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/friendsCard"
+                style="@style/Card"
+                android:visibility="gone">
+
+                <TextView
+                    style="@style/About.Item"
+                    android:text="@string/share_friends"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:id="@+id/friendsList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
+                <Button
+                    android:id="@+id/stopButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/share_stop" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/status"
+                style="@style/About.Item"
+                android:layout_margin="12dp"
+                android:visibility="gone" />
+
+            <ProgressBar
+                android:id="@+id/progress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="12dp"
+                android:visibility="gone" />
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

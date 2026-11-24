@@ -19,11 +19,13 @@
 
 package org.isoron.uhabits.activities.habits.show
 
+import android.content.Intent
 import android.view.Menu
 import android.view.MenuItem
 import org.isoron.uhabits.R
 import org.isoron.uhabits.core.preferences.Preferences
 import org.isoron.uhabits.core.ui.screens.habits.show.ShowHabitMenuPresenter
+import org.isoron.uhabits.sharing.ShareHabitActivity
 
 class ShowHabitMenu(
     val activity: ShowHabitActivity,
@@ -66,6 +68,12 @@ class ShowHabitMenu(
             }
             R.id.action_randomize -> {
                 presenter.onRandomize()
+                return true
+            }
+            R.id.action_share_with_friends -> {
+                activity.startActivity(
+                    Intent(activity, ShareHabitActivity::class.java).setData(activity.intent.data)
+                )
                 return true
             }
             R.id.export -> {

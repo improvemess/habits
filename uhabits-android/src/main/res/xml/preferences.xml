@@ -121,6 +121,20 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+            android:key="sharingCategory"
+            android:title="@string/pref_sharing_category">
+
+        <EditTextPreference
+                android:key="pref_sharing_server"
+                android:defaultValue="https://habits.improvemess.com"
+                android:inputType="textUri"
+                android:title="@string/pref_sharing_server"
+                app:iconSpaceReserved="false"
+                android:singleLine="true" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
             android:key="databaseCategory"
             android:title="@string/database">
 

@@ -31,6 +31,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.preference.EditTextPreference
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
@@ -38,6 +40,7 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.recyclerview.widget.RecyclerView
 import org.isoron.platform.time.DayOfWeek
 import org.isoron.platform.time.JavaLocalDateFormatter
+import org.isoron.uhabits.BuildConfig
 import org.isoron.uhabits.HabitsApplication
 import org.isoron.uhabits.R
 import org.isoron.uhabits.activities.habits.list.RESULT_BUG_REPORT
@@ -46,6 +49,7 @@ import org.isoron.uhabits.activities.habits.list.RESULT_EXPORT_DB
 import org.isoron.uhabits.activities.habits.list.RESULT_IMPORT_DATA
 import org.isoron.uhabits.activities.habits.list.RESULT_REPAIR_DB
 import org.isoron.uhabits.core.preferences.Preferences
+import org.isoron.uhabits.core.sharing.SharingServers
 import org.isoron.uhabits.core.ui.NotificationTray
 import org.isoron.uhabits.notifications.AndroidNotificationTray.Companion.createAndroidNotificationChannel
 import org.isoron.uhabits.notifications.RingtoneManager
@@ -91,6 +95,7 @@ class SettingsFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeLis
             widgetUpdater = appContext.component.widgetUpdater
         }
         setResultOnPreferenceClick("importData", RESULT_IMPORT_DATA)
+        setupSharingServerPreference()
         setResultOnPreferenceClick("exportCSV", RESULT_EXPORT_CSV)
         setResultOnPreferenceClick("exportDB", RESULT_EXPORT_DB)
         setResultOnPreferenceClick("repairDB", RESULT_REPAIR_DB)
@@ -191,6 +196,23 @@ class SettingsFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeLis
         }
         BackupManager.dataChanged("org.isoron.uhabits")
         updateWeekdayPreference()
+    }
+
+    private fun setupSharingServerPreference() {
+        val pref = findPreference(Preferences.SHARING_SERVER_KEY) as EditTextPreference? ?: return
+        fun summary(url: String) = getString(R.string.pref_sharing_server_summary, url)
+        pref.summary = summary(pref.text ?: SharingServers.DEFAULT)
+        pref.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, value ->
+            val url = SharingServers.normalize(value as String, allowInsecure = BuildConfig.DEBUG)
+            if (url == null) {
+                Toast.makeText(requireContext(), R.string.pref_sharing_server_invalid, Toast.LENGTH_LONG).show()
+                return@OnPreferenceChangeListener false
+            }
+            // Store the normalized form, e.g. without a trailing slash.
+            pref.text = url
+            pref.summary = summary(url)
+            false
+        }
     }
 
     private fun setResultOnPreferenceClick(key: String, result: Int) {
