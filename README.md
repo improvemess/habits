@@ -1,24 +1,24 @@
-<h1 align="center">Loop Habit Tracker</h1>
+<h1 align="center">Loop Habit Tracker (fork)</h1>
 <p align="center">
-  <a href="https://github.com/iSoron/uhabits/releases/latest">
-    <img alt="release" src="https://img.shields.io/github/v/release/iSoron/uhabits" />
-  </a>
-  <a href="https://github.com/iSoron/uhabits/discussions">
-    <img alt="GitHub" src="https://img.shields.io/badge/GitHub-Discussions-%23fc4ebc" />
+  <a href="https://github.com/oliverlorenz/uhabits/releases/latest">
+    <img alt="release" src="https://img.shields.io/github/v/release/oliverlorenz/uhabits" />
   </a>
 </p>
 
-Loop is a mobile app that helps you create and maintain good habits,
-allowing you to achieve your long-term goals. Detailed graphs and statistics
-show you how your habits improved over time. It is completely ad-free and open
-source.
+This is a personal fork of [Loop Habit Tracker](https://github.com/iSoron/uhabits)
+by Álinson Santos Xavier. Loop helps you create and maintain good habits, with
+detailed graphs and statistics that show how your habits improved over time.
 
-<p align="center">
-  <a href="https://play.google.com/store/apps/details?id=org.isoron.uhabits&utm_source=global_co&utm_medium=prtnr&utm_content=Mar2515&utm_campaign=PartBadge&pcampaignid=MKT-AC-global-none-all-co-pr-py-PartBadges-Oct1515-1"><img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" height="80px"/></a>
-  <a href="https://f-droid.org/app/org.isoron.uhabits"><img alt="Get it on F-Droid" src="https://f-droid.org/badge/get-it-on.png" height="80px"/></a>
-</p>
+The fork adds features that upstream does not have (see
+[Differences from upstream](#differences-from-upstream)) and is **not**
+published on Google Play or F-Droid. APKs are only available from the
+[releases page][releases]. It is not affiliated with the upstream project; for
+the official app, use upstream.
 
 ## Screenshots
+
+The screenshots show the upstream app. They do not yet include the fork's
+additions.
 
 [![Main screen][screen1th]][screen1]
 [![Edit habit][screen2th]][screen2]
@@ -27,68 +27,47 @@ source.
 [![Widgets][screen5th]][screen5]
 [![Night mode][screen6th]][screen6]
 
-## Features
+## Features of Loop (from upstream)
 
-* **Beautiful, minimalistic and lightweight interface.** Loop has an elegant and minimalistic interface that is very easy to use, even for first-time users. Highly optimized for speed, the app works well even on older phones.
-
-* **Habit score.** Loop has an advanced formula for calculating the strength of your habits. Every repetition makes your habit stronger and every missed day makes it weaker. A few missed days after a long streak, however, will not completely destroy your progress, unlike many other don't-break-the-chain apps.
-
-* **Flexible schedules.** In addition to daily habits, Loop supports habits with more complex schedules, such as 3 times per week or every other day.
-
-* **Reminders.** Schedule notifications to remind you of your habits. Each habit can have its own reminder, at a chosen time of the day. Easily check or dismiss your habit directly from the notification.
-
-* **Widgets.** Be reminded of your habits whenever you unlock your phone. Colorful widgets allow you to track your habits directly from your home screen, without even opening the app.
-
-* **Take control of your data.** If you want to further analyze your data, or move it to another service, Loop allows you to export it to spreadsheets (CSV) or to a database file (SQLite). For power users, checkmarks can be added through other apps, such as Tasker.
-
-* **No limitations.** Track as many habits as you wish. Loop imposes no artificial limits on how many habits you can have. All features are available to all users. There are no in-app purchases.
-
-* **Completely ad-free and open source.** There are no advertisements, annoying notifications or intrusive permissions in this app, and there will never be. The app is completely open-source (GPLv3).
-
-* **Works offline and respects your privacy.** Loop doesn't require an Internet connection or online account registration. Your confidential data is never sent to anyone. Neither the developers nor any third-parties have access to it.
+* **Habit score.** An advanced formula calculates the strength of your habits. Every repetition makes a habit stronger and every missed day makes it weaker. A few missed days after a long streak do not completely destroy your progress.
+* **Flexible schedules.** Daily habits, but also more complex schedules such as 3 times per week or every other day.
+* **Reminders.** Each habit can have its own reminder. Check or dismiss a habit directly from the notification.
+* **Widgets.** Track your habits directly from your home screen.
+* **Your data, your files.** Export to spreadsheets (CSV) or to a database file (SQLite). Checkmarks can be added through other apps, such as Tasker.
+* **No limitations, no ads.** Track as many habits as you wish. No advertisements, no in-app purchases. The app is open source (GPLv3).
 
 ## Differences from upstream
 
-This is a fork of [iSoron/uhabits](https://github.com/iSoron/uhabits). It adds the following on top of upstream. Changes are listed by pull request; this list is updated with every change.
+This fork adds the following on top of upstream. Changes are listed by pull request; this list is updated with every change.
 
 * **Streak flame instead of score** (#11, port of upstream [#2393](https://github.com/iSoron/uhabits/pull/2393)). New setting *Show streak flame*: the habit card shows the current streak instead of the score ring. The flame stays gray until today's check-in is done. Off by default.
 * **Pausing habits** (#25, #41). Several pause periods per habit, each with an optional title. Paused days count as skipped, so score and streak are preserved. Pauses can only start today or later and at most 31 days ahead, may not overlap, and can be shortened or removed. Pauses are included in the database backup and restored on import.
 * **Home Assistant integration** (#8, #12, #38). Every change to an entry and to a habit (edit, archive, delete) produces an event for a pluggable transport. The Companion App transport broadcasts them to Home Assistant, and Home Assistant can set entries through a token-protected receiver. Disabled by default; the token is not part of backups.
-* **Sharing habits with friends** (#37, #39, #40, #42, #44). End-to-end encrypted (AES-256-GCM) sharing through a sharing server (uhabits-server). Includes the owner and device identity, the plaintext format of shared data (notes and automatic check marks are never shared), an outbox with background sync via WorkManager and a weekly heartbeat. The app now requests the `INTERNET` permission, but nothing is sent until a habit is shared. The sharing UI is still to come.
+* **Sharing habits with friends** (#37, #39, #40, #42, #44). End-to-end encrypted (AES-256-GCM) sharing through a sharing server (uhabits-server). Includes the owner and device identity, the plaintext format of shared data (notes and automatic check marks are never shared), an outbox with background sync via WorkManager and a weekly heartbeat. The sharing UI is still to come.
+* **Network access and privacy** (#44). Upstream works fully offline and has no `INTERNET` permission. This fork requests it for sharing. As long as no habit is shared, nothing is sent over the network. The database backup now contains the owner secret and sharing keys, so treat it as confidential.
 * **Build and release** (#9, #10, #17, #18). CI quality gates (ktlint, core and Android tests, lint) on every pull request, debug APKs with a stable signing key, and automatic releases on merges to `dev` via semantic-release with Conventional Commit titles.
 
 ## Installing
 
-The easiest way to install Loop is through the [Google Play Store][playstore] or [F-Droid][fdroid].
-You may also download and install the APK from the [releases page][releases];
-note, however, that the app will not be updated automatically.  To build this
-app from the source code, see [build instructions][build].
+Download the APK from the [releases page][releases] and install it. The app is
+not updated automatically; install newer releases over the old one. Releases
+are signed with a fixed debug key, so they can only be installed over other
+releases of this fork.
+
+The fork uses the same application ID as upstream (`org.isoron.uhabits`). If
+you have the original Loop installed, uninstall it first (export a backup
+before) or the installation will be rejected because of the different
+signature.
+
+To build the app from the source code, see the [build instructions][build].
 
 ## Contributing
 
-Loop is an open source project developed entirely by volunteers. If you would
-like to contribute to the project, you are very welcome. There are many ways to
-contribute, even if you are not a software developer.
-
-* **Report bugs, suggest features.** The easiest way to contribute is to simply
-  use the app and let us know if you find any problems or have any suggestions
-  to improve it. To report a problem, please [create a new bug report](https://github.com/iSoron/uhabits/issues/new/choose).
-  To request a new feature or vote on existing feature requests, please visit
-  our [GitHub Discussions page](https://github.com/iSoron/uhabits/discussions/categories/feature-requests).
-  If you would like to receive the newest versions of the app
-  earlier than everyone else, [join our open beta on Google Play][beta].
-
-* **Spread the word.** If you like the app, share it with your family, friends
-  and colleagues. You can also rate and review the app on Google Play Store, to help
-  other users find it more easily.
-
-* **Translate the app into your own language.** If you are not a native English
-  speaker, and would like to see the app translated into your own language,
-  please join our [open translation project][poedit]. If the translation
-  is already completed, you are also very welcome to join and proofread it.
-
-* **Write some code.** If you are an Android developer, you are very welcome to
-  contribute with code. Please see the [guidelines](https://github.com/iSoron/uhabits/blob/dev/docs/GUIDELINES.md).
+This is a personal fork. Bugs and ideas for the fork are welcome in the
+[issues of this repository](https://github.com/oliverlorenz/uhabits/issues).
+Changes go through pull requests against `dev`; see the
+[guidelines](docs/GUIDELINES.md). Problems that also occur in the original app
+are better reported [upstream](https://github.com/iSoron/uhabits/issues).
 
 ## License
 
@@ -121,9 +100,5 @@ contribute, even if you are not a software developer.
 [screen4th]: screenshots/4.thumb.png
 [screen5th]: screenshots/5.thumb.png
 [screen6th]: screenshots/6.thumb.png
-[poedit]: https://translate.loophabits.org
-[playstore]: https://play.google.com/store/apps/details?id=org.isoron.uhabits
-[releases]: https://github.com/iSoron/uhabits/releases
-[fdroid]: https://f-droid.org/app/org.isoron.uhabits
-[build]: https://github.com/iSoron/uhabits/blob/dev/docs/BUILD.md
-[beta]: https://play.google.com/apps/testing/org.isoron.uhabits
+[releases]: https://github.com/oliverlorenz/uhabits/releases
+[build]: docs/BUILD.md
