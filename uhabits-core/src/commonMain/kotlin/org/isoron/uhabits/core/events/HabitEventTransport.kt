@@ -19,10 +19,14 @@
 package org.isoron.uhabits.core.events
 
 /**
- * Delivers [HabitEvent]s to an external system, and owns their wire format.
+ * Delivers [HabitEvent]s and [HabitLifecycleEvent]s to an external system, and
+ * owns their wire format.
  *
  * Called on the main thread; implementations must not block.
  */
 fun interface HabitEventTransport {
     fun send(event: HabitEvent)
+
+    /** Ignores changes to the habits themselves, unless overridden. */
+    fun send(event: HabitLifecycleEvent) {}
 }
