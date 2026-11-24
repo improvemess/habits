@@ -20,6 +20,7 @@ package org.isoron.uhabits.core.models
 
 import org.isoron.platform.Synchronized
 import org.isoron.platform.time.LocalDate
+import org.isoron.platform.time.getToday
 
 /**
  * The list of pause periods of a single habit. This base implementation keeps everything in
@@ -48,9 +49,24 @@ open class PauseList {
 
     fun isEmpty(): Boolean = getAll().isEmpty()
 
+    /** The earliest and latest day to which [pause] can be extended or shortened. */
+    fun allowedEndRange(pause: Pause, today: LocalDate = getToday()): ClosedRange<LocalDate> {
+        val earliest = if (pause.start.isNewerThan(today)) pause.start else today
+        var latest = today.plus(MAX_DAYS_AHEAD)
+        val nextStart = getAll().filter { it != pause && it.start.isNewerThan(pause.start) }
+            .minOfOrNull { it.start.daysSince2000 }
+        if (nextStart != null && LocalDate(nextStart - 1).isOlderThan(latest)) latest = LocalDate(nextStart - 1)
+        return earliest..latest
+    }
+
     fun isPaused(date: LocalDate): Boolean = getAll().any { it.contains(date) }
 
     /** Returns true if any existing pause shares at least one day with [from]..[to]. */
     fun overlaps(from: LocalDate, to: LocalDate): Boolean =
         getAll().any { !it.start.isNewerThan(to) && !it.end.isOlderThan(from) }
+
+    companion object {
+        /** Pauses can only be planned this many days into the future. */
+        const val MAX_DAYS_AHEAD = 31
+    }
 }

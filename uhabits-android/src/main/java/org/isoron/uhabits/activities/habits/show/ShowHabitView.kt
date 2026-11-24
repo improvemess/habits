@@ -20,6 +20,7 @@
 package org.isoron.uhabits.activities.habits.show
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -40,6 +41,7 @@ import org.isoron.uhabits.utils.setupToolbar
 class ShowHabitView(context: Context) : FrameLayout(context) {
     private val binding = ShowHabitBinding.inflate(LayoutInflater.from(context))
     private var onRemovePause: (Pause) -> Unit = {}
+    private var onEditPause: (Pause) -> Unit = {}
 
     init {
         binding.toolbar.applyToolbarInsets()
@@ -75,6 +77,10 @@ class ShowHabitView(context: Context) : FrameLayout(context) {
         onRemovePause = listener
     }
 
+    fun setOnEditPauseListener(listener: (Pause) -> Unit) {
+        onEditPause = listener
+    }
+
     private fun setPauses(pauses: List<Pause>) {
         val container = binding.pauseList
         container.removeAllViews()
@@ -100,13 +106,26 @@ class ShowHabitView(context: Context) : FrameLayout(context) {
                 setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
             }
             row.addView(label, LinearLayout.LayoutParams(0, LayoutParams.WRAP_CONTENT, 1f))
-            val close = ImageButton(context).apply {
-                setImageResource(android.R.drawable.ic_menu_close_clear_cancel)
+            // The stock icons are not theme aware, so tint them with the text color. Otherwise
+            // they can be (almost) black on a dark background.
+            fun iconButton(icon: Int, description: Int, onClick: () -> Unit) = ImageButton(context).apply {
+                setImageResource(icon)
+                imageTintList = ColorStateList.valueOf(label.currentTextColor)
                 setBackgroundResource(android.R.color.transparent)
-                contentDescription = context.getString(R.string.pause_remove_description)
-                setOnClickListener { onRemovePause(pause) }
+                contentDescription = context.getString(description)
+                setOnClickListener { onClick() }
             }
-            row.addView(close, LinearLayout.LayoutParams((40 * dp).toInt(), (40 * dp).toInt()))
+            val size = (40 * dp).toInt()
+            row.addView(
+                iconButton(android.R.drawable.ic_menu_edit, R.string.pause_edit_description) { onEditPause(pause) },
+                LinearLayout.LayoutParams(size, size)
+            )
+            row.addView(
+                iconButton(android.R.drawable.ic_menu_close_clear_cancel, R.string.pause_remove_description) {
+                    onRemovePause(pause)
+                },
+                LinearLayout.LayoutParams(size, size)
+            )
             container.addView(row)
         }
     }

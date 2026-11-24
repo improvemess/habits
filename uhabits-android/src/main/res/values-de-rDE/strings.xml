@@ -55,6 +55,8 @@
     <string name="pause_default_title">Pause</string>
     <string name="pause_title_dialog">Grund der Pause</string>
     <string name="pause_title_hint">z. B. Urlaub (optional)</string>
+    <string name="pause_edit_description">Ende der Pause ändern</string>
+    <string name="pause_edit_end_title">Ende der Pause</string>
     <string name="pause_remove_confirm">Entfernen</string>
     <string name="pause_remove_description">Pause entfernen</string>
     <string name="overview">Übersicht</string>

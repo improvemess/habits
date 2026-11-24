@@ -24,6 +24,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
+import android.graphics.Typeface
 import android.text.TextPaint
 import android.view.HapticFeedbackConstants
 import android.view.View
@@ -47,7 +48,8 @@ import org.isoron.uhabits.utils.toMeasureSpec
 data class CheckmarkButtonState(
     val color: Int,
     val value: Int,
-    val notes: String
+    val notes: String,
+    val paused: Boolean = false
 )
 
 class CheckmarkButtonView(
@@ -157,6 +159,7 @@ class CheckmarkButtonView(
                 }
                 else -> R.string.fa_check
             }
+            paint.typeface = if (state.value == SKIP && state.paused) Typeface.DEFAULT_BOLD else getFontAwesome()
             paint.textSize = when {
                 id == R.string.fa_question -> sp(12.0f)
                 state.value == YES_AUTO -> sp(13.0f)
@@ -170,7 +173,9 @@ class CheckmarkButtonView(
                 paint.style = Paint.Style.FILL
             }
 
-            val label = resources.getString(id)
+            // A day that belongs to a pause shows "zz" (sleeping) instead of the skip symbol
+            val isPaused = state.value == SKIP && state.paused
+            val label = if (isPaused) "zz" else resources.getString(id)
             val em = paint.measureText("m")
 
             rect.set(0f, 0f, width.toFloat(), height.toFloat())

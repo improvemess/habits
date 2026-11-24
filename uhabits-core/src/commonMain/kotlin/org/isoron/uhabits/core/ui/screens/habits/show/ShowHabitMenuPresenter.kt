@@ -23,6 +23,7 @@ import org.isoron.platform.time.LocalDate
 import org.isoron.platform.time.getToday
 import org.isoron.uhabits.core.commands.AddPauseCommand
 import org.isoron.uhabits.core.commands.ArchiveHabitsCommand
+import org.isoron.uhabits.core.commands.ChangePauseEndCommand
 import org.isoron.uhabits.core.commands.CommandRunner
 import org.isoron.uhabits.core.commands.DeleteHabitsCommand
 import org.isoron.uhabits.core.commands.RemovePauseCommand
@@ -75,6 +76,14 @@ class ShowHabitMenuPresenter(
             }
             commandRunner.run(AddPauseCommand(habitList, habit, from, to, title))
             screen.showMessage(Message.HABIT_PAUSED)
+            screen.refresh()
+        }
+    }
+
+    fun onEditPauseEnd(pause: Pause) {
+        val range = habit.pauses.allowedEndRange(pause)
+        screen.showEditPauseEndDialog(pause, range.start, range.endInclusive) { newEnd ->
+            commandRunner.run(ChangePauseEndCommand(habitList, habit, pause, newEnd))
             screen.refresh()
         }
     }
@@ -147,6 +156,13 @@ class ShowHabitMenuPresenter(
         fun showMessage(m: Message?)
         fun showSendFileScreen(filename: String)
         fun showDeleteConfirmationScreen(callback: OnConfirmedCallback)
+        fun showEditPauseEndDialog(
+            pause: Pause,
+            earliest: LocalDate,
+            latest: LocalDate,
+            onPicked: (newEnd: LocalDate) -> Unit
+        )
+
         fun showPauseDialog(onPicked: (from: LocalDate, to: LocalDate, title: String) -> Unit)
         fun close()
         fun refresh()

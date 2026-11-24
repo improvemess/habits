@@ -31,6 +31,47 @@ class PauseCommandsTest : BaseUnitTest() {
     }
 
     @Test
+    fun testCannotPauseMoreThanAMonthAhead() {
+        val habit = fixtures.createEmptyHabit()
+        assertFailsWith<IllegalArgumentException> {
+            AddPauseCommand(habitList, habit, today.plus(20), today.plus(32)).run()
+        }
+        AddPauseCommand(habitList, habit, today.plus(20), today.plus(31)).run()
+    }
+
+    @Test
+    fun testChangeEndExtendsAndShortens() {
+        val habit = fixtures.createEmptyHabit()
+        val pause = Pause(today.minus(2), today.plus(2), "Trip")
+        habit.pauses.add(pause)
+        ChangePauseEndCommand(habitList, habit, pause, today.plus(6)).run()
+        assertEquals(listOf(Pause(today.minus(2), today.plus(6), "Trip")), habit.pauses.getAll())
+        val extended = habit.pauses.getAll().single()
+        ChangePauseEndCommand(habitList, habit, extended, today).run()
+        assertEquals(today, habit.pauses.getAll().single().end)
+        // the past days stay paused, the days after the new end are released
+        assertEquals(Entry.SKIP, habit.computedEntries.get(today.minus(1)).value)
+        assertEquals(Entry.UNKNOWN, habit.computedEntries.get(today.plus(1)).value)
+    }
+
+    @Test
+    fun testChangeEndCannotGoIntoThePastOrOverlapNextPause() {
+        val habit = fixtures.createEmptyHabit()
+        val first = Pause(today.minus(2), today.plus(2))
+        val second = Pause(today.plus(10), today.plus(12))
+        habit.pauses.add(first)
+        habit.pauses.add(second)
+        assertFailsWith<IllegalArgumentException> {
+            ChangePauseEndCommand(habitList, habit, first, today.minus(1)).run()
+        }
+        assertFailsWith<IllegalArgumentException> {
+            ChangePauseEndCommand(habitList, habit, first, today.plus(10)).run()
+        }
+        ChangePauseEndCommand(habitList, habit, first, today.plus(9)).run()
+        assertEquals(today.plus(9), habit.pauses.getAll().first().end)
+    }
+
+    @Test
     fun testCannotPauseRetroactively() {
         val habit = fixtures.createEmptyHabit()
         assertFailsWith<IllegalArgumentException> {

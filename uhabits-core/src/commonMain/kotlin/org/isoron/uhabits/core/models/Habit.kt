@@ -123,7 +123,7 @@ data class Habit(
         if (pauseList.isEmpty()) return originalEntries
         val result = EntryList()
         originalEntries.getKnown().forEach { result.add(it) }
-        val limit = getToday().plus(31)
+        val limit = getToday().plus(PauseList.MAX_DAYS_AHEAD)
         for (pause in pauseList) {
             var day = pause.start
             while (!day.isNewerThan(pause.end) && !day.isNewerThan(limit)) {
