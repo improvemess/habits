@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.8.0](https://github.com/oliverlorenz/uhabits/compare/v2.7.0...v2.8.0) (2026-11-24)
+
+### Features
+
+* define the plaintext format of shared habit data ([#40](https://github.com/oliverlorenz/uhabits/issues/40)) ([879e15a](https://github.com/oliverlorenz/uhabits/commit/879e15ac3e16e30d0fa26b44a9e97ba30fc9bf8a)), references [#33](https://github.com/oliverlorenz/uhabits/issues/33) [#36](https://github.com/oliverlorenz/uhabits/issues/36) [#39](https://github.com/oliverlorenz/uhabits/issues/39) [#32](https://github.com/oliverlorenz/uhabits/issues/32) [#33](https://github.com/oliverlorenz/uhabits/issues/33)
+
 ## [2.7.0](https://github.com/oliverlorenz/uhabits/compare/v2.6.0...v2.7.0) (2026-11-24)
 
 ### Features
