@@ -41,14 +41,15 @@ class ShareSyncer(
     private val store: ShareStore,
     private val habitList: HabitList,
     private val api: SharingApi,
-    private val tokens: DeviceTokenStore,
-    private val ownerIdentityStore: OwnerIdentityStore,
+    tokens: DeviceTokenStore,
+    ownerIdentityStore: OwnerIdentityStore,
     private val deviceIdentity: DeviceIdentity,
     logging: Logging
 ) {
     enum class Result { DONE, RETRY }
 
     private val logger = logging.getLogger("ShareSyncer")
+    private val sessions = ServerSessions(api, tokens, ownerIdentityStore, deviceIdentity)
 
     suspend fun sync(): Result {
         var result = Result.DONE
@@ -71,15 +72,7 @@ class ShareSyncer(
 
     /** Runs [block] with a device token for [server]; false if it should be retried later. */
     private suspend fun perServer(server: String, block: suspend (String) -> Unit): Boolean = try {
-        val token = tokens.get(server) ?: register(server)
-        try {
-            block(token)
-        } catch (e: SharingApiException) {
-            if (!e.isUnauthorized) throw e
-            logger.info("Device token rejected by $server, registering again")
-            tokens.remove(server)
-            block(register(server))
-        }
+        sessions.withToken(server, block)
         true
     } catch (e: SharingApiException) {
         if (e.isTemporary) {
@@ -89,14 +82,6 @@ class ShareSyncer(
             logger.error("Sharing server $server failed: ${e.status} ${e.message}")
             true
         }
-    }
-
-    private suspend fun register(server: String): String {
-        val identity = ownerIdentityStore.getOrCreate()
-        api.createOwner(server, identity)
-        val token = api.registerDevice(server, identity, deviceIdentity.deviceId)
-        tokens.put(server, token)
-        return token
     }
 
     private suspend fun syncShare(server: String, token: String, share: Share) {

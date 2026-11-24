@@ -25,6 +25,7 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import org.isoron.platform.time.LocalDate
+import org.isoron.platform.time.setToday
 import org.isoron.uhabits.core.BaseUnitTest
 import org.isoron.uhabits.core.io.StandardLogging
 import org.isoron.uhabits.core.models.Entry
@@ -65,30 +66,34 @@ class SharingServerEndToEndTest : BaseUnitTest() {
         val habit = fixtures.createEmptyHabit()
         habitList.add(habit)
         val start = LocalDate(2026, 11, 20)
+        setToday(LocalDate(2026, 11, 24))
         habit.originalEntries.add(Entry(start, Entry.YES_MANUAL))
         habit.originalEntries.add(Entry(start.plus(1), Entry.SKIP))
 
-        // Registering happens inside the syncer; creating the share is the job of the
-        // share flow (#34), so this test does it by hand with the device token.
-        assertEquals(ShareSyncer.Result.DONE, syncer.heartbeat()) // no shares yet: no calls
-        val identity = identityStore.getOrCreate()
-        api.createOwner(url, identity)
-        val token = api.registerDevice(url, identity, DeviceIdentity(devices).deviceId)
-        tokens.put(url, token)
-        val key = ShareKey.generate()
-        val placeholder = ShareCipher.sealText(key, "{}", ShareContext.metadata("pending"))
-        val shareId = post(url, "/api/v1/shares", token, "{\"meta\":\"$placeholder\"}")["shareId"]!!.jsonPrimitive.content
+        val sessions = ServerSessions(api, tokens, identityStore, DeviceIdentity(devices))
+        val service = SharingService(store, api, sessions, { System.currentTimeMillis() })
+        val check = service.checkServer(url, allowInsecure = true)
+        check(check is ServerCheck.Ok) { "server check failed: $check" }
 
-        val share = store.insert(shareId, habit.uuid!!, url, key, start, 0)
-        store.enqueue(OutboxItem(share.id, OutboxItem.Kind.META, null, 1))
-        store.enqueue(OutboxItem(share.id, OutboxItem.Kind.ENTRY, start, 2))
-        store.enqueue(OutboxItem(share.id, OutboxItem.Kind.ENTRY, start.plus(1), 3))
+        val share = service.share(habit, url, SharedHistory.ALL)
+        assertEquals(start, share.historyStart)
         assertEquals(ShareSyncer.Result.DONE, syncer.sync())
         assertEquals(ShareSyncer.Result.DONE, syncer.heartbeat())
 
-        val read = get(url, "/api/v1/shares/$shareId", token)
+        // A friend redeems the invite: the link carries the server and, in the fragment, the key.
+        val link = service.createInvite(share)
+        val code = link.url.substringAfter("/invite/").substringBefore('#')
+        val key = ShareKey.decodeOrNull(link.url.substringAfter("#k=").substringBefore('&'))!!
+        assertEquals(share.key, key)
+        val redeemed = post(url, "/api/v1/invites/$code/redeem", null, "{\"displayName\":\"Anna\"}")
+        val readerToken = redeemed["readerToken"]!!.jsonPrimitive.content
+        assertEquals(listOf("Anna"), service.readers(share).map { it.displayName })
+
+        val shareId = share.shareId
+        val read = get(url, "/api/v1/shares/$shareId", readerToken)
         val meta = SharePayloads.openMetadata(key, shareId, read["meta"]!!.jsonPrimitive.content)
         assertEquals(habit.name, meta.name)
+        assertEquals(start, meta.historyStart)
         val entries = read["entries"]!!.jsonArray.associate {
             val e = it.jsonObject
             val (y, m, d) = e["date"]!!.jsonPrimitive.content.split("-").map { part -> part.toInt() }
@@ -97,22 +102,24 @@ class SharingServerEndToEndTest : BaseUnitTest() {
         }
         assertEquals(mapOf(start to SharedEntry.State.YES, start.plus(1) to SharedEntry.State.SKIP), entries)
 
-        store.markEnded(share.id)
-        store.enqueue(OutboxItem(share.id, OutboxItem.Kind.END, null, 4))
+        service.removeReader(share, redeemed["readerId"]!!.jsonPrimitive.content)
+        assertEquals(emptyList(), service.readers(share))
+
+        service.stopSharing(share)
         assertEquals(ShareSyncer.Result.DONE, syncer.sync())
+        val token = tokens.get(url)!!
         assertEquals("ended", get(url, "/api/v1/shares/$shareId", token)["status"]!!.jsonPrimitive.content)
         db.close()
     }
-
-    private fun post(url: String, path: String, token: String, body: String): JsonObject =
+    private fun post(url: String, path: String, token: String?, body: String): JsonObject =
         call(url, "POST", path, token, body)
 
     private fun get(url: String, path: String, token: String): JsonObject = call(url, "GET", path, token, null)
 
-    private fun call(url: String, method: String, path: String, token: String, body: String?): JsonObject {
+    private fun call(url: String, method: String, path: String, token: String?, body: String?): JsonObject {
         val c = URI(url.trimEnd('/') + path).toURL().openConnection() as HttpURLConnection
         c.requestMethod = method
-        c.setRequestProperty("Authorization", "Bearer $token")
+        if (token != null) c.setRequestProperty("Authorization", "Bearer $token")
         if (body != null) {
             c.doOutput = true
             c.setRequestProperty("Content-Type", "application/json")

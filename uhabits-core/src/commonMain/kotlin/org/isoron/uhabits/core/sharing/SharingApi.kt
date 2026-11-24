@@ -30,6 +30,15 @@ data class EntryUpload(
     val deviceId: String
 )
 
+/** What `/.well-known/uhabits-server` says about a server. */
+data class ServerInfo(val apiVersions: List<String>, val version: String)
+
+/** An invite created by the server; [url] has no key yet (see [SharingService.createInvite]). */
+data class Invite(val code: String, val url: String, val expiresAt: String)
+
+/** A friend who redeemed an invite. */
+data class Reader(val readerId: String, val displayName: String?, val lastSeenAt: String)
+
 /**
  * The calls of the sharing server (uhabits-server, API v1) that the owner's
  * devices need to keep shares up to date. Implemented per platform.
@@ -37,11 +46,17 @@ data class EntryUpload(
  * @throws SharingApiException on any failure.
  */
 interface SharingApi {
+    /** Reads `/.well-known/uhabits-server`; needs no token. */
+    suspend fun discover(serverUrl: String): ServerInfo
+
     /** Creates the owner; succeeds if it already exists with the same secret. */
     suspend fun createOwner(serverUrl: String, identity: OwnerIdentity)
 
     /** Registers this device and returns its device token. */
     suspend fun registerDevice(serverUrl: String, identity: OwnerIdentity, deviceId: String): String
+
+    /** Creates a share with the sealed [meta] and returns its id. */
+    suspend fun createShare(serverUrl: String, deviceToken: String, meta: String): String
 
     suspend fun putMeta(serverUrl: String, deviceToken: String, shareId: String, meta: String)
 
@@ -51,6 +66,12 @@ interface SharingApi {
     suspend fun endShare(serverUrl: String, deviceToken: String, shareId: String)
 
     suspend fun heartbeat(serverUrl: String, deviceToken: String)
+
+    suspend fun createInvite(serverUrl: String, deviceToken: String, shareId: String): Invite
+
+    suspend fun listReaders(serverUrl: String, deviceToken: String, shareId: String): List<Reader>
+
+    suspend fun removeReader(serverUrl: String, deviceToken: String, shareId: String, readerId: String)
 
     companion object {
         const val MAX_ENTRIES_PER_REQUEST = 500

@@ -127,6 +127,44 @@ class HttpSharingApiTest {
     }
 
     @Test
+    fun testDiscover() = runTest {
+        response = "{\"apiVersions\":[\"v1\"],\"version\":\"1.0.1\"}"
+        assertEquals(ServerInfo(listOf("v1"), "1.0.1"), api.discover(url))
+        assertEquals("GET /.well-known/uhabits-server", requests.single().let { "${it.method} ${it.path}" })
+    }
+
+    @Test
+    fun testCreateShareAndInvite() = runTest {
+        status = 201
+        response = "{\"shareId\":\"s9\",\"status\":\"active\",\"revision\":1}"
+        assertEquals("s9", api.createShare(url, "dt", "v1.META"))
+        assertEquals("{\"meta\":\"v1.META\"}", requests.last().body)
+        response = "{\"code\":\"c1\",\"url\":\"https://h/invite/c1\",\"expiresAt\":\"2026-12-01T10:00:00.000Z\"}"
+        assertEquals(Invite("c1", "https://h/invite/c1", "2026-12-01T10:00:00.000Z"), api.createInvite(url, "dt", "s9"))
+        assertEquals("POST /api/v1/shares/s9/invites", requests.last().let { "${it.method} ${it.path}" })
+    }
+
+    @Test
+    fun testReaders() = runTest {
+        response = "{\"readers\":[{\"readerId\":\"r1\",\"displayName\":\"Anna\",\"createdAt\":\"x\"," +
+            "\"lastSeenAt\":\"2026-11-24T07:12:00.000Z\"},{\"readerId\":\"r2\",\"displayName\":null," +
+            "\"createdAt\":\"x\",\"lastSeenAt\":\"2026-11-24T07:12:00.000Z\"}]}"
+        assertEquals(
+            listOf(Reader("r1", "Anna", "2026-11-24T07:12:00.000Z"), Reader("r2", null, "2026-11-24T07:12:00.000Z")),
+            api.listReaders(url, "dt", "s9")
+        )
+        status = 204
+        api.removeReader(url, "dt", "s9", "r1")
+        assertEquals("DELETE /api/v1/shares/s9/readers/r1", requests.last().let { "${it.method} ${it.path}" })
+    }
+
+    @Test
+    fun testUnexpectedResponse() = runTest {
+        response = "<html>proxy error</html>"
+        assertFailsWith<SharingApiException> { api.discover(url) }
+    }
+
+    @Test
     fun testServerBelowSubPath() = runTest {
         api.heartbeat(url + "habits", "dt")
         assertEquals("/habits/api/v1/heartbeat", requests.single().path)
