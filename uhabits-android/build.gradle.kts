@@ -141,6 +141,7 @@ dependencies {
     implementation(libs.documentfile)
     implementation(libs.opencsv)
     implementation(libs.konfetti.xml)
+    implementation(libs.work.runtime.ktx)
     implementation(project(":uhabits-core"))
     ksp(libs.kotlin.inject.compiler)
 
