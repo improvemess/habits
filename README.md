@@ -47,6 +47,16 @@ source.
 
 * **Works offline and respects your privacy.** Loop doesn't require an Internet connection or online account registration. Your confidential data is never sent to anyone. Neither the developers nor any third-parties have access to it.
 
+## Differences from upstream
+
+This is a fork of [iSoron/uhabits](https://github.com/iSoron/uhabits). It adds the following on top of upstream. Changes are listed by pull request; this list is updated with every change.
+
+* **Streak flame instead of score** (#11, port of upstream [#2393](https://github.com/iSoron/uhabits/pull/2393)). New setting *Show streak flame*: the habit card shows the current streak instead of the score ring. The flame stays gray until today's check-in is done. Off by default.
+* **Pausing habits** (#25, #41). Several pause periods per habit, each with an optional title. Paused days count as skipped, so score and streak are preserved. Pauses can only start today or later and at most 31 days ahead, may not overlap, and can be shortened or removed. Pauses are included in the database backup and restored on import.
+* **Home Assistant integration** (#8, #12, #38). Every change to an entry and to a habit (edit, archive, delete) produces an event for a pluggable transport. The Companion App transport broadcasts them to Home Assistant, and Home Assistant can set entries through a token-protected receiver. Disabled by default; the token is not part of backups.
+* **Sharing habits with friends** (#37, #39, #40, #42, #44). End-to-end encrypted (AES-256-GCM) sharing through a sharing server (uhabits-server). Includes the owner and device identity, the plaintext format of shared data (notes and automatic check marks are never shared), an outbox with background sync via WorkManager and a weekly heartbeat. The app now requests the `INTERNET` permission, but nothing is sent until a habit is shared. The sharing UI is still to come.
+* **Build and release** (#9, #10, #17, #18). CI quality gates (ktlint, core and Android tests, lint) on every pull request, debug APKs with a stable signing key, and automatic releases on merges to `dev` via semantic-release with Conventional Commit titles.
+
 ## Installing
 
 The easiest way to install Loop is through the [Google Play Store][playstore] or [F-Droid][fdroid].
