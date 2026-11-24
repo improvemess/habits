@@ -52,6 +52,21 @@ object HabitEventFactory {
         )
     }
 
+    fun snapshot(habit: Habit): HabitSnapshot = HabitSnapshot(
+        habitUuid = habit.uuid!!,
+        name = habit.name,
+        description = habit.description,
+        question = habit.question,
+        category = habit.category,
+        color = habit.color.paletteIndex,
+        frequencyNumerator = habit.frequency.numerator,
+        frequencyDenominator = habit.frequency.denominator,
+        habitType = if (habit.isNumerical) HabitEvent.Type.NUMERICAL else HabitEvent.Type.YES_NO,
+        unit = habit.unit,
+        target = if (habit.isNumerical) habit.targetValue else null,
+        targetType = if (habit.isNumerical) targetTypeOf(habit.targetType) else null
+    )
+
     private fun stateOf(habit: Habit, raw: Int): EntryState = when {
         raw == Entry.UNKNOWN -> EntryState.UNKNOWN
         raw == Entry.SKIP -> EntryState.SKIP

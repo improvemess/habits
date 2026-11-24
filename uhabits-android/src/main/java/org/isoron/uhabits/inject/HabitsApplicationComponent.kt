@@ -36,6 +36,8 @@ import org.isoron.uhabits.core.models.sqlite.SQLiteHabitList
 import org.isoron.uhabits.core.preferences.Preferences
 import org.isoron.uhabits.core.preferences.WidgetPreferences
 import org.isoron.uhabits.core.reminders.ReminderScheduler
+import org.isoron.uhabits.core.sharing.DeviceIdentity
+import org.isoron.uhabits.core.sharing.OwnerIdentityStore
 import org.isoron.uhabits.core.tasks.CoroutineTaskRunner
 import org.isoron.uhabits.core.tasks.TaskRunner
 import org.isoron.uhabits.core.ui.NotificationTray
@@ -51,6 +53,7 @@ import org.isoron.uhabits.io.AndroidLogging
 import org.isoron.uhabits.notifications.AndroidNotificationTray
 import org.isoron.uhabits.preferences.SharedPreferencesStorage
 import org.isoron.uhabits.receivers.ReminderController
+import org.isoron.uhabits.sharing.SharedPreferencesDeviceIdStorage
 import org.isoron.uhabits.utils.DatabaseUtils
 import org.isoron.uhabits.widgets.WidgetUpdater
 import java.io.File
@@ -67,6 +70,7 @@ abstract class HabitsApplicationComponent(
 
     @get:AppContext
     abstract val context: Context
+    abstract val deviceIdentity: DeviceIdentity
     abstract val genericImporter: GenericImporter
     abstract val habitList: HabitList
     abstract val intentFactory: IntentFactory
@@ -75,6 +79,7 @@ abstract class HabitsApplicationComponent(
     abstract val midnightTimer: MidnightTimer
     abstract val modelFactory: ModelFactory
     abstract val notificationTray: NotificationTray
+    abstract val ownerIdentityStore: OwnerIdentityStore
     abstract val pendingIntentFactory: PendingIntentFactory
     abstract val preferences: Preferences
     abstract val reminderScheduler: ReminderScheduler
@@ -123,6 +128,15 @@ abstract class HabitsApplicationComponent(
     @AppScope
     @Provides
     open fun modelFactory(): ModelFactory = SQLModelFactory(providedDb)
+
+    @AppScope
+    @Provides
+    open fun ownerIdentityStore(): OwnerIdentityStore = OwnerIdentityStore(providedDb)
+
+    @AppScope
+    @Provides
+    open fun deviceIdentity(storage: SharedPreferencesDeviceIdStorage): DeviceIdentity =
+        DeviceIdentity(storage)
 
     @AppScope
     @Provides

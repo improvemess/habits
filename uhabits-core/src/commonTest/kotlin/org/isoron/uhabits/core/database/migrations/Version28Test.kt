@@ -31,11 +31,12 @@ class Version28Test : BaseUnitTest() {
     }
 
     @Test
-    fun testMigrateTo28AddsTitleColumnWithEmptyDefault() = dbTest {
+    fun testMigrateTo28CreatesPausesTable() = dbTest {
         migrateTo(28)
         db.run("insert into HabitPauses(habit, startTimestamp, endTimestamp) values (1, 10, 20)")
-        db.query("select title from HabitPauses") { stmt ->
-            assertEquals("", stmt.getText(0))
+        db.query("select startTimestamp, endTimestamp from HabitPauses") { stmt ->
+            assertEquals(10, stmt.getInt(0))
+            assertEquals(20, stmt.getInt(1))
         }
     }
 }

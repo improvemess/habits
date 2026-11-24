@@ -1,0 +1,41 @@
+name: PR Title
+
+# Der PR-Titel wird beim Squash-Merge zum Commit-Titel auf dev und bestimmt
+# damit, ob und wie semantic-release die Version erhöht:
+#   feat: …            -> Minor
+#   fix: / perf: / revert: … -> Patch
+#   feat!: … (oder "BREAKING CHANGE:" im Text) -> Major
+#   chore/ci/docs/refactor/style/test/build -> kein Release
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+concurrency:
+  group: pr-title-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  pull-requests: read
+
+jobs:
+  validate:
+    name: Validate PR title
+    runs-on: ubuntu-latest
+    steps:
+      - uses: amannn/action-semantic-pull-request@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          types: |
+            feat
+            fix
+            perf
+            revert
+            chore
+            ci
+            docs
+            refactor
+            style
+            test
+            build
+          requireScope: false
