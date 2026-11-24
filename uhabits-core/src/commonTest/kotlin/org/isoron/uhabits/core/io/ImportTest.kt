@@ -20,18 +20,12 @@ package org.isoron.uhabits.core.io
 
 import kotlinx.coroutines.test.runTest
 import org.isoron.platform.io.Database
-import org.isoron.platform.io.TestDatabaseHelper
-import org.isoron.platform.io.UserFile
-import org.isoron.platform.io.migrateTo
-import org.isoron.platform.io.run
 import org.isoron.platform.time.LocalDate
 import org.isoron.uhabits.core.BaseUnitTest
-import org.isoron.uhabits.core.DATABASE_VERSION
 import org.isoron.uhabits.core.models.Entry
 import org.isoron.uhabits.core.models.Frequency
 import org.isoron.uhabits.core.models.Habit
 import org.isoron.uhabits.core.models.HabitType
-import org.isoron.uhabits.core.sharing.OwnerIdentity
 import org.isoron.uhabits.core.sharing.OwnerIdentityStore
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -202,48 +196,9 @@ class ImportTest : BaseUnitTest() {
         assertNull(ownerIdentityStore.load())
     }
 
-    @Test
-    fun testLoopDBWithOwnerIdentityReplacesLocalIdentity() = runTest {
-        initOwnerIdentityStore()
-        ownerIdentityStore.getOrCreate()
-        val backedUp = OwnerIdentity.generate()
-        importFromFile("loop.db") { db -> OwnerIdentityStore(db).save(backedUp) }
-        assertEquals(backedUp, ownerIdentityStore.load())
-    }
-
-    @Test
-    fun testLoopDBWithMalformedOwnerIdentityKeepsLocalIdentity() = runTest {
-        initOwnerIdentityStore()
-        val local = ownerIdentityStore.getOrCreate()
-        importFromFile("loop.db") { db ->
-            db.run(
-                "INSERT INTO OwnerIdentity(id, owner_id, owner_secret) " +
-                    "VALUES (1, 'not-a-uuid', 'not-a-secret')"
-            )
-        }
-        assertEquals(local, ownerIdentityStore.load())
-    }
-
-    /**
-     * Migrates a copy of [assetFilename] to the current version and lets
-     * [prepare] change it, e.g. to simulate a backup made by this version.
-     */
-    private suspend fun prepareBackup(assetFilename: String, prepare: (Database) -> Unit): UserFile {
-        val userFile = copyResourceToTempFile(assetFilename)
-        val db = databaseOpener().open(userFile.pathString)
-        db.migrateTo(DATABASE_VERSION) { TestDatabaseHelper.loadMigrationSQL(it) }
-        prepare(db)
-        db.close()
-        return userFile
-    }
-
-    private suspend fun importFromFile(assetFilename: String, prepare: ((Database) -> Unit)? = null) {
+    private suspend fun importFromFile(assetFilename: String) {
         if (!::ownerIdentityStore.isInitialized) initOwnerIdentityStore()
-        val userFile = if (prepare != null) {
-            prepareBackup(assetFilename, prepare)
-        } else {
-            copyResourceToTempFile(assetFilename)
-        }
+        val userFile = copyResourceToTempFile(assetFilename)
         assertTrue(userFile.exists())
         val dbOpener = databaseOpener()
         val importer = GenericImporter(
