@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.8.1](https://github.com/oliverlorenz/uhabits/compare/v2.8.0...v2.8.1) (2026-11-24)
+
+### Bug Fixes
+
+* import habit pauses from backups ([#41](https://github.com/oliverlorenz/uhabits/issues/41)) ([41b5709](https://github.com/oliverlorenz/uhabits/commit/41b57090c79467f148284f115c85c359fccbd4c8))
+
 ## [2.8.0](https://github.com/oliverlorenz/uhabits/compare/v2.7.0...v2.8.0) (2026-11-24)
 
 ### Features
