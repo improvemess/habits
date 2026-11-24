@@ -80,11 +80,16 @@ class CheckmarkButtonView(
     }
 
     fun performToggle() {
-        val v = Entry.nextToggleValue(
-            value = state.value,
-            isSkipEnabled = preferences.isSkipEnabled,
-            areQuestionMarksEnabled = preferences.areQuestionMarksEnabled
-        )
+        // Tapping a paused day ("zz") checks it; unchecking returns it to the paused state
+        val v = if (state.value == SKIP && state.paused) {
+            Entry.YES_MANUAL
+        } else {
+            Entry.nextToggleValue(
+                value = state.value,
+                isSkipEnabled = preferences.isSkipEnabled,
+                areQuestionMarksEnabled = preferences.areQuestionMarksEnabled
+            )
+        }
         state = state.copy(value = v)
         onToggle(v, state.notes)
         performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)

@@ -35,9 +35,9 @@ data class CreateRepetitionCommand(
         val entries = habit.originalEntries
         var newValue = value
         if (value == Entry.NO && habit.pauses.isPaused(date)) {
-            // On a paused day, "not done" is shown as a dash instead of a cross: tapping an
-            // empty paused day checks it, and unchecking it returns it to the paused state.
-            newValue = if (entries.get(date).value == Entry.UNKNOWN) Entry.YES_MANUAL else Entry.UNKNOWN
+            // On a paused day, "not done" means "still paused": the day returns to the paused
+            // state instead of showing a cross.
+            newValue = Entry.UNKNOWN
         }
         entries.add(Entry(date, newValue, notes))
         habit.recompute()
