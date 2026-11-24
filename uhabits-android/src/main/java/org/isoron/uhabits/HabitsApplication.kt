@@ -71,6 +71,10 @@ class HabitsApplication : Application() {
         val prefs = component.preferences
         prefs.lastAppVersion = BuildConfig.VERSION_CODE
 
+        // Identities for sharing habits with friends; created once, on first start.
+        component.ownerIdentityStore.getOrCreate()
+        component.deviceIdentity.deviceId
+
         setToday(computeToday(component.preferences.midnightDelayHours, 0))
         setFirstWeekday(prefs.firstWeekday)
 
