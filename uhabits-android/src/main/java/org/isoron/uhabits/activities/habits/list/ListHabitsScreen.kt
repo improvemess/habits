@@ -53,6 +53,7 @@ import org.isoron.uhabits.core.models.Habit
 import org.isoron.uhabits.core.models.HabitList
 import org.isoron.uhabits.core.models.PaletteColor
 import org.isoron.uhabits.core.preferences.Preferences
+import org.isoron.uhabits.core.sharing.ShareStore
 import org.isoron.uhabits.core.tasks.TaskRunner
 import org.isoron.uhabits.core.ui.ThemeSwitcher
 import org.isoron.uhabits.core.ui.callbacks.CheckMarkDialogCallback
@@ -112,7 +113,8 @@ class ListHabitsScreen(
     private val colorPickerFactory: ColorPickerDialogFactory,
     private val behavior: Lazy<ListHabitsBehavior>,
     private val preferences: Preferences,
-    private val rootView: Lazy<ListHabitsRootView>
+    private val rootView: Lazy<ListHabitsRootView>,
+    private val shareStore: ShareStore
 ) : CommandRunner.Listener,
     MidnightTimer.MidnightListener,
     ListHabitsBehavior.Screen,
@@ -140,7 +142,8 @@ class ListHabitsScreen(
                 secondaryOrder = adapter.secondaryOrder,
                 checkmarkCount = MAX_CHECKMARK_COUNT,
                 theme = themeSwitcher.currentTheme!!,
-                showStreak = preferences.isStreakFlameEnabled
+                showStreak = preferences.isStreakFlameEnabled,
+                sharedHabits = shareStore.sharedHabitUuids()
             )
         )
     }

@@ -27,6 +27,7 @@ import org.isoron.uhabits.core.models.Frequency
 import org.isoron.uhabits.core.models.Habit
 import org.isoron.uhabits.core.models.HabitType
 import org.isoron.uhabits.core.sharing.OwnerIdentityStore
+import org.isoron.uhabits.core.sharing.ShareStore
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -215,7 +216,8 @@ class ImportTest : BaseUnitTest() {
                 commandRunner,
                 StandardLogging(),
                 fileOpener,
-                ownerIdentityStore
+                ownerIdentityStore,
+                ShareStore(localDb)
             ),
             RewireDBImporter(habitList, modelFactory, dbOpener),
             TickmateDBImporter(habitList, modelFactory, dbOpener),

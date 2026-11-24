@@ -47,7 +47,9 @@ object ListHabitsPresenter {
         secondaryOrder: Order,
         checkmarkCount: Int,
         theme: Theme,
-        showStreak: Boolean = false
+        showStreak: Boolean = false,
+        /** UUIDs of habits shared with friends; their cards get a marker. */
+        sharedHabits: Set<String> = emptySet()
     ): ListHabitsState {
         val view = allHabits.getFiltered(filter)
         view.primaryOrder = primaryOrder
@@ -88,7 +90,8 @@ object ListHabitsPresenter {
                     },
                     category = habit.category,
                     streak = streak,
-                    streakDoneToday = streakDoneToday
+                    streakDoneToday = streakDoneToday,
+                    isShared = habit.uuid in sharedHabits
                 )
             )
         }
@@ -120,7 +123,8 @@ data class HabitCardState(
     val paused: List<Boolean> = emptyList(),
     val category: String,
     val streak: Int = 0,
-    val streakDoneToday: Boolean = false
+    val streakDoneToday: Boolean = false,
+    val isShared: Boolean = false
 )
 
 /**

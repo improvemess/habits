@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Debug builds only: allow plain http, e.g. for a sharing server on the local network
+  (SharingServers.normalize only accepts http in debug builds, too). Release builds keep
+  Android's default, which blocks cleartext traffic.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application android:usesCleartextTraffic="true" />
+</manifest>

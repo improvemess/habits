@@ -36,6 +36,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import me.tatarka.inject.annotations.Inject
+import org.isoron.platform.gui.FontAwesome
 import org.isoron.platform.gui.toInt
 import org.isoron.platform.time.LocalDate
 import org.isoron.platform.time.getToday
@@ -44,6 +45,7 @@ import org.isoron.uhabits.activities.common.views.RingView
 import org.isoron.uhabits.activities.common.views.StreakFlameView
 import org.isoron.uhabits.core.ui.screens.habits.list.HabitCardState
 import org.isoron.uhabits.inject.ActivityContext
+import org.isoron.uhabits.utils.InterfaceUtils
 import org.isoron.uhabits.utils.currentTheme
 import org.isoron.uhabits.utils.dp
 import org.isoron.uhabits.utils.sres
@@ -66,6 +68,7 @@ class HabitCardView(
     private var numberPanel: NumberPanelView
     private var innerFrame: LinearLayout
     private var label: TextView
+    private var sharedIcon: TextView
     private var scoreRing: RingView
     private var streakFlame: StreakFlameView
 
@@ -81,6 +84,10 @@ class HabitCardView(
         label.apply {
             text = r.name
             setTextColor(c)
+        }
+        sharedIcon.apply {
+            setTextColor(c)
+            visibility = if (r.isShared) View.VISIBLE else View.GONE
         }
         scoreRing.apply {
             setPercentage(r.score.toFloat())
@@ -161,6 +168,19 @@ class HabitCardView(
             }
         }
 
+        sharedIcon = TextView(context).apply {
+            text = FontAwesome.USERS
+            typeface = InterfaceUtils.getFontAwesome(context)
+            textSize = 12f
+            contentDescription = resources.getString(R.string.shared_with_friends)
+            val margin = dp(4f).toInt()
+            layoutParams = LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT).apply {
+                setMargins(margin, 0, margin, 0)
+                gravity = Gravity.CENTER
+            }
+            visibility = GONE
+        }
+
         checkmarkPanel = checkmarkPanelFactory.create().apply {
             onToggle = { date, value, notes ->
                 triggerRipple(date)
@@ -212,6 +232,7 @@ class HabitCardView(
             addView(scoreRing)
             addView(streakFlame)
             addView(label)
+            addView(sharedIcon)
             addView(checkmarkPanel)
             addView(numberPanel)
 

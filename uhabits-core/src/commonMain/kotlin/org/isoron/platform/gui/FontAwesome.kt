@@ -24,5 +24,6 @@ class FontAwesome {
         const val CHECK = "\uf00c"
         const val TIMES = "\uf00d"
         const val FIRE = "\uf06d"
+        const val USERS = "\uf0c0"
     }
 }

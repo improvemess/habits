@@ -115,6 +115,14 @@
         </activity>
 
         <activity
+            android:name=".sharing.ShareHabitActivity"
+            android:label="@string/share_with_friends">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.habits.show.ShowHabitActivity" />
+        </activity>
+
+        <activity
             android:name=".activities.about.AboutActivity"
             android:label="@string/about">
             <meta-data

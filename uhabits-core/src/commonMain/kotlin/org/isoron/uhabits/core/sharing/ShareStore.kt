@@ -98,6 +98,9 @@ class ShareStore(private val db: Database) {
 
     fun findAll(): List<Share> = queryShares("") {}
 
+    /** UUIDs of habits with at least one share that has not been ended. */
+    fun sharedHabitUuids(): Set<String> = findAll().filter { !it.ended }.map { it.habitUuid }.toSet()
+
     /** Servers with at least one share that has not been ended. */
     fun activeServers(): List<String> =
         findAll().filter { !it.ended }.map { it.serverUrl }.distinct()

@@ -24,10 +24,13 @@ import org.isoron.platform.io.TestDatabaseHelper
 import org.isoron.platform.io.UserFile
 import org.isoron.platform.io.migrateTo
 import org.isoron.platform.io.run
+import org.isoron.platform.time.LocalDate
 import org.isoron.uhabits.core.BaseUnitTest
 import org.isoron.uhabits.core.DATABASE_VERSION
 import org.isoron.uhabits.core.sharing.OwnerIdentity
 import org.isoron.uhabits.core.sharing.OwnerIdentityStore
+import org.isoron.uhabits.core.sharing.ShareKey
+import org.isoron.uhabits.core.sharing.ShareStore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -39,10 +42,17 @@ import kotlin.test.assertEquals
 class LoopDBImporterOwnerIdentityTest : BaseUnitTest() {
 
     private lateinit var ownerIdentityStore: OwnerIdentityStore
+    private lateinit var shareStore: ShareStore
+
+    private suspend fun initStores() {
+        val db = buildMemoryDatabase()
+        ownerIdentityStore = OwnerIdentityStore(db)
+        shareStore = ShareStore(db)
+    }
 
     @Test
     fun testBackupWithOwnerIdentityReplacesLocalIdentity() = runTest {
-        ownerIdentityStore = OwnerIdentityStore(buildMemoryDatabase())
+        initStores()
         ownerIdentityStore.getOrCreate()
         val backedUp = OwnerIdentity.generate()
         importBackup { db -> OwnerIdentityStore(db).save(backedUp) }
@@ -51,7 +61,7 @@ class LoopDBImporterOwnerIdentityTest : BaseUnitTest() {
 
     @Test
     fun testBackupWithMalformedOwnerIdentityKeepsLocalIdentity() = runTest {
-        ownerIdentityStore = OwnerIdentityStore(buildMemoryDatabase())
+        initStores()
         val local = ownerIdentityStore.getOrCreate()
         importBackup { db ->
             db.run(
@@ -59,6 +69,24 @@ class LoopDBImporterOwnerIdentityTest : BaseUnitTest() {
                     "VALUES (1, 'not-a-uuid', 'not-a-secret')"
             )
         }
+        assertEquals(local, ownerIdentityStore.load())
+    }
+
+    @Test
+    fun testBackupWithOtherIdentityIsIgnoredWhileSharesAreActive() = runTest {
+        initStores()
+        val local = ownerIdentityStore.getOrCreate()
+        shareStore.insert("s1", "h1", "https://a", ShareKey.generate(), LocalDate(2026, 11, 24), 0)
+        importBackup { db -> OwnerIdentityStore(db).save(OwnerIdentity.generate()) }
+        assertEquals(local, ownerIdentityStore.load())
+    }
+
+    @Test
+    fun testBackupWithSameIdentityIsFineWhileSharesAreActive() = runTest {
+        initStores()
+        val local = ownerIdentityStore.getOrCreate()
+        shareStore.insert("s1", "h1", "https://a", ShareKey.generate(), LocalDate(2026, 11, 24), 0)
+        importBackup { db -> OwnerIdentityStore(db).save(local) }
         assertEquals(local, ownerIdentityStore.load())
     }
 
@@ -77,7 +105,8 @@ class LoopDBImporterOwnerIdentityTest : BaseUnitTest() {
             commandRunner,
             StandardLogging(),
             fileOpener,
-            ownerIdentityStore
+            ownerIdentityStore,
+            shareStore
         )
         importer.importHabitsFromFile(userFile)
         userFile.delete()

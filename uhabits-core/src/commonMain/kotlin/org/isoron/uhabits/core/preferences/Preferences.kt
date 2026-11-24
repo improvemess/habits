@@ -24,6 +24,7 @@ import org.isoron.platform.time.getFirstWeekdayNumberAccordingToLocale
 import org.isoron.platform.utils.StringUtils.Companion.joinLongs
 import org.isoron.platform.utils.StringUtils.Companion.splitLongs
 import org.isoron.uhabits.core.models.HabitList
+import org.isoron.uhabits.core.sharing.SharingServers
 import org.isoron.uhabits.core.ui.ThemeSwitcher
 import kotlin.math.max
 import kotlin.math.min
@@ -188,6 +189,7 @@ open class Preferences(private val storage: Storage) {
 
     companion object {
         const val MIDNIGHT_DELAY_HOURS = 3
+        const val SHARING_SERVER_KEY = "pref_sharing_server"
     }
 
     open fun updateLastHint(number: Int, date: LocalDate) {
@@ -216,6 +218,13 @@ open class Preferences(private val storage: Storage) {
         set(value) {
             storage.putBoolean("pref_unknown_enabled", value)
             for (l in listeners) l.onQuestionMarksChanged()
+        }
+
+    /** Server for new shares; existing shares keep theirs (see [org.isoron.uhabits.core.sharing.Share]). */
+    open var sharingServerUrl: String
+        get() = storage.getString(SHARING_SERVER_KEY, SharingServers.DEFAULT).ifBlank { SharingServers.DEFAULT }
+        set(url) {
+            storage.putString(SHARING_SERVER_KEY, url)
         }
 
     open var isStreakFlameEnabled: Boolean

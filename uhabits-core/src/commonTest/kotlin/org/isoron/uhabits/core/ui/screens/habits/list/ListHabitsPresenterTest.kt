@@ -190,6 +190,24 @@ class ListHabitsPresenterTest : BaseUnitTest() {
     }
 
     @Test
+    fun testMarksSharedHabits() {
+        val shared = fixtures.createEmptyHabit()
+        habitList.add(shared)
+        val other = fixtures.createEmptyHabit()
+        habitList.add(other)
+        val state = ListHabitsPresenter.buildState(
+            allHabits = habitList,
+            filter = null,
+            primaryOrder = Order.BY_POSITION,
+            secondaryOrder = Order.BY_NAME_ASC,
+            checkmarkCount = checkmarkCount,
+            theme = theme,
+            sharedHabits = setOf(shared.uuid!!)
+        )
+        assertEquals(mapOf(shared.id!! to true, other.id!! to false), state.items.associate { it.id to it.isShared })
+    }
+
+    @Test
     fun testStreakCountsOnlyPerformedDays() {
         // 3 times in 4 days: days between repetitions are not required (YES_AUTO)
         val habit = fixtures.createEmptyHabit()

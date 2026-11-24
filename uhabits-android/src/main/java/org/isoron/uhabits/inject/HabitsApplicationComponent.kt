@@ -41,9 +41,11 @@ import org.isoron.uhabits.core.sharing.DeviceTokenStore
 import org.isoron.uhabits.core.sharing.FriendsTransport
 import org.isoron.uhabits.core.sharing.HttpSharingApi
 import org.isoron.uhabits.core.sharing.OwnerIdentityStore
+import org.isoron.uhabits.core.sharing.ServerSessions
 import org.isoron.uhabits.core.sharing.ShareStore
 import org.isoron.uhabits.core.sharing.ShareSyncer
 import org.isoron.uhabits.core.sharing.SharingApi
+import org.isoron.uhabits.core.sharing.SharingService
 import org.isoron.uhabits.core.tasks.CoroutineTaskRunner
 import org.isoron.uhabits.core.tasks.TaskRunner
 import org.isoron.uhabits.core.ui.NotificationTray
@@ -95,6 +97,7 @@ abstract class HabitsApplicationComponent(
     abstract val reminderController: ReminderController
     abstract val shareStore: ShareStore
     abstract val shareSyncer: ShareSyncer
+    abstract val sharingService: SharingService
     abstract val taskRunner: TaskRunner
     abstract val widgetPreferences: WidgetPreferences
     abstract val widgetUpdater: WidgetUpdater
@@ -175,6 +178,21 @@ abstract class HabitsApplicationComponent(
         deviceIdentity,
         logging
     )
+
+    @AppScope
+    @Provides
+    open fun sharingService(
+        shareStore: ShareStore,
+        sharingApi: SharingApi,
+        deviceTokenStore: DeviceTokenStore,
+        ownerIdentityStore: OwnerIdentityStore,
+        deviceIdentity: DeviceIdentity
+    ): SharingService = SharingService(
+        shareStore,
+        sharingApi,
+        ServerSessions(sharingApi, deviceTokenStore, ownerIdentityStore, deviceIdentity),
+        { System.currentTimeMillis() }
+    ) { ShareSyncWork.scheduleSync(appContext) }
 
     @AppScope
     @Provides
