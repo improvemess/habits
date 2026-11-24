@@ -34,6 +34,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.isoron.platform.gui.toInt
 import org.isoron.platform.time.LocalDate
+import org.isoron.platform.time.getToday
 import org.isoron.uhabits.AndroidDirFinder
 import org.isoron.uhabits.HabitsApplication
 import org.isoron.uhabits.R
@@ -118,9 +119,21 @@ class ShowHabitActivity : AppCompatActivity(), CommandRunner.Listener {
 
         view.setListener(presenter)
         view.setOnRemovePauseListener { pause ->
-            MaterialAlertDialogBuilder(this)
+            // A pause that has not started yet only needs a plain confirmation. For a running
+            // pause, also explain that the days up to today stay paused.
+            val message = if (pause.start.isNewerThan(getToday())) {
+                R.string.pause_remove_message_future
+            } else {
+                R.string.pause_remove_message
+            }
+            val dialogTheme = if (themeSwitcher.currentTheme is DarkTheme) {
+                R.style.PauseDialogDark
+            } else {
+                0
+            }
+            MaterialAlertDialogBuilder(this, dialogTheme)
                 .setTitle(R.string.pause_remove_title)
-                .setMessage(R.string.pause_remove_message)
+                .setMessage(message)
                 .setPositiveButton(R.string.pause_remove_confirm) { _, _ ->
                     menuPresenter.onRemovePause(pause)
                 }
@@ -255,6 +268,9 @@ class ShowHabitActivity : AppCompatActivity(), CommandRunner.Listener {
 
                 ShowHabitMenuPresenter.Message.HABIT_PAUSED ->
                     showMessage(resources.getString(R.string.toast_habit_paused))
+
+                ShowHabitMenuPresenter.Message.PAUSE_OVERLAPS ->
+                    showMessage(resources.getString(R.string.toast_pause_overlaps))
 
                 ShowHabitMenuPresenter.Message.PAUSE_REMOVED ->
                     showMessage(resources.getString(R.string.toast_pause_removed))

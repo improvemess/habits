@@ -434,4 +434,10 @@
         <item name="colorOnPrimary">#121212</item>
     </style>
 
+    <!-- Same problem for dialog buttons: they use colorPrimary, which is near black in dark themes. -->
+    <style name="PauseDialogDark" parent="@style/ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="colorPrimary">#E0E0E0</item>
+        <item name="colorOnPrimary">#121212</item>
+    </style>
+
 </resources>

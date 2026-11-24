@@ -42,6 +42,21 @@ class PauseCommandsTest : BaseUnitTest() {
     }
 
     @Test
+    fun testOverlappingPausesAreRejected() {
+        val habit = fixtures.createEmptyHabit()
+        AddPauseCommand(habitList, habit, today.plus(5), today.plus(10)).run()
+        // overlaps at the start, at the end, inside and around the existing pause
+        for ((from, to) in listOf(3 to 5, 10 to 12, 6 to 8, 2 to 12)) {
+            assertFailsWith<IllegalArgumentException> {
+                AddPauseCommand(habitList, habit, today.plus(from), today.plus(to)).run()
+            }
+        }
+        // directly adjacent pauses are fine
+        AddPauseCommand(habitList, habit, today.plus(11), today.plus(12)).run()
+        assertEquals(2, habit.pauses.getAll().size)
+    }
+
+    @Test
     fun testRemoveRunningPauseKeepsDaysUpToToday() {
         val habit = fixtures.createEmptyHabit()
         val pause = Pause(today.minus(2), today.plus(2))

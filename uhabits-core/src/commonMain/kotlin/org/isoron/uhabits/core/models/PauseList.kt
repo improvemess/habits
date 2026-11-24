@@ -49,4 +49,8 @@ open class PauseList {
     fun isEmpty(): Boolean = getAll().isEmpty()
 
     fun isPaused(date: LocalDate): Boolean = getAll().any { it.contains(date) }
+
+    /** Returns true if any existing pause shares at least one day with [from]..[to]. */
+    fun overlaps(from: LocalDate, to: LocalDate): Boolean =
+        getAll().any { !it.start.isNewerThan(to) && !it.end.isOlderThan(from) }
 }

@@ -69,6 +69,10 @@ class ShowHabitMenuPresenter(
 
     fun onPauseHabit() {
         screen.showPauseDialog { from, to ->
+            if (habit.pauses.overlaps(from, to)) {
+                screen.showMessage(Message.PAUSE_OVERLAPS)
+                return@showPauseDialog
+            }
             commandRunner.run(AddPauseCommand(habitList, habit, from, to))
             screen.showMessage(Message.HABIT_PAUSED)
             screen.refresh()
@@ -134,7 +138,8 @@ class ShowHabitMenuPresenter(
         HABIT_ARCHIVED,
         HABIT_UNARCHIVED,
         HABIT_PAUSED,
-        PAUSE_REMOVED
+        PAUSE_REMOVED,
+        PAUSE_OVERLAPS
     }
 
     interface Screen {

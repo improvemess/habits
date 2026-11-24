@@ -50,6 +50,8 @@
     <string name="pause_period">Pausiert: %1$s – %2$s</string>
     <string name="pause_remove_title">Pause entfernen?</string>
     <string name="pause_remove_message">Die Tage bis einschließlich heute bleiben pausiert. Nur die Tage nach heute werden wieder aktiv.</string>
+    <string name="pause_remove_message_future">Möchtest du diese Pause wirklich entfernen?</string>
+    <string name="toast_pause_overlaps">Pausen dürfen sich nicht überlappen</string>
     <string name="pause_remove_confirm">Entfernen</string>
     <string name="pause_remove_description">Pause entfernen</string>
     <string name="overview">Übersicht</string>
