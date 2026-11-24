@@ -19,18 +19,29 @@
 package org.isoron.uhabits.core.io
 
 import kotlinx.coroutines.test.runTest
+import org.isoron.platform.io.Database
 import org.isoron.platform.time.LocalDate
 import org.isoron.uhabits.core.BaseUnitTest
 import org.isoron.uhabits.core.models.Entry
 import org.isoron.uhabits.core.models.Frequency
 import org.isoron.uhabits.core.models.Habit
 import org.isoron.uhabits.core.models.HabitType
+import org.isoron.uhabits.core.sharing.OwnerIdentityStore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class ImportTest : BaseUnitTest() {
+
+    private lateinit var localDb: Database
+    private lateinit var ownerIdentityStore: OwnerIdentityStore
+
+    private suspend fun initOwnerIdentityStore() {
+        localDb = buildMemoryDatabase()
+        ownerIdentityStore = OwnerIdentityStore(localDb)
+    }
 
     @Test
     fun testHabitBullCSV() = runTest {
@@ -170,7 +181,23 @@ class ImportTest : BaseUnitTest() {
         return h.originalEntries.get(LocalDate(year, month, day)).notes == notes
     }
 
+    @Test
+    fun testLoopDBWithoutOwnerIdentityKeepsLocalIdentity() = runTest {
+        initOwnerIdentityStore()
+        val local = ownerIdentityStore.getOrCreate()
+        importFromFile("loop.db")
+        assertEquals(local, ownerIdentityStore.load())
+    }
+
+    @Test
+    fun testLoopDBWithoutOwnerIdentityDoesNotCreateOne() = runTest {
+        initOwnerIdentityStore()
+        importFromFile("loop.db")
+        assertNull(ownerIdentityStore.load())
+    }
+
     private suspend fun importFromFile(assetFilename: String) {
+        if (!::ownerIdentityStore.isInitialized) initOwnerIdentityStore()
         val userFile = copyResourceToTempFile(assetFilename)
         assertTrue(userFile.exists())
         val dbOpener = databaseOpener()
@@ -181,7 +208,8 @@ class ImportTest : BaseUnitTest() {
                 dbOpener,
                 commandRunner,
                 StandardLogging(),
-                fileOpener
+                fileOpener,
+                ownerIdentityStore
             ),
             RewireDBImporter(habitList, modelFactory, dbOpener),
             TickmateDBImporter(habitList, modelFactory, dbOpener),
