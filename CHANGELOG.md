@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.7.0](https://github.com/oliverlorenz/uhabits/compare/v2.6.0...v2.7.0) (2026-11-24)
+
+### Features
+
+* Gewohnheiten pausieren: Zeiträume, nur ab heute ([#22](https://github.com/oliverlorenz/uhabits/issues/22)) ([#25](https://github.com/oliverlorenz/uhabits/issues/25)) ([94705ee](https://github.com/oliverlorenz/uhabits/commit/94705eeccca8439f2bd705a636a92a2ecbf365be))
+
 ## [2.6.0](https://github.com/oliverlorenz/uhabits/compare/v2.5.0...v2.6.0) (2026-11-24)
 
 ### Features
