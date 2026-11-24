@@ -21,6 +21,15 @@ Bei **jeder** Änderung am Datenmodell oder an Daten, die Nutzer:innen speichern
 - Nie direkt auf `dev` committen: Feature-Branch von `dev`, aussagekräftige Commits, Pull Request im Fork.
 - `gh pr create` immer mit `--repo oliverlorenz/uhabits --base dev`.
 
+## Immer beachten: README mit Unterschieden zum Fork-Ursprung
+
+Bei **jeder** Änderung (Feature, Fix, Änderung am Verhalten, an Berechtigungen, Abhängigkeiten oder am Build/Release) ergänzen wir im selben PR den Abschnitt „Differences from upstream“ in `README.md`:
+
+- Neuer Punkt oder bestehenden Punkt erweitern, mit PR-Nummer, kurz und aus Nutzersicht (Englisch, wie die README).
+- Wichtige Eigenheiten nennen: Standardwerte (z. B. „off by default“), neue Berechtigungen, was bewusst nicht enthalten ist.
+- Reine interne Refactorings ohne sichtbare Wirkung brauchen keinen Eintrag.
+- In der PR-Beschreibung festhalten: „README: ergänzt / n. a.“.
+
 ## Qualitätssicherung vor jedem Push
 
 - `./gradlew ktlintCheck` (alle Module) und die betroffenen Tests ausführen; CI „Quality Gates" schlägt bei ktlint-Verstößen fehl (z. B. Import-Reihenfolge).
