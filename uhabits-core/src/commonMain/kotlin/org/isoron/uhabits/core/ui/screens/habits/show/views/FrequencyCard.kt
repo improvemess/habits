@@ -29,7 +29,9 @@ data class FrequencyCardState(
     val firstWeekday: DayOfWeek,
     val frequency: HashMap<LocalDate, Array<Int>>,
     val theme: Theme,
-    val isNumerical: Boolean
+    val isNumerical: Boolean,
+    /** Counts relapses (crosses) of a habit the user wants to quit instead of completed days. */
+    val isNegative: Boolean = false
 )
 
 class FrequencyCardPresenter {
@@ -38,14 +40,19 @@ class FrequencyCardPresenter {
             habit: Habit,
             firstWeekday: DayOfWeek,
             theme: Theme
-        ) = FrequencyCardState(
-            color = habit.color,
-            isNumerical = habit.isNumerical,
-            frequency = habit.originalEntries.computeWeekdayFrequency(
-                isNumerical = habit.isNumerical
-            ),
-            firstWeekday = firstWeekday,
-            theme = theme
-        )
+        ): FrequencyCardState {
+            val relapses = habit.isNegative && !habit.isNumerical
+            return FrequencyCardState(
+                color = habit.color,
+                isNumerical = habit.isNumerical,
+                isNegative = relapses,
+                frequency = habit.originalEntries.computeWeekdayFrequency(
+                    isNumerical = habit.isNumerical,
+                    countRelapses = relapses
+                ),
+                firstWeekday = firstWeekday,
+                theme = theme
+            )
+        }
     }
 }

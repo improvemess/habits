@@ -26,8 +26,10 @@ import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
+import org.isoron.platform.gui.toInt
 import org.isoron.uhabits.R
 import org.isoron.uhabits.activities.habits.list.views.toShortString
+import org.isoron.uhabits.core.ui.views.FAILED_RED
 import org.isoron.uhabits.utils.InterfaceUtils.dpToPixels
 import org.isoron.uhabits.utils.InterfaceUtils.getDimension
 import org.isoron.uhabits.utils.StyledResources
@@ -46,6 +48,7 @@ class TargetChart : View {
     private var values = emptyList<Double>()
     private var labels = emptyList<String>()
     private var targets = emptyList<Double>()
+    private var exceeded = emptyList<Boolean>()
     private var maxLabelSize = 0f
     private var tinyTextSize = 0f
 
@@ -130,7 +133,7 @@ class TargetChart : View {
             completedWidth = 2 * round
         }
         val remainingWidth = barRect.width() - completedWidth
-        paint!!.color = primaryColor
+        paint!!.color = if (exceeded.getOrElse(row) { false }) FAILED_RED.toInt() else primaryColor
         barRect[barRect.left, barRect.top, barRect.left + completedWidth] = barRect.bottom
         canvas.drawRoundRect(barRect, round, round, paint!!)
 
@@ -183,6 +186,11 @@ class TargetChart : View {
     fun setLabels(labels: List<String>) {
         this.labels = labels
         requestLayout()
+    }
+
+    fun setExceeded(exceeded: List<Boolean>) {
+        this.exceeded = exceeded
+        postInvalidate()
     }
 
     fun setTargets(targets: List<Double>) {

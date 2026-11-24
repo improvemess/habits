@@ -49,8 +49,11 @@ data class CheckmarkButtonState(
     val color: Int,
     val value: Int,
     val notes: String,
-    val paused: Boolean = false
+    val paused: Boolean = false,
+    val isNegative: Boolean = false
 )
+
+internal val NEGATIVE_RED = Color.rgb(0xD3, 0x2F, 0x2F)
 
 class CheckmarkButtonView(
     context: Context,
@@ -144,7 +147,9 @@ class CheckmarkButtonView(
             paint.color = when (state.value) {
                 YES_MANUAL, YES_AUTO, SKIP -> state.color
                 NO -> {
-                    if (preferences.areQuestionMarksEnabled) {
+                    if (state.isNegative) {
+                        NEGATIVE_RED
+                    } else if (preferences.areQuestionMarksEnabled) {
                         mediumContrastColor
                     } else {
                         lowContrastColor

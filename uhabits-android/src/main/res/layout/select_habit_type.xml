@@ -32,7 +32,46 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/buttonBuild"
+        style="@style/SelectHabitTypeButton">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/SelectHabitTypeButtonTitle"
+            android:text="@string/goal_build" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/SelectHabitTypeButtonBody"
+            android:text="@string/goal_build_example" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/buttonQuit"
+        style="@style/SelectHabitTypeButton">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/SelectHabitTypeButtonTitle"
+            android:text="@string/goal_quit" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/SelectHabitTypeButtonBody"
+            android:text="@string/goal_quit_example" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:id="@+id/buttonYesNo"
+        android:visibility="gone"
         style="@style/SelectHabitTypeButton">
 
         <TextView
@@ -44,6 +83,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:id="@+id/yesNoExample"
             style="@style/SelectHabitTypeButtonBody"
             android:text="@string/yes_or_no_example" />
     </LinearLayout>
@@ -52,6 +92,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/buttonMeasurable"
+        android:visibility="gone"
         style="@style/SelectHabitTypeButton">
 
         <TextView
@@ -63,6 +104,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:id="@+id/measurableExample"
             style="@style/SelectHabitTypeButtonBody"
             android:text="@string/measurable_example" />
     </LinearLayout>
@@ -86,4 +128,4 @@
 <!--            android:text="@string/subjective_example" />-->
 <!--    </LinearLayout>-->
 
-</LinearLayout>
+</LinearLayout>

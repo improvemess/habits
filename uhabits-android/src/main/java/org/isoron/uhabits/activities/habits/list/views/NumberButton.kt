@@ -45,7 +45,8 @@ data class NumberButtonState(
     val value: Double,
     val completed: Boolean,
     val units: String,
-    val notes: String
+    val notes: String,
+    val isNegative: Boolean = false
 )
 
 private val BOLD_TYPEFACE = Typeface.create("sans-serif-condensed", Typeface.BOLD)
@@ -145,6 +146,7 @@ class NumberButtonView(
 
         fun draw(canvas: Canvas) {
             val activeColor = when {
+                state.isNegative && !state.completed && state.value > 0.0 -> NEGATIVE_RED
                 state.completed -> state.color
                 state.value < 0.0 -> lowContrast
                 else -> mediumContrast
@@ -203,6 +205,22 @@ class NumberButtonView(
                 }
                 rect.offset(0f, 1.3f * em)
                 canvas.drawText(trimmedUnits, rect.centerX(), rect.centerY(), pUnit)
+            }
+
+            if (state.isNegative && !state.completed && state.value > 0.0) {
+                // Small cross at the upper right of the exceeded number
+                val crossPaint = TextPaint(pNumber).apply {
+                    this.typeface = getFontAwesome()
+                    this.textSize = 0.75f * dim(R.dimen.smallerTextSize)
+                    textAlign = Paint.Align.LEFT
+                }
+                val numberWidth = pNumber.measureText(label)
+                canvas.drawText(
+                    resources.getString(R.string.fa_times),
+                    width / 2f + numberWidth / 2f + 0.15f * em,
+                    height / 2f - 0.55f * em,
+                    crossPaint
+                )
             }
 
             drawNotesIndicator(

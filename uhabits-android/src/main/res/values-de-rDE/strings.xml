@@ -45,6 +45,24 @@
         <item quantity="other">Gewohnheiten wiederhergestellt</item>
     </plurals>
     <string name="pause">Pausieren</string>
+    <string name="quit_habit">Gewohnheit abgewöhnen</string>
+    <string name="quit_yes_or_no_example">z.B. Bist du heute rauchfrei geblieben? Hast du auf Süßigkeiten verzichtet? Hast du Social Media gemieden?</string>
+    <string name="quit_measurable_example">z.B. Wie viele Zigaretten hast du heute geraucht? Wie viele Minuten warst du auf Social Media?</string>
+    <string name="quit_short_example">z.B. Rauchen</string>
+    <string name="quit_question_boolean">z.B. Bist du heute rauchfrei geblieben?</string>
+    <string name="quit_measurable_short_example">z.B. Zigaretten</string>
+    <string name="quit_measurable_question_example">z.B. Wie viele Zigaretten hast du heute geraucht?</string>
+    <string name="quit_units_example">z.B. Zigaretten</string>
+    <string name="quit_target">Limit</string>
+    <string name="quit_period">Zeitraum</string>
+    <string name="quit_per_day">Pro Tag</string>
+    <string name="quit_per_week">Pro Woche</string>
+    <string name="quit_per_month">Pro Monat</string>
+    <string name="quit_target_example">z.B. 3</string>
+    <string name="goal_build">Ich will mir etwas aneignen</string>
+    <string name="goal_build_example">z.B. Sport, Lesen, Meditieren</string>
+    <string name="goal_quit">Ich will mir etwas abgewöhnen</string>
+    <string name="goal_quit_example">z.B. Rauchen, Süßigkeiten, Social Media</string>
     <string name="toast_habit_paused">Pause hinzugefügt</string>
     <string name="toast_pause_removed">Pause entfernt</string>
     <string name="pause_period">%1$s: %2$s – %3$s</string>

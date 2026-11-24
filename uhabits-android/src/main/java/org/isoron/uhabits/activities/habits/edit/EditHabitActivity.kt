@@ -35,6 +35,8 @@ import androidx.fragment.app.DialogFragment
 import com.android.datetimepicker.time.RadialPickerLayout
 import com.android.datetimepicker.time.TimePickerDialog
 import org.isoron.platform.gui.toInt
+import org.isoron.platform.time.LocalDate
+import org.isoron.platform.time.getToday
 import org.isoron.uhabits.HabitsApplication
 import org.isoron.uhabits.R
 import org.isoron.uhabits.activities.AndroidThemeSwitcher
@@ -86,6 +88,8 @@ class EditHabitActivity : AppCompatActivity() {
     var reminderMin = -1
     var reminderDays: WeekdayList = WeekdayList.EVERY_DAY
     var targetType = NumericalHabitType.AT_LEAST
+    var isNegative = false
+    var negativeSince: LocalDate? = null
 
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
@@ -109,6 +113,8 @@ class EditHabitActivity : AppCompatActivity() {
             freqNum = habit.frequency.numerator
             freqDen = habit.frequency.denominator
             targetType = habit.targetType
+            negativeSince = habit.negativeSince
+            isNegative = habit.isNegative
             habit.reminder?.let {
                 reminderHour = it.hour
                 reminderMin = it.minute
@@ -122,6 +128,8 @@ class EditHabitActivity : AppCompatActivity() {
             binding.targetInput.setText(habit.targetValue.toString())
         } else {
             habitType = HabitType.fromInt(intent.getIntExtra("habitType", HabitType.YES_NO.value))
+            isNegative = intent.getBooleanExtra("negative", false)
+            if (isNegative && habitType == HabitType.NUMERICAL) targetType = NumericalHabitType.AT_MOST
         }
 
         if (state != null) {
@@ -133,6 +141,7 @@ class EditHabitActivity : AppCompatActivity() {
             reminderHour = state.getInt("reminderHour")
             reminderMin = state.getInt("reminderMin")
             reminderDays = WeekdayList(state.getInt("reminderDays"))
+            isNegative = state.getBoolean("isNegative")
         }
 
         updateColors()
@@ -146,9 +155,11 @@ class EditHabitActivity : AppCompatActivity() {
             HabitType.NUMERICAL -> {
                 binding.nameInput.hint = getString(R.string.measurable_short_example)
                 binding.questionInput.hint = getString(R.string.measurable_question_example)
-                binding.frequencyOuterBox.visibility = View.GONE
             }
         }
+
+        if (isNegative) applyQuitTexts()
+        updateFrequencyVisibility()
 
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -197,9 +208,9 @@ class EditHabitActivity : AppCompatActivity() {
         binding.numericalFrequencyPicker.setOnClickListener {
             val builder = AlertDialog.Builder(this)
             val arrayAdapter = ArrayAdapter<String>(this, android.R.layout.select_dialog_item)
-            arrayAdapter.add(getString(R.string.every_day))
-            arrayAdapter.add(getString(R.string.every_week))
-            arrayAdapter.add(getString(R.string.every_month))
+            arrayAdapter.add(periodText(1)!!)
+            arrayAdapter.add(periodText(7)!!)
+            arrayAdapter.add(periodText(30)!!)
             builder.setAdapter(arrayAdapter) { dialog, which ->
                 freqDen = when (which) {
                     1 -> 7
@@ -289,6 +300,7 @@ class EditHabitActivity : AppCompatActivity() {
             habit.unit = binding.unitInput.text.trim().toString()
         }
         habit.type = habitType
+        habit.negativeSince = if (isNegative) negativeSince ?: initialNegativeSince(original) else null
 
         val command = if (habitId >= 0) {
             EditHabitCommand(
@@ -305,6 +317,37 @@ class EditHabitActivity : AppCompatActivity() {
         }
         component.commandRunner.run(command)
         finish()
+    }
+
+    /** Avoided habits count as done from the day of the oldest entry, or today if there is none. */
+    private fun initialNegativeSince(original: Habit?): LocalDate {
+        val today = getToday()
+        val oldest = original?.originalEntries?.getKnown()?.lastOrNull()?.date
+        return if (oldest != null && oldest.isOlderThan(today)) oldest else today
+    }
+
+    /** Wording and options for habits the user wants to quit. */
+    private fun applyQuitTexts() {
+        if (habitId < 0) binding.toolbar.title = getString(R.string.quit_habit)
+        if (habitType == HabitType.YES_NO) {
+            binding.nameInput.hint = getString(R.string.quit_short_example)
+            binding.questionInput.hint = getString(R.string.quit_question_boolean)
+        } else {
+            binding.nameInput.hint = getString(R.string.quit_measurable_short_example)
+            binding.questionInput.hint = getString(R.string.quit_measurable_question_example)
+            binding.unitInput.hint = getString(R.string.quit_units_example)
+            binding.targetLabel.text = getString(R.string.quit_target)
+            binding.numericalFrequencyLabel.text = getString(R.string.quit_period)
+            binding.targetInput.hint = getString(R.string.quit_target_example)
+            // A limit is always "at most"
+            targetType = NumericalHabitType.AT_MOST
+            binding.targetTypeOuterBox.visibility = View.GONE
+        }
+    }
+
+    private fun updateFrequencyVisibility() {
+        val hidden = habitType == HabitType.NUMERICAL || isNegative
+        binding.frequencyOuterBox.visibility = if (hidden) View.GONE else View.VISIBLE
     }
 
     private fun validate(): Boolean {
@@ -339,12 +382,15 @@ class EditHabitActivity : AppCompatActivity() {
     @SuppressLint("StringFormatMatches")
     private fun populateFrequency() {
         binding.booleanFrequencyPicker.text = formatFrequency(freqNum, freqDen, resources)
-        binding.numericalFrequencyPicker.text = when (freqDen) {
-            1 -> getString(R.string.every_day)
-            7 -> getString(R.string.every_week)
-            30 -> getString(R.string.every_month)
-            else -> "$freqNum/$freqDen"
-        }
+        binding.numericalFrequencyPicker.text = periodText(freqDen) ?: "$freqNum/$freqDen"
+    }
+
+    /** Day, week or month period of a measurable habit; "per ..." wording for limits. */
+    private fun periodText(den: Int): String? = when (den) {
+        1 -> getString(if (isNegative) R.string.quit_per_day else R.string.every_day)
+        7 -> getString(if (isNegative) R.string.quit_per_week else R.string.every_week)
+        30 -> getString(if (isNegative) R.string.quit_per_month else R.string.every_month)
+        else -> null
     }
 
     private fun populateTargetType() {
@@ -380,6 +426,7 @@ class EditHabitActivity : AppCompatActivity() {
             putInt("reminderHour", reminderHour)
             putInt("reminderMin", reminderMin)
             putInt("reminderDays", reminderDays.toInteger())
+            putBoolean("isNegative", isNegative)
         }
     }
 }

@@ -38,15 +38,31 @@ class HabitTypeDialog : AppCompatDialogFragment() {
         savedInstanceState: Bundle?
     ): View {
         val binding = SelectHabitTypeBinding.inflate(inflater, container, false)
+        var negative = false
+
+        fun showTypeStep(isNegative: Boolean) {
+            negative = isNegative
+            if (isNegative) {
+                binding.yesNoExample.setText(R.string.quit_yes_or_no_example)
+                binding.measurableExample.setText(R.string.quit_measurable_example)
+            }
+            binding.buttonBuild.visibility = View.GONE
+            binding.buttonQuit.visibility = View.GONE
+            binding.buttonYesNo.visibility = View.VISIBLE
+            binding.buttonMeasurable.visibility = View.VISIBLE
+        }
+
+        binding.buttonBuild.setOnClickListener { showTypeStep(false) }
+        binding.buttonQuit.setOnClickListener { showTypeStep(true) }
 
         binding.buttonYesNo.setOnClickListener {
-            val intent = IntentFactory().startEditActivity(requireActivity(), HabitType.YES_NO.value)
+            val intent = IntentFactory().startEditActivity(requireActivity(), HabitType.YES_NO.value, negative)
             startActivity(intent)
             dismiss()
         }
 
         binding.buttonMeasurable.setOnClickListener {
-            val intent = IntentFactory().startEditActivity(requireActivity(), HabitType.NUMERICAL.value)
+            val intent = IntentFactory().startEditActivity(requireActivity(), HabitType.NUMERICAL.value, negative)
             startActivity(intent)
             dismiss()
         }

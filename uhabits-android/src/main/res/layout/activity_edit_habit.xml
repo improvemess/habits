@@ -184,6 +184,7 @@
                     android:layout_weight="1">
                     <LinearLayout style="@style/FormInnerBox">
                         <TextView
+                            android:id="@+id/targetLabel"
                             style="@style/FormLabel"
                             android:text="@string/target" />
                         <EditText
@@ -200,6 +201,7 @@
                     android:layout_weight="1">
                     <LinearLayout style="@style/FormInnerBox">
                         <TextView
+                            android:id="@+id/numericalFrequencyLabel"
                             style="@style/FormLabel"
                             android:text="@string/frequency" />
                         <TextView

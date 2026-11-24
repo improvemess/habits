@@ -40,6 +40,8 @@ data class Habit(
     var type: HabitType = HabitType.YES_NO,
     var unit: String = "",
     var uuid: String? = null,
+    /** First day on which an avoided ("negative") habit counts as done; null for normal habits. */
+    var negativeSince: LocalDate? = null,
     val computedEntries: EntryList,
     val originalEntries: EntryList,
     val scores: ScoreList,
@@ -51,6 +53,9 @@ data class Habit(
     }
 
     var observable = ModelObservable()
+
+    val isNegative: Boolean
+        get() = negativeSince != null
 
     val isNumerical: Boolean
         get() = type == HabitType.NUMERICAL
@@ -76,13 +81,13 @@ data class Habit(
 
     fun recompute() {
         computedEntries.recomputeFrom(
-            originalEntries = entriesWithPauses(),
-            frequency = frequency,
+            originalEntries = entriesWithAutoChecks(entriesWithPauses()),
+            frequency = effectiveFrequency,
             isNumerical = isNumerical
         )
 
         computedEntries.recomputeCompletion(
-            frequency = frequency,
+            frequency = effectiveFrequency,
             isNumerical = isNumerical,
             targetType = targetType,
             targetValue = targetValue
@@ -95,7 +100,7 @@ data class Habit(
         if (from.isNewerThan(to)) from = to
 
         scores.recompute(
-            frequency = frequency,
+            frequency = effectiveFrequency,
             isNumerical = isNumerical,
             numericalHabitType = targetType,
             targetValue = targetValue,
@@ -138,6 +143,32 @@ data class Habit(
         return result
     }
 
+    /** Avoided habits are always evaluated daily: every day is either kept or relapsed. */
+    private val effectiveFrequency: Frequency
+        get() = if (isNegative && !isNumerical) Frequency.DAILY else frequency
+
+    /**
+     * For avoided ("negative") habits, every day from [negativeSince] until today without an
+     * entry counts as done. Nothing is persisted: a tap on a day stores NO (relapse), and
+     * returning to the check removes it again. Days before [negativeSince] stay unknown.
+     */
+    private fun entriesWithAutoChecks(source: EntryList): EntryList {
+        val since = negativeSince
+        if (since == null || isNumerical) return source
+        val result = EntryList()
+        source.getKnown().forEach { result.add(it) }
+        val today = getToday()
+        var day: LocalDate = since
+        while (!day.isNewerThan(today)) {
+            val existing = source.get(day)
+            if (existing.value == Entry.UNKNOWN) {
+                result.add(Entry(day, Entry.YES_MANUAL, existing.notes))
+            }
+            day = day.plus(1)
+        }
+        return result
+    }
+
     fun copyFrom(other: Habit) {
         this.category = other.category
         this.color = other.color
@@ -154,6 +185,7 @@ data class Habit(
         this.type = other.type
         this.unit = other.unit
         this.uuid = other.uuid
+        this.negativeSince = other.negativeSince
     }
 
     override fun equals(other: Any?): Boolean {
@@ -175,6 +207,7 @@ data class Habit(
         if (type != other.type) return false
         if (unit != other.unit) return false
         if (uuid != other.uuid) return false
+        if (negativeSince != other.negativeSince) return false
 
         return true
     }
@@ -195,6 +228,7 @@ data class Habit(
         result = 31 * result + type.value
         result = 31 * result + unit.hashCode()
         result = 31 * result + (uuid?.hashCode() ?: 0)
+        result = 31 * result + (negativeSince?.hashCode() ?: 0)
         return result
     }
 }

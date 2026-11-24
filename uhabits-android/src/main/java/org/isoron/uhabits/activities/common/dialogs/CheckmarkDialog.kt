@@ -28,6 +28,7 @@ import android.view.View.VISIBLE
 import androidx.appcompat.app.AppCompatDialogFragment
 import org.isoron.uhabits.HabitsApplication
 import org.isoron.uhabits.R
+import org.isoron.uhabits.activities.habits.list.views.NEGATIVE_RED
 import org.isoron.uhabits.core.models.Entry.Companion.NO
 import org.isoron.uhabits.core.models.Entry.Companion.SKIP
 import org.isoron.uhabits.core.models.Entry.Companion.UNKNOWN
@@ -56,6 +57,8 @@ class CheckmarkDialog : AppCompatDialogFragment() {
         arrayOf(view.noBtn, view.unknownBtn).forEach {
             it.setTextColor(view.root.sres.getColor(R.attr.contrast60))
         }
+        // A cross is a relapse for a habit the user wants to quit
+        if (requireArguments().getBoolean("negative", false)) view.noBtn.setTextColor(NEGATIVE_RED)
         arrayOf(view.yesBtn, view.noBtn, view.skipBtn, view.unknownBtn).forEach {
             it.typeface = getFontAwesome(requireContext())
         }

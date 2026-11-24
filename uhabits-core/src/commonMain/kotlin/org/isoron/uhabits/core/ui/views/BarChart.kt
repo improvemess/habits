@@ -38,6 +38,13 @@ class BarChart(
     var series = mutableListOf<List<Double>>()
     var colors = mutableListOf<Color>()
     var axis = listOf<LocalDate>()
+
+    /** Per column of the first series: how much of the top of the bar is drawn in red. */
+    var redParts = listOf<Double>()
+
+    /** Optional numbers above each column of the first series: in the bar color, and in red. */
+    var labels = listOf<String>()
+    var redLabels = listOf<String>()
     override var dataOffset = 0
 
     // Style
@@ -84,11 +91,13 @@ class BarChart(
                 else -> series[s][dataColumn]
             }
             if (value <= 0) return
+            val redPart = if (s == 0) redParts.getOrNull(dataColumn) ?: 0.0 else 0.0
+            val hasRed = redPart > 0
             val perc = value / maxValue
             val barHeight = round(maxBarHeight * perc)
             val x = barOffset(c, s)
             val y = height - footerHeight - barHeight
-            canvas.setColor(colors[s])
+            canvas.setColor(if (hasRed) FAILED_RED else colors[s])
             val r = round(barWidth * 0.15)
             if (2 * r < barHeight) {
                 canvas.fillRect(x, y + r, barWidth, barHeight - r)
@@ -98,14 +107,41 @@ class BarChart(
             } else {
                 canvas.fillRect(x, y, barWidth, barHeight)
             }
+            if (hasRed) {
+                // Only the top part stays red, the rest keeps the habit color
+                val keptHeight = round(maxBarHeight * max(0.0, value - redPart) / maxValue)
+                canvas.setColor(colors[s])
+                canvas.fillRect(x, height - footerHeight - keptHeight, barWidth, keptHeight)
+            }
             canvas.setFontSize(theme.smallTextSize)
             canvas.setTextAlign(TextAlign.CENTER)
-            canvas.setColor(colors[s])
-            canvas.drawText(
-                value.toShortString(),
-                x + barWidth / 2,
-                y - theme.smallTextSize * 0.80
-            )
+            val labelY = y - theme.smallTextSize * 0.80
+            val good = if (s == 0) labels.getOrNull(dataColumn) else null
+            val bad = if (s == 0) redLabels.getOrNull(dataColumn) else null
+            if (good == null) {
+                canvas.setColor(if (hasRed) FAILED_RED else colors[s])
+                canvas.drawText(value.toShortString(), x + barWidth / 2, labelY)
+            } else if (bad.isNullOrEmpty()) {
+                canvas.setColor(colors[s])
+                canvas.drawText(good, x + barWidth / 2, labelY)
+            } else {
+                // Good days in the bar color, relapses in red, side by side
+                val gap = theme.smallTextSize * 0.4
+                val goodWidth = canvas.measureText(good)
+                val total = goodWidth + gap + canvas.measureText(bad)
+                if (total > barGroupWidth) {
+                    canvas.setColor(colors[s])
+                    canvas.drawText(good, x + barWidth / 2, labelY)
+                } else {
+                    val left = x + barWidth / 2 - total / 2
+                    canvas.setTextAlign(TextAlign.LEFT)
+                    canvas.setColor(colors[s])
+                    canvas.drawText(good, left, labelY)
+                    canvas.setColor(FAILED_RED)
+                    canvas.drawText(bad, left + goodWidth + gap, labelY)
+                    canvas.setTextAlign(TextAlign.CENTER)
+                }
+            }
         }
 
         fun drawSeries(s: Int) {

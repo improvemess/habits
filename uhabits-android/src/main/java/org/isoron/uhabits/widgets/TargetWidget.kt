@@ -57,6 +57,7 @@ class TargetWidget(
         )
         chart.setColor(WidgetTheme().color(habit.color).toInt())
         chart.setTargets(data.targets)
+        chart.setExceeded(data.exceeded)
         chart.setLabels(data.intervals.map { intervalToLabel(context.resources, it) })
         chart.setValues(data.values)
     }

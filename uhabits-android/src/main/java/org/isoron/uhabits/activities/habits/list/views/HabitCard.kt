@@ -103,7 +103,7 @@ class HabitCardView(
             true -> View.VISIBLE
             false -> View.GONE
         }
-        checkmarkPanel.setState(CheckmarkPanelState(r.checkmarks, c, r.notes, newState.buttonCount, r.paused))
+        checkmarkPanel.setState(CheckmarkPanelState(r.checkmarks, c, r.notes, newState.buttonCount, r.paused, r.isNegative))
         numberPanel.setState(
             NumberPanelState(
                 r.checkmarks.map { it / 1000.0 },
@@ -111,7 +111,8 @@ class HabitCardView(
                 c,
                 r.unit,
                 r.notes,
-                newState.buttonCount
+                newState.buttonCount,
+                r.isNegative
             )
         )
         setSelected(newState.selected)

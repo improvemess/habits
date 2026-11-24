@@ -70,7 +70,8 @@ open class ListHabitsBehavior(
             screen.showCheckmarkPopup(
                 entry.value,
                 entry.notes,
-                habit.color
+                habit.color,
+                habit.isNegative
             ) { newValue: Int, newNotes: String ->
                 if (newValue != entry.value && newValue == YES_MANUAL) screen.showConfetti(habit.color, x, y)
                 commandRunner.run(CreateRepetitionCommand(habitList, habit, date, newValue, newNotes))
@@ -183,6 +184,7 @@ open class ListHabitsBehavior(
             selectedValue: Int,
             notes: String,
             color: PaletteColor,
+            isNegative: Boolean = false,
             callback: CheckMarkDialogCallback
         )
         fun showSendBugReportToDeveloperScreen(log: String)

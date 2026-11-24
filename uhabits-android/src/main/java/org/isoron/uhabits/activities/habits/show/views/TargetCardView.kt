@@ -34,6 +34,7 @@ class TargetCardView(context: Context, attrs: AttributeSet) : LinearLayout(conte
         val androidColor = state.theme.color(state.color).toInt()
         binding.targetChart.setValues(state.values)
         binding.targetChart.setTargets(state.targets)
+        binding.targetChart.setExceeded(state.exceeded)
         binding.targetChart.setLabels(state.intervals.map { intervalToLabel(resources, it) })
         binding.title.setTextColor(androidColor)
         binding.targetChart.setColor(androidColor)
