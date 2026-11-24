@@ -19,6 +19,7 @@
 
 plugins {
     kotlin("multiplatform")
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ktlint.plugin)
     alias(libs.plugins.mokkery)
 }
@@ -42,6 +43,7 @@ kotlin {
             dependencies {
                 implementation(kotlin("stdlib-common"))
                 implementation(libs.kotlinx.coroutines.core)
+                implementation(libs.kotlinx.serialization.json)
                 compileOnly(libs.kotlin.inject.runtime)
             }
         }
