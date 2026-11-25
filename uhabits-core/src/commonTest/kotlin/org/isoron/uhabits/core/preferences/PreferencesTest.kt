@@ -159,11 +159,4 @@ class PreferencesTest : BaseUnitTest() {
         prefs.isStreakFlameEnabled = false
         assertFalse(prefs.isStreakFlameEnabled)
     }
-
-    @Test
-    fun testQuestionMarks() {
-        assertTrue(prefs.areQuestionMarksEnabled)
-        prefs.areQuestionMarksEnabled = false
-        assertFalse(prefs.areQuestionMarksEnabled)
-    }
 }

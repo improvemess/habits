@@ -46,7 +46,7 @@
             app:iconSpaceReserved="false" />
 
         <SwitchPreferenceCompat
-            android:defaultValue="true"
+            android:defaultValue="false"
             android:key="pref_unknown_enabled"
             android:summary="@string/pref_unknown_description"
             android:title="@string/pref_unknown_title"

@@ -212,7 +212,7 @@ open class Preferences(private val storage: Storage) {
         }
 
     open var areQuestionMarksEnabled: Boolean
-        get() = storage.getBoolean("pref_unknown_enabled", true)
+        get() = storage.getBoolean("pref_unknown_enabled", false)
         set(value) {
             storage.putBoolean("pref_unknown_enabled", value)
             for (l in listeners) l.onQuestionMarksChanged()
