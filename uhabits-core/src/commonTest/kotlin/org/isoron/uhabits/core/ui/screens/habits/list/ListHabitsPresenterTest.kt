@@ -315,4 +315,18 @@ class ListHabitsPresenterTest : BaseUnitTest() {
         habit.recompute()
         assertEquals(StreakUnit.WEEKS, streakCard(habit).streakUnit)
     }
+
+    @Test
+    fun testFlameIsGrayUntilFirstPeriodIsComplete() {
+        val habit = fixtures.createEmptyHabit()
+        val today = getToday()
+        for (i in 0 until 3) habit.originalEntries.add(Entry(today.minus(i), Entry.YES_MANUAL))
+        habit.recompute()
+        assertEquals(true, streakCard(habit).streakDoneToday)
+
+        habit.streakUnit = StreakUnit.MONTHS
+        val card = streakCard(habit)
+        assertEquals(0, card.streak)
+        assertEquals(false, card.streakDoneToday)
+    }
 }

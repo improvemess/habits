@@ -71,7 +71,10 @@ object ListHabitsPresenter {
             // the flame stays colored (if there is a streak); on the first day after the pause it
             // is gray again until the streak is continued or lapses.
             val skippedToday = habit.computedEntries.get(today).value == Entry.SKIP
+            // In weeks or months the streak only counts completed periods; until the first one is
+            // complete there is no streak yet and the flame stays gray at 0.
             val streakDoneToday = ongoing != null && ongoing.end >= today &&
+                (streakUnit == StreakUnit.DAYS || streak > 0) &&
                 (!skippedToday || (streak > 0 && habit.pauses.isPaused(today)))
             val entries = habit.computedEntries.getByInterval(dateFrom, today)
             items.add(
