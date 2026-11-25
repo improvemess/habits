@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.15.1](https://github.com/oliverlorenz/uhabits/compare/v2.15.0...v2.15.1) (2026-11-25)
+
+### Bug Fixes
+
+* Fragezeichen vor dem Anlegetag einer Negativ-Gewohnheit nicht mehr blau ([#64](https://github.com/oliverlorenz/uhabits/issues/64)) ([#69](https://github.com/oliverlorenz/uhabits/issues/69)) ([ae3d283](https://github.com/oliverlorenz/uhabits/commit/ae3d283b615ceb438c70a0c38a887b63fbce7e86)), references [#65](https://github.com/oliverlorenz/uhabits/issues/65) [#67](https://github.com/oliverlorenz/uhabits/issues/67)
+* messbarer Eintrag auf 0 zurückgesetzt sieht aus wie ein leerer Tag ([#62](https://github.com/oliverlorenz/uhabits/issues/62)) ([#67](https://github.com/oliverlorenz/uhabits/issues/67)) ([ee10e08](https://github.com/oliverlorenz/uhabits/commit/ee10e0814f308276f11d2b4a1d837c179f48417e))
+
 ## [2.15.0](https://github.com/oliverlorenz/uhabits/compare/v2.14.0...v2.15.0) (2026-11-25)
 
 * fix instrumented tests broken by recent features ([#57](https://github.com/oliverlorenz/uhabits/issues/57)) ([4a90b13](https://github.com/oliverlorenz/uhabits/commit/4a90b137a5244a44642f6f82b2d2aa86544b4af5)), closes [#54](https://github.com/oliverlorenz/uhabits/issues/54) [#55](https://github.com/oliverlorenz/uhabits/issues/55) [#56](https://github.com/oliverlorenz/uhabits/issues/56), references [#54](https://github.com/oliverlorenz/uhabits/issues/54) [#16](https://github.com/oliverlorenz/uhabits/issues/16) [#55](https://github.com/oliverlorenz/uhabits/issues/55) [#13](https://github.com/oliverlorenz/uhabits/issues/13) [#56](https://github.com/oliverlorenz/uhabits/issues/56)
