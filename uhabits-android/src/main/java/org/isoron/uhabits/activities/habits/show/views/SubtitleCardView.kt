@@ -24,7 +24,6 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
-import org.isoron.platform.gui.toInt
 import org.isoron.uhabits.R
 import org.isoron.uhabits.activities.habits.edit.formatFrequency
 import org.isoron.uhabits.activities.habits.list.views.toShortString
@@ -48,15 +47,12 @@ class SubtitleCardView(context: Context, attrs: AttributeSet) : LinearLayout(con
 
     @SuppressLint("SetTextI18n")
     fun setState(state: SubtitleCardState) {
-        val color = state.theme.color(state.color).toInt()
         val reminder = state.reminder
         binding.frequencyLabel.text = formatFrequency(
             state.frequency.numerator,
             state.frequency.denominator,
             resources
         )
-        binding.questionLabel.setTextColor(color)
-        binding.questionLabel.text = state.question
         binding.reminderLabel.text = if (reminder != null) {
             formatTime(context, reminder.hour, reminder.minute)
         } else {
@@ -64,7 +60,6 @@ class SubtitleCardView(context: Context, attrs: AttributeSet) : LinearLayout(con
         }
         binding.targetText.text = "${state.targetValue.toShortString()} ${state.unit}"
 
-        binding.questionLabel.visibility = View.VISIBLE
         binding.targetIcon.visibility = View.VISIBLE
         binding.targetText.visibility = View.VISIBLE
         if (state.isNumerical) {
@@ -75,9 +70,6 @@ class SubtitleCardView(context: Context, attrs: AttributeSet) : LinearLayout(con
         } else {
             binding.targetIcon.visibility = View.GONE
             binding.targetText.visibility = View.GONE
-        }
-        if (state.question.isEmpty()) {
-            binding.questionLabel.visibility = View.GONE
         }
         binding.categoryLabel.text = state.category
         binding.categoryRow.visibility = if (state.category.isBlank()) {

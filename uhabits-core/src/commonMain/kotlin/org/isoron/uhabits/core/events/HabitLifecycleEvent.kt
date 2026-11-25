@@ -47,7 +47,6 @@ data class HabitSnapshot(
     val habitUuid: String,
     val name: String,
     val description: String,
-    val question: String,
     val category: String,
     /** Index into the app's color palette. */
     val color: Int,

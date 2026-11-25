@@ -173,8 +173,6 @@
     <string name="target_type">Тип на целта</string>
     <string name="target_type_at_least">Най-малко</string>
     <string name="target_type_at_most">Най-много</string>
-    <string name="example_question_boolean">напр. Тренирахте ли днес?</string>
-    <string name="question">Въпрос</string>
     <string name="target">Цел</string>
     <string name="yes">Да</string>
     <string name="no">Не</string>
@@ -186,7 +184,6 @@
     <string name="widget_opacity_title">Прозрачност на приспособлението</string>
     <string name="widget_opacity_description">Прави приспособленията по-прозрачни или по-непрозрачни на началния ви екран</string>
     <string name="first_day_of_the_week">Първи ден от седмицата</string>
-    <string name="default_reminder_question">Изпълнихте ли навика днес?</string>
     <string name="notes">Бележки</string>
     <string name="example_notes">(Незадължително)</string>
     <string name="yes_or_no_example">напр. Събудихте ли се рано днес? Тренирахте ли? Играхте ли шах?</string>
@@ -199,7 +196,6 @@
     <string name="color">Цвят</string>
     <string name="example_target">напр. 15</string>
     <string name="measurable_short_example">напр. Бягане</string>
-    <string name="measurable_question_example">напр. Колко километра пробягахте днес?</string>
     <string name="measurable_units_example">напр. км</string>
     <string name="every_month">Всеки месец</string>
     <string name="validation_cannot_be_blank">Не може да бъде празно</string>

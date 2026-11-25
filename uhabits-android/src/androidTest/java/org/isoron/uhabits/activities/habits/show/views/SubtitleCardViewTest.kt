@@ -51,7 +51,6 @@ class SubtitleCardViewTest : BaseViewTest() {
                 color = PaletteColor(7),
                 frequency = Frequency(3, 7),
                 isNumerical = false,
-                question = "Did you meditate this morning?",
                 reminder = Reminder(8, 30, EVERY_DAY),
                 theme = LightTheme()
             )

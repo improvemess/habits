@@ -185,8 +185,6 @@
     <string name="target_type">Vrsta cilja</string>
     <string name="target_type_at_least">Vsaj</string>
     <string name="target_type_at_most">Največ</string>
-    <string name="example_question_boolean">npr. Ste danes telovadili?</string>
-    <string name="question">Vprašanje</string>
     <string name="target">Cilj</string>
     <string name="yes">Da</string>
     <string name="no">Ne</string>
@@ -198,7 +196,6 @@
     <string name="widget_opacity_title">Prosojnost pripomočka</string>
     <string name="widget_opacity_description">Pripomočke naredi bolj pregledne ali bolj neprozorne na domačem zaslonu.</string>
     <string name="first_day_of_the_week">Prvi dan v tednu</string>
-    <string name="default_reminder_question">Ste danes dokončali to navado?</string>
     <string name="notes">Opombe</string>
     <string name="example_notes">(Neobvezno)</string>
     <string name="yes_or_no_example">npr. Ste se danes zgodaj zbudili? Ste telovadili? Ste igrali šah?</string>
@@ -211,7 +208,6 @@
     <string name="color">Barva</string>
     <string name="example_target">npr. 15</string>
     <string name="measurable_short_example"> npr. Tek</string>
-    <string name="measurable_question_example">npr. Koliko kilometrov ste pretekli danes?</string>
     <string name="measurable_units_example">npr. km</string>
     <string name="every_month">Vsak mesec</string>
     <string name="validation_cannot_be_blank">Ne sme biti prazno</string>

@@ -153,7 +153,7 @@ object CommonSteps : BaseUserInterfaceTest() {
                     .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
 
             Screen.EDIT_HABIT ->
-                Espresso.onView(ViewMatchers.withId(R.id.questionInput))
+                Espresso.onView(ViewMatchers.withId(R.id.nameInput))
                     .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
 
             // First step of the dialog: build or quit a habit (#16).

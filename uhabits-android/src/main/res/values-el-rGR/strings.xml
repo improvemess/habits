@@ -173,8 +173,6 @@
     <string name="target_type">Τύπος Στόχου</string>
     <string name="target_type_at_least">Τουλάχιστον</string>
     <string name="target_type_at_most">Το πολύ</string>
-    <string name="example_question_boolean">π.χ. Ασκήθηκες σήμερα;</string>
-    <string name="question">Ερώτηση</string>
     <string name="target">Στόχος</string>
     <string name="yes">Ναι</string>
     <string name="no">Όχι</string>
@@ -186,7 +184,6 @@
     <string name="widget_opacity_title">Διαφάνεια widget</string>
     <string name="widget_opacity_description">Κάνει τα widgets περισσότερο ή λιγότερο διαφανή στην αρχική οθόνη.</string>
     <string name="first_day_of_the_week">Πρώτη ημέρα της εβδομάδας</string>
-    <string name="default_reminder_question">Ολοκλήρωσες αυτή τη συνήθεια σήμερα;</string>
     <string name="notes">Σημειώσεις</string>
     <string name="example_notes">(Προαιρετικό)</string>
     <string name="yes_or_no_example">π.χ. Ξύπνησες νωρίς σήμερα; Ασκήθηκες; Έπαιξες σκάκι;</string>
@@ -199,7 +196,6 @@
     <string name="color">Χρώμα</string>
     <string name="example_target">π.χ. 15</string>
     <string name="measurable_short_example">π.χ. Τρέξιμο</string>
-    <string name="measurable_question_example">π.χ. Πόσα χιλιόμετρα τρέξατε σήμερα;</string>
     <string name="measurable_units_example">π.χ. χιλιόμετρα</string>
     <string name="every_month">Κάθε μήνα</string>
     <string name="validation_cannot_be_blank">Δεν μπορεί να είναι κενό</string>

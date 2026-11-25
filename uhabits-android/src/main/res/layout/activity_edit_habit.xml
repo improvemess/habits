@@ -125,21 +125,6 @@
                 </FrameLayout>
             </LinearLayout>
 
-            <!-- Habit Question -->
-            <FrameLayout style="@style/FormOuterBox">
-                <LinearLayout style="@style/FormInnerBox">
-                    <TextView
-                        style="@style/FormLabel"
-                        android:text="@string/question" />
-                    <EditText
-                        android:id="@+id/questionInput"
-                        style="@style/FormInput"
-                        android:inputType="textCapSentences|textMultiLine"
-                        android:hint="@string/example_question_boolean"
-                         />
-                </LinearLayout>
-            </FrameLayout>
-
             <!-- Frequency -->
             <FrameLayout
                 android:id="@+id/frequencyOuterBox"

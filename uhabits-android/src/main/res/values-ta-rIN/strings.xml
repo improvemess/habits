@@ -173,8 +173,6 @@
     <string name="target_type">இலக்கு வகை</string>
     <string name="target_type_at_least">குறைந்த பட்சம்</string>
     <string name="target_type_at_most">அதிக பட்சம்</string>
-    <string name="example_question_boolean">எ. கா. இன்று உடற்பயிற்சி செய்தீரா?</string>
-    <string name="question">கேள்வி</string>
     <string name="target">இலக்கு</string>
     <string name="yes">ஆம்</string>
     <string name="no">இல்லை</string>
@@ -186,7 +184,6 @@
     <string name="widget_opacity_title">விட்ஜெட்டின் மங்கல் அளவு</string>
     <string name="widget_opacity_description">உங்கள் முகப்பு திரையில் விட்ஜெட்டுகளை மேலோட்டமாக அல்லது குறைவாக மங்கலாக்கு</string>
     <string name="first_day_of_the_week">வாரத்தின் முதல் நாள்</string>
-    <string name="default_reminder_question">இன்று இந்தப் பழக்கத்தைச் செய்தீரா?</string>
     <string name="notes">குறிப்புகள்</string>
     <string name="example_notes">(விருப்பத்தேர்வு)</string>
     <string name="yes_or_no_example">உதாரணமாக: இன்று நீங்கள் வழக்கம்போல முன் எழுந்தீர்களா? நீங்கள் உடற்பயிற்சி செய்தீர்களா? நீங்கள் சதுரங்கம் விளையாடினீர்களா?</string>
@@ -199,7 +196,6 @@
     <string name="color">நிறம்</string>
     <string name="example_target">எ. கா. 15</string>
     <string name="measurable_short_example">எ. கா. ஓடு</string>
-    <string name="measurable_question_example">எ. கா. இன்று எத்தனை மைல் ஓடினாய்?</string>
     <string name="measurable_units_example">எ. கா. மைல்கள்</string>
     <string name="every_month">ஒவ்வொரு மாதமும்</string>
     <string name="validation_cannot_be_blank">வெற்றிடமாக இருக்கக் கூடாது</string>

@@ -49,9 +49,7 @@
     <string name="quit_yes_or_no_example">z.B. Bist du heute rauchfrei geblieben? Hast du auf Süßigkeiten verzichtet? Hast du Social Media gemieden?</string>
     <string name="quit_measurable_example">z.B. Wie viele Zigaretten hast du heute geraucht? Wie viele Minuten warst du auf Social Media?</string>
     <string name="quit_short_example">z.B. Rauchen</string>
-    <string name="quit_question_boolean">z.B. Bist du heute rauchfrei geblieben?</string>
     <string name="quit_measurable_short_example">z.B. Zigaretten</string>
-    <string name="quit_measurable_question_example">z.B. Wie viele Zigaretten hast du heute geraucht?</string>
     <string name="quit_units_example">z.B. Zigaretten</string>
     <string name="quit_target">Limit</string>
     <string name="quit_period">Zeitraum</string>
@@ -210,8 +208,6 @@
     <string name="target_type">Zieltyp</string>
     <string name="target_type_at_least">Mindestens</string>
     <string name="target_type_at_most">Höchstens</string>
-    <string name="example_question_boolean">z.B. Hast du heute trainiert?</string>
-    <string name="question">Frage</string>
     <string name="target">Ziel</string>
     <string name="yes">Ja</string>
     <string name="no">Nein</string>
@@ -223,7 +219,6 @@
     <string name="widget_opacity_title">Widget Deckkraft</string>
     <string name="widget_opacity_description">Stellt die Durchsichtigkeit des Hintergrundes der Widgets auf dem Startbildschirm ein.</string>
     <string name="first_day_of_the_week">Erster Tag der Woche</string>
-    <string name="default_reminder_question">Hast du diese Gewohnheit heute erledigt?</string>
     <string name="notes">Notiz</string>
     <string name="example_notes">(Optional)</string>
     <string name="yes_or_no_example">z.B. Bist du heute früh wach geworden? Hast du trainiert? Hast du Schach gespielt?</string>
@@ -236,7 +231,6 @@
     <string name="color">Farbe</string>
     <string name="example_target">z.B. 15</string>
     <string name="measurable_short_example">z.B. Laufen</string>
-    <string name="measurable_question_example">z.B. Wie viele Kilometer bist du heute gelaufen?</string>
     <string name="measurable_units_example">z.B. Kilometer</string>
     <string name="every_month">Monatlich</string>
     <string name="validation_cannot_be_blank">Darf nicht leer sein</string>

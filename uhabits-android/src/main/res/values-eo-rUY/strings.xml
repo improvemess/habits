@@ -141,8 +141,6 @@
     <string name="long_press_to_edit">Premu kaj tenu por ŝanĝi la valoron</string>
     <string name="calendar">Kalendaro:</string>
     <string name="unit">Unueco</string>
-    <string name="example_question_boolean">ekz. Ĉu vi ekzercis hodiaŭ?</string>
-    <string name="question">Demando</string>
     <string name="target">Celo</string>
     <string name="yes">Jes</string>
     <string name="no">Ne</string>

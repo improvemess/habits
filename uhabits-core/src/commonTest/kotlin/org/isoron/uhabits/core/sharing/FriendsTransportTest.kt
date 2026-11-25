@@ -56,7 +56,7 @@ class FriendsTransportTest {
     )
 
     private val snapshot = HabitSnapshot(
-        "h1", "Run", "", "", "", 3, 1, 1, HabitEvent.Type.YES_NO, "", null, null
+        "h1", "Run", "", "", 3, 1, 1, HabitEvent.Type.YES_NO, "", null, null
     )
 
     @Test

@@ -134,7 +134,6 @@
     <string name="by_color">Etter farge</string>
     <string name="by_score">Etter poengsum</string>
     <string name="export">Eksportér</string>
-    <string name="question">Spørsmål</string>
     <string name="x_times_per_y_days">%d ganger på %d dager</string>
     <string name="select_public_backup_folder">Velg offentlig sikkerhetskopimappe</string>
     <string name="no_public_backup_folder_selected">Ingen mappe valgt</string>

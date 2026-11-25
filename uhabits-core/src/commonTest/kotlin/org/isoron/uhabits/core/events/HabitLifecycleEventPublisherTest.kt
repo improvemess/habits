@@ -89,14 +89,12 @@ class HabitLifecycleEventPublisherTest : BaseUnitTest() {
         edit {
             name = "Run"
             description = "Outside"
-            question = "Did you run?"
             frequency = Frequency(3, 7)
         }
         val snapshot = updates().single().snapshot
         assertEquals(habit.uuid, snapshot.habitUuid)
         assertEquals("Run", snapshot.name)
         assertEquals("Outside", snapshot.description)
-        assertEquals("Did you run?", snapshot.question)
         assertEquals(3, snapshot.frequencyNumerator)
         assertEquals(7, snapshot.frequencyDenominator)
         assertEquals(HabitEvent.Type.YES_NO, snapshot.habitType)

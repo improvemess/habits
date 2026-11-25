@@ -66,25 +66,21 @@ open class BaseUserInterfaceTest {
         habitList.removeAll()
         val h1 = fixtures.createEmptyHabit()
         h1.name = "Wake up early"
-        h1.question = "Did you wake up early today?"
         h1.description = "test description 1"
         h1.color = PaletteColor(5)
         habitList.update(h1)
         val h2 = fixtures.createShortHabit()
         h2.name = "Track time"
-        h2.question = "Did you track your time?"
         h2.description = "test description 2"
         h2.color = PaletteColor(5)
         habitList.update(h2)
         val h3 = fixtures.createLongHabit()
         h3.name = "Meditate"
-        h3.question = "Did meditate today?"
         h3.description = "test description 3"
         h3.color = PaletteColor(10)
         habitList.update(h3)
         val h4 = fixtures.createEmptyHabit()
         h4.name = EMPTY_DESCRIPTION_HABIT_NAME
-        h4.question = "Did you read books today?"
         h4.description = ""
         h4.color = PaletteColor(2)
         habitList.update(h4)

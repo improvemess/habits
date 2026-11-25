@@ -48,7 +48,6 @@ class HabitsCSVExporterTest : BaseUnitTest() {
 
         val reading = modelFactory.buildHabit()
         reading.name = "Reading"
-        reading.question = "Did you read today?"
         reading.type = HabitType.YES_NO
         reading.frequency = Frequency.DAILY
         reading.color = PaletteColor(6)
@@ -57,7 +56,6 @@ class HabitsCSVExporterTest : BaseUnitTest() {
 
         val stretch = modelFactory.buildHabit()
         stretch.name = "Stretch"
-        stretch.question = "Did you stretch today?"
         stretch.type = HabitType.YES_NO
         stretch.frequency = Frequency.DAILY
         stretch.color = PaletteColor(10)
@@ -66,7 +64,6 @@ class HabitsCSVExporterTest : BaseUnitTest() {
 
         val commaName = modelFactory.buildHabit()
         commaName.name = "Foo, Bar"
-        commaName.question = "Did you do foo bar?"
         commaName.type = HabitType.YES_NO
         commaName.frequency = Frequency.DAILY
         commaName.color = PaletteColor(12)
@@ -76,7 +73,6 @@ class HabitsCSVExporterTest : BaseUnitTest() {
 
         val nonDaily = modelFactory.buildHabit()
         nonDaily.name = "Night run"
-        nonDaily.question = "Did you run at night?"
         nonDaily.type = HabitType.YES_NO
         nonDaily.frequency = Frequency(1, 3)
         nonDaily.color = PaletteColor(14)

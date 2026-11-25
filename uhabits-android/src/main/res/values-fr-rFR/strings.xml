@@ -173,8 +173,6 @@
     <string name="target_type">Type d\'objectif</string>
     <string name="target_type_at_least">Au moins</string>
     <string name="target_type_at_most">Au plus</string>
-    <string name="example_question_boolean">Par ex., avez-vous fait de l\'exercice aujourd\'hui?</string>
-    <string name="question">Question</string>
     <string name="target">Cible</string>
     <string name="yes">Oui</string>
     <string name="no">Non</string>
@@ -186,7 +184,6 @@
     <string name="widget_opacity_title">Opacité des widgets</string>
     <string name="widget_opacity_description">Rend les widgets plus transparents ou plus opaques sur votre écran d\'accueil.</string>
     <string name="first_day_of_the_week">Premier jour de la semaine</string>
-    <string name="default_reminder_question">Avez-vous réalisé cette habitude, aujourd\'hui ?</string>
     <string name="notes">Remarques</string>
     <string name="example_notes">(Facultatif) </string>
     <string name="yes_or_no_example">Par exemple, vous êtes-vous réveillé tôt aujourd\'hui ? Avez-vous fait de l\'exercice ? Avez-vous joué aux échecs ? </string>
@@ -200,7 +197,6 @@ Combien de pages avez-vous lu ?</string>
     <string name="color">Couleur</string>
     <string name="example_target">Par ex, 15</string>
     <string name="measurable_short_example">Par ex, Courir</string>
-    <string name="measurable_question_example">Par ex, Combien de km avez-vous couru aujourd\'hui? </string>
     <string name="measurable_units_example">Par ex, km</string>
     <string name="every_month">Tous les mois</string>
     <string name="validation_cannot_be_blank">Ne peut pas être vide</string>

@@ -167,8 +167,6 @@
     <string name="target_type">Loại mục tiêu</string>
     <string name="target_type_at_least">Ít nhất</string>
     <string name="target_type_at_most">Nhiều nhất</string>
-    <string name="example_question_boolean">v.d. Hôm nay bạn đã tập thể dục chưa?</string>
-    <string name="question">Câu hỏi</string>
     <string name="target">Mục tiêu</string>
     <string name="yes">Có</string>
     <string name="no">Không</string>
@@ -180,7 +178,6 @@
     <string name="widget_opacity_title">Độ mờ của tiện ích</string>
     <string name="widget_opacity_description">Làm cho các tiện ích trong suốt hơn hoặc mờ hơn trên màn hình chính của bạn.</string>
     <string name="first_day_of_the_week">Ngày đầu tiên trong tuần</string>
-    <string name="default_reminder_question">Bạn đã hoàn thành thói quen này hôm nay chưa?</string>
     <string name="notes">Ghi chú</string>
     <string name="example_notes">(Không bắt buộc)</string>
     <string name="yes_or_no_example">Ví dụ: Hôm nay bạn có dậy sớm không? Bạn có tập thể dục? Bạn có chơi cờ vua không?</string>
@@ -193,7 +190,6 @@
     <string name="color">Màu sắc</string>
     <string name="example_target">Ví dụ: 15</string>
     <string name="measurable_short_example">Ví dụ: Chạy</string>
-    <string name="measurable_question_example">Ví dụ: Bao nhiêu dặm bạn đã chạy ngày hôm nay?</string>
     <string name="measurable_units_example">Ví dụ: Dặm</string>
     <string name="every_month">Hàng tháng</string>
     <string name="validation_cannot_be_blank">Không thể để trống</string>

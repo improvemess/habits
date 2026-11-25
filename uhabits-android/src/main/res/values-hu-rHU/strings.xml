@@ -178,8 +178,6 @@
     <string name="target_type">Célkitűzés típusa</string>
     <string name="target_type_at_least">Legalább</string>
     <string name="target_type_at_most">Legfeljebb</string>
-    <string name="example_question_boolean">pl. Edzettél ma?</string>
-    <string name="question">Kérdés</string>
     <string name="target">Cél</string>
     <string name="yes">Igen</string>
     <string name="no">Nem</string>
@@ -191,7 +189,6 @@
     <string name="widget_opacity_title">A widget áttetszősége</string>
     <string name="widget_opacity_description">A widgetet átlátszóbbá vagy takaróbbá teszi az induló képernyőn.</string>
     <string name="first_day_of_the_week">A hét első napja</string>
-    <string name="default_reminder_question">Teljesítetted ma ezt a szokást?</string>
     <string name="notes">Jegyzetek</string>
     <string name="example_notes">(opcionális)</string>
     <string name="yes_or_no_example">pl. Korán keltél ma fel? Edzettél? Sakkoztál?</string>
@@ -204,7 +201,6 @@
     <string name="color">Szín</string>
     <string name="example_target">pl. 15</string>
     <string name="measurable_short_example">pl. Futás</string>
-    <string name="measurable_question_example">pl. Hány kilométert futottál ma?</string>
     <string name="measurable_units_example">pl. kilométer</string>
     <string name="every_month">Minden hónapban</string>
     <string name="validation_cannot_be_blank">Nem lehet üres</string>

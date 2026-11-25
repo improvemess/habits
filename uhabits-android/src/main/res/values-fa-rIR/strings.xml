@@ -173,8 +173,6 @@
     <string name="target_type">نوع داده هدف</string>
     <string name="target_type_at_least">حداقل</string>
     <string name="target_type_at_most">حداکثر</string>
-    <string name="example_question_boolean">مثلا آیا امروز ورزش کردید؟</string>
-    <string name="question">سوال</string>
     <string name="target">هدف</string>
     <string name="yes">بله</string>
     <string name="no">نه</string>
@@ -186,7 +184,6 @@
     <string name="widget_opacity_title">تیرگی ویجت</string>
     <string name="widget_opacity_description">ویجت‌ها را در صفحه اصلی شفاف‌تر یا مات‌تر می‌کند.</string>
     <string name="first_day_of_the_week">روز اول هفته</string>
-    <string name="default_reminder_question">آیا امروز این عادت را انجام داده‌اید؟</string>
     <string name="notes">یادداشت‌ها</string>
     <string name="example_notes">(اختیاری)</string>
     <string name="yes_or_no_example">آیا امروز زود بیدار شدید؟ ورزش کردید؟ شطرنج بازی کردید؟</string>
@@ -199,7 +196,6 @@
     <string name="color">رنگ</string>
     <string name="example_target">مثلاً 15</string>
     <string name="measurable_short_example">مثلاً دویدن</string>
-    <string name="measurable_question_example">مثلاً امروز چند کیلومتر دویدید؟</string>
     <string name="measurable_units_example">مثلاً کیلومتر</string>
     <string name="every_month">هر ماه</string>
     <string name="validation_cannot_be_blank">نمی‌تواند خالی باشد</string>

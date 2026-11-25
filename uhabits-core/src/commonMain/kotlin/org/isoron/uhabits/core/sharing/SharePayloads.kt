@@ -31,7 +31,6 @@ import kotlin.math.roundToInt
 data class SharedHabitMetadata(
     val name: String,
     val description: String,
-    val question: String,
     val category: String,
     /** Index into the app's color palette. */
     val color: Int,
@@ -50,7 +49,6 @@ data class SharedHabitMetadata(
         fun from(snapshot: HabitSnapshot, historyStart: LocalDate) = SharedHabitMetadata(
             name = snapshot.name,
             description = snapshot.description,
-            question = snapshot.question,
             category = snapshot.category,
             color = snapshot.color,
             frequencyNumerator = snapshot.frequencyNumerator,
@@ -118,7 +116,7 @@ class SharePayloadException(message: String, cause: Throwable? = null) : Excepti
  * with another `v` is rejected.
  *
  * Metadata, e.g.:
- * `{"v":1,"name":"Run","description":"","question":"Did you run?","category":"",
+ * `{"v":1,"name":"Run","description":"","category":"",
  *   "color":3,"freqNum":3,"freqDen":7,"type":"YES_NO","unit":"","historyStart":"2026-11-24"}`
  *
  * Entry, e.g. `{"v":1,"state":"YES"}` or `{"v":1,"state":"VALUE","value":2.5}`.
@@ -137,7 +135,6 @@ object SharePayloads {
         MetadataV1(
             name = metadata.name,
             description = metadata.description,
-            question = metadata.question,
             category = metadata.category,
             color = metadata.color,
             freqNum = metadata.frequencyNumerator,
@@ -158,7 +155,6 @@ object SharePayloads {
         SharedHabitMetadata(
             name = m.name,
             description = m.description,
-            question = m.question,
             category = m.category,
             color = m.color,
             frequencyNumerator = m.freqNum,
@@ -224,7 +220,6 @@ object SharePayloads {
         val v: Int = VERSION,
         val name: String,
         val description: String = "",
-        val question: String = "",
         val category: String = "",
         val color: Int,
         val freqNum: Int,

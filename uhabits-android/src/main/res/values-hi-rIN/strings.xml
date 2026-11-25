@@ -200,8 +200,6 @@
     <string name="target_type">लक्ष्य प्रकार</string>
     <string name="target_type_at_least">कम से कम</string>
     <string name="target_type_at_most">ज्यादा से ज्यादा</string>
-    <string name="example_question_boolean">जैसे आपने आज व्यायाम किया?</string>
-    <string name="question">प्रश्न</string>
     <string name="target">लक्ष्य</string>
     <string name="yes">हाँ</string>
     <string name="no">नहीं</string>
@@ -213,7 +211,6 @@
     <string name="widget_opacity_title">विजेट अपारदर्शिता</string>
     <string name="widget_opacity_description">आपके होम स्क्रीन में अधिक पारदर्शी या अधिक अपारदर्शी बनाता है।</string>
     <string name="first_day_of_the_week">सप्ताह का पहला दिन</string>
-    <string name="default_reminder_question">क्या आपने आज यह आदत पूरी कर ली है?</string>
     <string name="notes">नोट्स</string>
     <string name="example_notes">वैकल्पिक</string>
     <string name="yes_or_no_example">उदा। क्या आप आज जल्दी उठ गए? क्या आपने व्यायाम किया? क्या आपने शतरंज खेला?</string>
@@ -228,7 +225,6 @@
     <string name="color">रंग</string>
     <string name="example_target">जैसे १५</string>
     <string name="measurable_short_example">जैसे दौड</string>
-    <string name="measurable_question_example">जैसे आज आप कितने मील दौड़े?</string>
     <string name="measurable_units_example">जैसे मील</string>
     <string name="every_month">प्रति माह</string>
     <string name="validation_cannot_be_blank">इसे खाली नहीं रखा जा सकता</string>

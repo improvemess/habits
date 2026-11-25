@@ -258,7 +258,6 @@ class SQLiteHabitList(private val modelFactory: ModelFactory) : HabitList() {
                 id = habit.id,
                 name = habit.name,
                 description = habit.description,
-                question = habit.question,
                 freqNum = numerator,
                 freqDen = denominator,
                 color = habit.color.paletteIndex,
@@ -283,7 +282,6 @@ class SQLiteHabitList(private val modelFactory: ModelFactory) : HabitList() {
             habit.id = data.id
             habit.name = data.name
             habit.description = data.description
-            habit.question = data.question
             habit.frequency = Frequency(data.freqNum, data.freqDen)
             habit.color = PaletteColor(data.color)
             habit.isArchived = data.archived != 0

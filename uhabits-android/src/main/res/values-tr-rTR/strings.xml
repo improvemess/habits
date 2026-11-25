@@ -173,8 +173,6 @@
     <string name="target_type">Hedef Türü</string>
     <string name="target_type_at_least">En az</string>
     <string name="target_type_at_most">En fazla</string>
-    <string name="example_question_boolean">örn: Bugün egzersiz yaptın mı?</string>
-    <string name="question">Soru</string>
     <string name="target">Hedef</string>
     <string name="yes">Evet</string>
     <string name="no">Hayır</string>
@@ -186,7 +184,6 @@
     <string name="widget_opacity_title">Widget saydamlığı</string>
     <string name="widget_opacity_description">Ana ekrandaki widget\'ları daha saydam veya daha opak hâle getir.</string>
     <string name="first_day_of_the_week">Haftanın ilk günü</string>
-    <string name="default_reminder_question">Bugün bu alışkanlığı tamamladın mı?</string>
     <string name="notes">Notlar</string>
     <string name="example_notes">(isteğe bağlı)</string>
     <string name="yes_or_no_example">örn: Bugün erken kalktın mı? Egzersiz yaptın mı? Satranç oynadın mı?</string>
@@ -199,7 +196,6 @@
     <string name="color">Renk</string>
     <string name="example_target">örn: 15</string>
     <string name="measurable_short_example">örn: Kitap</string>
-    <string name="measurable_question_example">örn: Bugün kaç sayfa kitap okudun?</string>
     <string name="measurable_units_example">örn: Sayfa</string>
     <string name="every_month">Her ay</string>
     <string name="validation_cannot_be_blank">Boş bırakılamaz</string>

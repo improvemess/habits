@@ -168,8 +168,6 @@
     <string name="target_type">目标类型</string>
     <string name="target_type_at_least">至少</string>
     <string name="target_type_at_most">至多</string>
-    <string name="example_question_boolean">例如：你今天锻炼了吗？</string>
-    <string name="question">问题</string>
     <string name="target">目标</string>
     <string name="yes">完成了</string>
     <string name="no">未完成</string>
@@ -181,7 +179,6 @@
     <string name="widget_opacity_title">微件不透明度</string>
     <string name="widget_opacity_description">调整主屏幕上小部件的不透明度。</string>
     <string name="first_day_of_the_week">一周的第一天</string>
-    <string name="default_reminder_question">你今天完成这个习惯了吗？</string>
     <string name="notes">备注</string>
     <string name="example_notes">（选填）</string>
     <string name="yes_or_no_example">例如：你今天早起了吗？你锻炼了吗？你下棋了吗？</string>
@@ -194,7 +191,6 @@
     <string name="color">颜色</string>
     <string name="example_target">例如：15</string>
     <string name="measurable_short_example">例如：跑步</string>
-    <string name="measurable_question_example">例如：今天你跑了几公里？</string>
     <string name="measurable_units_example">例如：公里</string>
     <string name="every_month">每月</string>
     <string name="validation_cannot_be_blank">不能为空</string>

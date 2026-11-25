@@ -167,8 +167,6 @@
     <string name="target_type">目標タイプ</string>
     <string name="target_type_at_least">少なくとも</string>
     <string name="target_type_at_most">最大でも</string>
-    <string name="example_question_boolean">例：今日は運動しましたか？</string>
-    <string name="question">質問</string>
     <string name="target">目標</string>
     <string name="yes">はい</string>
     <string name="no">いいえ</string>
@@ -180,7 +178,6 @@
     <string name="widget_opacity_title">ウィジェットの透明度</string>
     <string name="widget_opacity_description">ホーム画面のウィジェットの透明度を調節します。</string>
     <string name="first_day_of_the_week">週の始まりの曜日</string>
-    <string name="default_reminder_question">今日この習慣を完了しましたか？</string>
     <string name="notes">メモ</string>
     <string name="example_notes">（省略可）</string>
     <string name="yes_or_no_example">例：今日は早く起きましたか？運動しましたか？チェスをしましたか？</string>
@@ -193,7 +190,6 @@
     <string name="color">色</string>
     <string name="example_target">例：15</string>
     <string name="measurable_short_example">例：ランニング</string>
-    <string name="measurable_question_example">例：今日は何km走りましたか?</string>
     <string name="measurable_units_example">例：km</string>
     <string name="every_month">毎月</string>
     <string name="validation_cannot_be_blank">空白にはできません</string>

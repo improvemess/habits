@@ -33,7 +33,6 @@ class SharePayloadsTest {
     private val yesNo = SharedHabitMetadata(
         name = "Run",
         description = "",
-        question = "Did you run?",
         category = "",
         color = 3,
         frequencyNumerator = 3,
@@ -56,7 +55,7 @@ class SharePayloadsTest {
     @Test
     fun testMetadataFormatIsStable() {
         assertEquals(
-            "{\"v\":1,\"name\":\"Run\",\"description\":\"\",\"question\":\"Did you run?\"," +
+            "{\"v\":1,\"name\":\"Run\",\"description\":\"\"," +
                 "\"category\":\"\",\"color\":3,\"freqNum\":3,\"freqDen\":7,\"type\":\"YES_NO\"," +
                 "\"unit\":\"\",\"historyStart\":\"2026-11-24\"}",
             SharePayloads.encodeMetadata(yesNo)
@@ -160,7 +159,6 @@ class SharePayloadsTest {
             habitUuid = "0f8fad5b-d9cb-469f-a165-70867728950e",
             name = "Run",
             description = "",
-            question = "Did you run?",
             category = "",
             color = 3,
             frequencyNumerator = 3,

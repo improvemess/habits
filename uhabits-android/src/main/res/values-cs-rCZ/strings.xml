@@ -185,8 +185,6 @@
     <string name="target_type">Typ Cíle</string>
     <string name="target_type_at_least">Minimálně</string>
     <string name="target_type_at_most">Maximálně</string>
-    <string name="example_question_boolean">např. Cvičil jsi dnes?</string>
-    <string name="question">Otázka</string>
     <string name="target">Cíl</string>
     <string name="yes">Ano</string>
     <string name="no">Ne</string>
@@ -198,7 +196,6 @@
     <string name="widget_opacity_title">Průhlednost widgetu</string>
     <string name="widget_opacity_description">Upravuje průhlednost pozadí widgetu na domovské obrazovce.</string>
     <string name="first_day_of_the_week">První den v týdnu</string>
-    <string name="default_reminder_question">Dokončili jste dnes tento návyk?</string>
     <string name="notes">Poznámky</string>
     <string name="example_notes">(nepovinné)</string>
     <string name="yes_or_no_example">např. Vzbudil ses dnes brzy? Cvičil jsi dnes? Hrál jsi šachy?</string>
@@ -211,7 +208,6 @@
     <string name="color">Barva</string>
     <string name="example_target">např. 15</string>
     <string name="measurable_short_example">např. Běh</string>
-    <string name="measurable_question_example">např. Kolik kilometrů jsi dnes uběhl?</string>
     <string name="measurable_units_example">např. Kilometry</string>
     <string name="every_month">Každý měsíc</string>
     <string name="validation_cannot_be_blank">Musíte vyplnit</string>

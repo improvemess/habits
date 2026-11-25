@@ -173,8 +173,6 @@
     <string name="target_type">Helburu mota</string>
     <string name="target_type_at_least">Gutxienez</string>
     <string name="target_type_at_most">Gehienez</string>
-    <string name="example_question_boolean">adib. ariketa egin al duzu gaur?</string>
-    <string name="question">Galdera</string>
     <string name="target">Helburua</string>
     <string name="yes">Bai</string>
     <string name="no">Ez</string>
@@ -186,7 +184,6 @@
     <string name="widget_opacity_title">Trepetaren opakutasuna</string>
     <string name="widget_opacity_description">Trepetak gardenagoak edo opakoagoak bihurtzen ditu hasierako pantailan.</string>
     <string name="first_day_of_the_week">Asteko lehen eguna</string>
-    <string name="default_reminder_question">Ohitura hau bete al duzu gaur?</string>
     <string name="notes">Oharrak</string>
     <string name="example_notes">(Aukerazkoa)</string>
     <string name="yes_or_no_example">adib. Gaur goiz esnatu zara? Ariketa fisikoa egin al duzu? Xakean jolastu al duzu?</string>
@@ -199,7 +196,6 @@
     <string name="color">Kolorea</string>
     <string name="example_target">adib. 15</string>
     <string name="measurable_short_example">adib. Korrika egin</string>
-    <string name="measurable_question_example">adib. Zenbat kilometro egin dituzu korrika gaur?</string>
     <string name="measurable_units_example">adib. Kilometroak</string>
     <string name="every_month">Hilabetero</string>
     <string name="validation_cannot_be_blank">Ezin da hutsik egon</string>

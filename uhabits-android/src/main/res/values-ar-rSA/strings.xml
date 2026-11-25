@@ -197,8 +197,6 @@
     <string name="target_type">نوع الهدف</string>
     <string name="target_type_at_least">على الأقل</string>
     <string name="target_type_at_most">على الأكثر</string>
-    <string name="example_question_boolean">على سبيل المثال هل تمرنت اليوم؟ </string>
-    <string name="question">السؤال</string>
     <string name="target">الهدف</string>
     <string name="yes">نعم</string>
     <string name="no">لا</string>
@@ -210,7 +208,6 @@
     <string name="widget_opacity_title">شفافية اختصار الشاشة الرئيسية</string>
     <string name="widget_opacity_description">Makes widgets more transparent or more opaque in your home screen.</string>
     <string name="first_day_of_the_week">اليوم الأول من الأسبوع</string>
-    <string name="default_reminder_question">هل أكملت هذه العادة اليوم؟</string>
     <string name="notes">ملاحظات</string>
     <string name="example_notes">(اختياري)</string>
     <string name="yes_or_no_example">مثلا: هل استيقظت باكرا اليوم؟ هل مارست الرياضة؟ هل لعبت الشطرنج؟</string>
@@ -223,7 +220,6 @@
     <string name="color">اللون</string>
     <string name="example_target">مثال: 15</string>
     <string name="measurable_short_example">مثلا: الجري</string>
-    <string name="measurable_question_example">مثلا، كم ميلا ركضت اليوم؟</string>
     <string name="measurable_units_example">مثلا: كيلومترات</string>
     <string name="every_month">كل شهر</string>
     <string name="validation_cannot_be_blank">لا يمكن أن يكون الإسم فارغًا</string>

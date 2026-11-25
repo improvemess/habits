@@ -173,8 +173,6 @@
     <string name="target_type">ടാർഗെറ്റ് തരം</string>
     <string name="target_type_at_least">ഇത്രയെങ്കിലും</string>
     <string name="target_type_at_most">പരമാവധി</string>
-    <string name="example_question_boolean">ഉദാ.  നിങ്ങൾ ഇന്ന് വ്യായാമം ചെയ്തോ?</string>
-    <string name="question">ചോദ്യം</string>
     <string name="target">ലക്ഷ്യം</string>
     <string name="yes">അതെ</string>
     <string name="no">ഇല്ല</string>
@@ -186,7 +184,6 @@
     <string name="widget_opacity_title">വിജറ്റ് അതാര്യത</string>
     <string name="widget_opacity_description">നിങ്ങളുടെ ഹോം സ്ക്രീനിൽ വിജറ്റുകളെ കൂടുതൽ സുതാര്യമോ അതാര്യമോ ആക്കുന്നു.</string>
     <string name="first_day_of_the_week">ആഴ്ചയിലെ ആദ്യ ദിവസം</string>
-    <string name="default_reminder_question">നിങ്ങൾ ഇന്ന് ഈ ശീലം പൂർത്തിയാക്കിയിട്ടുണ്ടോ?</string>
     <string name="notes">കുറിപ്പുകൾ</string>
     <string name="example_notes">(ഓപ്ഷണൽ)</string>
     <string name="yes_or_no_example">ഉദാ.  ഇന്ന് നേരത്തെ ഉണർന്നോ?  നിങ്ങൾ വ്യായാമം ചെയ്തോ?  നിങ്ങൾ ചെസ്സ് കളിച്ചോ?</string>
@@ -199,7 +196,6 @@
     <string name="color">നിറം</string>
     <string name="example_target">ഉദാ.  15</string>
     <string name="measurable_short_example">ഉദാ.  ഓടുക</string>
-    <string name="measurable_question_example">ഉദാ.  ഇന്ന് നിങ്ങൾ എത്ര മൈൽ ഓടി?</string>
     <string name="measurable_units_example">ഉദാ.  മൈലുകൾ</string>
     <string name="every_month">എല്ലാ മാസവും</string>
     <string name="validation_cannot_be_blank">ശൂന്യമാക്കാൻ കഴിയില്ല</string>

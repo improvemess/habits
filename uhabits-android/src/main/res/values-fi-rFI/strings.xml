@@ -173,8 +173,6 @@
     <string name="target_type">Kohdetyyppi</string>
     <string name="target_type_at_least">Vähintään</string>
     <string name="target_type_at_most">Enintään</string>
-    <string name="example_question_boolean">esim. Harrastitko tänään liikuntaa?</string>
-    <string name="question">Kysymys</string>
     <string name="target">Tavoite</string>
     <string name="yes">Kyllä</string>
     <string name="no">Ei</string>
@@ -186,7 +184,6 @@
     <string name="widget_opacity_title">Widgetin läpinäkyvyys</string>
     <string name="widget_opacity_description">Muuttaa kotinäkymän widgettien läpinäkyvyyttä.</string>
     <string name="first_day_of_the_week">Viikon ensimmäinen päivä</string>
-    <string name="default_reminder_question">Oletko suorittanut tämän tavan tänään?</string>
     <string name="notes">Muistiinpanot</string>
     <string name="example_notes">(Valinnainen)</string>
     <string name="yes_or_no_example">Esim. heräsitkö tänään aikaisin? Kuntoilitko? Pelasitko sakkia?</string>
@@ -199,7 +196,6 @@
     <string name="color">Väri</string>
     <string name="example_target">Esim. 15</string>
     <string name="measurable_short_example">Esim. juokse</string>
-    <string name="measurable_question_example">Esim. kuinka monta kilometriä juoksit tänään?</string>
     <string name="measurable_units_example">Esim. kilometriä</string>
     <string name="every_month">Joka kuukausi</string>
     <string name="validation_cannot_be_blank">Tätä ei voi jättää tyhjäksi</string>

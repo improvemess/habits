@@ -185,8 +185,6 @@
     <string name="target_type">Typ cieľa:</string>
     <string name="target_type_at_least">Aspoň</string>
     <string name="target_type_at_most">Najviac</string>
-    <string name="example_question_boolean">napr. Cvičili ste dnes?</string>
-    <string name="question">Otázka</string>
     <string name="target">Cieľ</string>
     <string name="yes">Áno</string>
     <string name="no">Nie</string>
@@ -198,7 +196,6 @@
     <string name="widget_opacity_title">Nepriehľadnosť widgetu</string>
     <string name="widget_opacity_description">Zvyšuje priehľadnosť alebo nepriehľadnosť widgetov na vašej domovskej obrazovke.</string>
     <string name="first_day_of_the_week">Prvý deň v týždni</string>
-    <string name="default_reminder_question">Už ste tento zvyk dokončili dnes?</string>
     <string name="notes">Poznámky</string>
     <string name="example_notes">(voliteľné)</string>
     <string name="yes_or_no_example">napr. Zobudili ste sa dnes skoro? Cvičili ste? Hrali ste šach?</string>
@@ -211,7 +208,6 @@
     <string name="color">Farba</string>
     <string name="example_target">napr. 15</string>
     <string name="measurable_short_example">napr. Beh</string>
-    <string name="measurable_question_example">napr. Koľko kilometrov ste dnes prešli?</string>
     <string name="measurable_units_example">napr. kilometre</string>
     <string name="every_month">Každý mesiac</string>
     <string name="validation_cannot_be_blank">Nemôže byť prázdne</string>

@@ -122,11 +122,9 @@ class AndroidNotificationTray(
         // WearableExtender.
         val wearableExtender = WearableExtender().setBackground(wearableBg)
 
-        val defaultText = context.getString(R.string.default_reminder_question)
         val builder = Builder(context, REMINDERS_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(habit.name)
-            .setContentText(if (habit.question.isBlank()) defaultText else habit.question)
             .setContentIntent(pendingIntents.showHabit(habit))
             .setDeleteIntent(pendingIntents.dismissNotification(habit))
             .setSound(null)
