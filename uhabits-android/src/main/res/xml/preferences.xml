@@ -119,7 +119,7 @@
 
         <EditTextPreference
                 android:key="pref_sharing_server"
-                android:defaultValue="https://habits.improvemess.com"
+                android:defaultValue="https://uhabits.oliverlorenz.com"
                 android:inputType="textUri"
                 android:title="@string/pref_sharing_server"
                 app:iconSpaceReserved="false"

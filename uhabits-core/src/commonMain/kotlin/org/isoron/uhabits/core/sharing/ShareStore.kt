@@ -31,7 +31,7 @@ data class Share(
     /** Id assigned by the server. */
     val shareId: String,
     val habitUuid: String,
-    /** Base URL of the sharing server, e.g. `https://habits.improvemess.com`. */
+    /** Base URL of the sharing server, e.g. `https://uhabits.oliverlorenz.com`. */
     val serverUrl: String,
     val key: ShareKey,
     /** First day whose entries are shared. */

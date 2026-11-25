@@ -21,6 +21,7 @@ package org.isoron.uhabits.core.preferences
 import org.isoron.platform.time.LocalDate
 import org.isoron.uhabits.core.BaseUnitTest
 import org.isoron.uhabits.core.models.HabitList
+import org.isoron.uhabits.core.sharing.SharingServers
 import org.isoron.uhabits.core.ui.ThemeSwitcher
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -158,5 +159,17 @@ class PreferencesTest : BaseUnitTest() {
         assertTrue(prefs.isStreakFlameEnabled)
         prefs.isStreakFlameEnabled = false
         assertFalse(prefs.isStreakFlameEnabled)
+    }
+
+    @Test
+    fun testSharingServerUrl() {
+        assertEquals(SharingServers.DEFAULT, prefs.sharingServerUrl)
+        prefs.sharingServerUrl = "https://example.com/habits"
+        assertEquals("https://example.com/habits", prefs.sharingServerUrl)
+        // Installs that stored the first, never reachable default get the real server.
+        storage.putString(Preferences.SHARING_SERVER_KEY, SharingServers.FORMER_DEFAULT)
+        assertEquals(SharingServers.DEFAULT, prefs.sharingServerUrl)
+        storage.putString(Preferences.SHARING_SERVER_KEY, "")
+        assertEquals(SharingServers.DEFAULT, prefs.sharingServerUrl)
     }
 }
