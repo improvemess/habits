@@ -162,6 +162,9 @@
     <string name="week_mode">Week</string>
     <string name="week_mode_rolling">Rolling week</string>
     <string name="week_mode_calendar">Calendar week</string>
+    <string name="month_mode">Month</string>
+    <string name="month_mode_rolling">Rolling month</string>
+    <string name="month_mode_calendar">Calendar month</string>
     <string name="help">Help &amp; FAQ</string>
     <string name="could_not_export">Failed to export data.</string>
     <string name="could_not_import">Failed to import data.</string>

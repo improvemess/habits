@@ -76,7 +76,7 @@ class SQLiteEntryList(val repository: EntryRepository) : EntryList() {
         originalEntries: EntryList,
         frequency: Frequency,
         isNumerical: Boolean,
-        calendarWeek: Boolean
+        calendarPeriod: Boolean
     ) {
         throw UnsupportedOperationException()
     }

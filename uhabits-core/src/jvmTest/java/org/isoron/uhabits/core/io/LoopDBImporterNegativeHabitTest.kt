@@ -54,7 +54,7 @@ class LoopDBImporterNegativeHabitTest : BaseUnitTest() {
         assertTrue(habitList.size() > 0)
         habitList.forEach { assertNull(it.negativeSince) }
         // Older backups are migrated: yes/no habits stay rolling
-        habitList.filter { !it.isNumerical }.forEach { assertFalse(it.calendarWeek) }
+        habitList.filter { !it.isNumerical }.forEach { assertFalse(it.calendarPeriod) }
         assertNotNull(habitList.getByPosition(0))
     }
 

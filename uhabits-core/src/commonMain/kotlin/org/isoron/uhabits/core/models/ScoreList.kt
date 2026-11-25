@@ -72,13 +72,14 @@ class ScoreList {
         computedEntries: EntryList,
         from: LocalDate,
         to: LocalDate,
-        calendarWeek: Boolean = false
+        calendarPeriod: Boolean = false
     ) {
         map.clear()
-        // Calendar week: the counting starts over on the first day of every week
+        // Calendar week or month: the counting starts over on the first day of every period
         val firstWeekday = getFirstWeekday()
         // (measurable habits keep their rolling score, only their completion follows the week mode)
-        val restartsWeekly = calendarWeek && !isNumerical && frequency.denominator == 7
+        val isMonthly = frequency.denominator == 30 || frequency.denominator == 31
+        val restartsPeriodically = calendarPeriod && !isNumerical && (frequency.denominator == 7 || isMonthly)
         var rollingSum = 0.0
         var numerator = frequency.numerator
         var denominator = frequency.denominator
@@ -89,7 +90,7 @@ class ScoreList {
         // For non-daily boolean habits, we double the numerator and the denominator to smooth
         // out irregular repetition schedules (for example, weekly habits performed on different
         // days of the week)
-        if (!isNumerical && freq < 1.0 && !restartsWeekly) {
+        if (!isNumerical && freq < 1.0 && !restartsPeriodically) {
             numerator *= 2
             denominator *= 2
         }
@@ -100,7 +101,8 @@ class ScoreList {
             val offset = values.size - i - 1
             val value = values[offset]
             val date = from.plus(i)
-            if (restartsWeekly && date.startOfWeek(firstWeekday) == date) {
+            val startsPeriod = if (isMonthly) date.day == 1 else date.startOfWeek(firstWeekday) == date
+            if (restartsPeriodically && startsPeriod) {
                 window.clear()
                 rollingSum = 0.0
             }

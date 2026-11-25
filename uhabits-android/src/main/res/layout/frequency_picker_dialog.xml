@@ -133,6 +133,19 @@
 
     </LinearLayout>
 
+    <TextView
+            android:id="@+id/monthModePicker"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginStart="56dp"
+            android:layout_marginBottom="8dp"
+            android:gravity="center_vertical"
+            android:paddingStart="12dp"
+            android:paddingEnd="8dp"
+            android:background="@drawable/bg_input_box"
+            android:drawableEnd="@drawable/ic_arrow_drop_down_dark"
+            android:text="@string/month_mode_rolling" />
+
     <LinearLayout
         android:id="@+id/xTimesPerYDaysContainer"
         android:layout_width="match_parent"

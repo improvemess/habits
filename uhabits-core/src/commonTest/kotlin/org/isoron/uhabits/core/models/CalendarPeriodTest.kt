@@ -31,7 +31,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 /** Weekly goals count either the last 7 days (rolling) or a calendar week (see #23). */
-class CalendarWeekTest : BaseUnitTest() {
+class CalendarPeriodTest : BaseUnitTest() {
 
     // Fixed "today" is Sunday, 2015-01-25; weeks start on Monday, so the current week is 19-25
     private fun day(d: Int) = LocalDate(2015, 1, d)
@@ -47,21 +47,21 @@ class CalendarWeekTest : BaseUnitTest() {
         resetFirstWeekday()
     }
 
-    private fun booleanHabit(calendarWeek: Boolean, vararg checkedDays: Int): Habit {
+    private fun booleanHabit(calendarPeriod: Boolean, vararg checkedDays: Int): Habit {
         val h = modelFactory.buildHabit()
         h.frequency = Frequency(3, 7)
-        h.calendarWeek = calendarWeek
+        h.calendarPeriod = calendarPeriod
         checkedDays.forEach { h.originalEntries.add(Entry(day(it), Entry.YES_MANUAL)) }
         h.recompute()
         return h
     }
 
-    private fun numericalHabit(calendarWeek: Boolean, target: Double, vararg values: Pair<Int, Int>): Habit {
+    private fun numericalHabit(calendarPeriod: Boolean, target: Double, vararg values: Pair<Int, Int>): Habit {
         val h = modelFactory.buildHabit()
         h.type = HabitType.NUMERICAL
         h.frequency = Frequency(1, 7)
         h.targetValue = target
-        h.calendarWeek = calendarWeek
+        h.calendarPeriod = calendarPeriod
         values.forEach { (d, v) -> h.originalEntries.add(Entry(day(d), v)) }
         h.recompute()
         return h
@@ -69,7 +69,7 @@ class CalendarWeekTest : BaseUnitTest() {
 
     @Test
     fun testDefaultIsRolling() {
-        assertFalse(modelFactory.buildHabit().calendarWeek)
+        assertFalse(modelFactory.buildHabit().calendarPeriod)
     }
 
     @Test
@@ -174,15 +174,70 @@ class CalendarWeekTest : BaseUnitTest() {
         assertFalse(without.isCompletedOn(day(21)))
     }
 
+    private fun monthly(calendarPeriod: Boolean, vararg checks: LocalDate): Habit {
+        val h = modelFactory.buildHabit()
+        h.frequency = Frequency(3, 30)
+        h.calendarPeriod = calendarPeriod
+        checks.forEach { h.originalEntries.add(Entry(it, Entry.YES_MANUAL)) }
+        h.recompute()
+        return h
+    }
+
+    @Test
+    fun testGoalReachedWithinOneCalendarMonthFillsTheWholeMonth() {
+        val checks = arrayOf(day(10), day(11), day(12))
+        val h = monthly(true, *checks)
+        assertTrue(h.isCompletedOn(day(1)))
+        assertTrue(h.isCompletedOn(day(31)))
+        assertFalse(h.isCompletedOn(LocalDate(2014, 12, 31)))
+        assertEquals(Entry.UNKNOWN, monthly(false, *checks).computedEntries.get(day(1)).value)
+    }
+
+    @Test
+    fun testChecksAcrossMonthChangeDoNotReachTheCalendarGoal() {
+        val checks = arrayOf(LocalDate(2014, 12, 30), LocalDate(2014, 12, 31), day(1))
+        assertFalse(monthly(true, *checks).isCompletedOn(day(2)))
+        assertTrue(monthly(false, *checks).isCompletedOn(day(2)))
+    }
+
+    @Test
+    fun testScoreRestartsWithEachCalendarMonth() {
+        val checks = arrayOf(LocalDate(2014, 12, 10), LocalDate(2014, 12, 11), LocalDate(2014, 12, 12))
+        val h = monthly(true, *checks)
+        assertTrue(h.scores[day(1)].value < h.scores[LocalDate(2014, 12, 31)].value)
+    }
+
+    @Test
+    fun testNumericalMonthRollingVersusCalendar() {
+        val december = LocalDate(2014, 12, 20)
+        fun habit(calendarPeriod: Boolean): Habit {
+            val h = modelFactory.buildHabit()
+            h.type = HabitType.NUMERICAL
+            h.frequency = Frequency(1, 30)
+            h.targetValue = 100.0
+            h.calendarPeriod = calendarPeriod
+            h.originalEntries.add(Entry(december, 60000))
+            h.originalEntries.add(Entry(day(10), 50000))
+            h.recompute()
+            return h
+        }
+        // Rolling: 60 + 50 within the 30 days ending on Jan 10; the 60 falls out of the window on Jan 19
+        assertTrue(habit(false).isCompletedOn(day(10)))
+        assertTrue(habit(false).isCompletedOn(day(18)))
+        assertFalse(habit(false).isCompletedOn(day(19)))
+        // Calendar: only January counts
+        assertFalse(habit(true).isCompletedOn(day(10)))
+    }
+
     @Test
     fun testCopyFromAndEqualsIncludeTheWeekMode() {
         val a = modelFactory.buildHabit()
         val b = modelFactory.buildHabit()
         b.uuid = a.uuid
-        a.calendarWeek = true
+        a.calendarPeriod = true
         assertFalse(a == b)
         b.copyFrom(a)
-        assertTrue(b.calendarWeek)
+        assertTrue(b.calendarPeriod)
         assertTrue(a == b)
     }
 }

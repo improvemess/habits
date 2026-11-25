@@ -26,6 +26,7 @@ import org.isoron.platform.io.run
 import org.isoron.uhabits.core.BaseUnitTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class Version33Test : BaseUnitTest() {
 
@@ -36,16 +37,22 @@ class Version33Test : BaseUnitTest() {
     fun testMigrateTo33KeepsWeeklyBehavior() = runTest {
         val db = openDatabaseResource("/databases/022.db")
         db.migrateTo(32) { loadMigration(it) }
-        db.run("update Habits set type = 0, freq_num = 3, freq_den = 7 where id = (select min(id) from Habits)")
-        db.run("update Habits set type = 1, freq_num = 1, freq_den = 30 where id = (select max(id) - 1 from Habits)")
-        db.run("update Habits set type = 1, freq_num = 1, freq_den = 7 where id = (select max(id) from Habits)")
+        val ids = mutableListOf<Long>()
+        db.query("select id from Habits order by id") { stmt -> ids.add(stmt.getLong(0)) }
+        assertTrue(ids.size >= 2, "need at least 2 habits, found ${ids.size}")
+        // Duplicate a habit to get a third one
+        db.run("create temp table copy as select * from Habits where id = ${ids[0]}")
+        db.run("update copy set id = 9999, uuid = 'copy', position = 99")
+        db.run("insert into Habits select * from copy")
+        ids.add(9999)
+        db.run("update Habits set type = 0, freq_num = 3, freq_den = 7 where id = ${ids[0]}")
+        db.run("update Habits set type = 1, freq_num = 1, freq_den = 30 where id = ${ids[1]}")
+        db.run("update Habits set type = 1, freq_num = 1, freq_den = 7 where id = ${ids[2]}")
         db.migrateTo(33) { loadMigration(it) }
 
         val values = mutableListOf<Int>()
-        db.query("select calendar_week from Habits order by id") { stmt -> values.add(stmt.getInt(0)) }
-        // Yes/no goals keep rolling; measurable weekly goals were always evaluated per calendar week
-        assertEquals(0, values.first())
-        assertEquals(0, values[values.size - 2])
-        assertEquals(1, values.last())
+        db.query("select calendar_period from Habits order by id") { stmt -> values.add(stmt.getInt(0)) }
+        // Yes/no goals keep rolling; measurable weekly and monthly goals were always evaluated per calendar period
+        assertEquals(listOf(0, 1, 1), values.take(3))
     }
 }

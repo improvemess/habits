@@ -147,6 +147,9 @@
     <string name="week_mode">Woche</string>
     <string name="week_mode_rolling">Rollierende Woche</string>
     <string name="week_mode_calendar">Kalenderwoche</string>
+    <string name="month_mode">Monat</string>
+    <string name="month_mode_rolling">Rollierender Monat</string>
+    <string name="month_mode_calendar">Kalendermonat</string>
     <string name="help">Hilfe &amp; FAQ</string>
     <string name="could_not_export">Fehler beim Exportieren der Daten.</string>
     <string name="could_not_import">Fehler beim Importieren der Daten.</string>

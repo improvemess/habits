@@ -43,7 +43,7 @@ data class Habit(
     /** First day on which an avoided ("negative") habit counts as done; null for normal habits. */
     var negativeSince: LocalDate? = null,
     /** Whether a weekly goal counts per calendar week instead of per rolling 7 days (see #23). */
-    var calendarWeek: Boolean = false,
+    var calendarPeriod: Boolean = false,
     val computedEntries: EntryList,
     val originalEntries: EntryList,
     val scores: ScoreList,
@@ -95,7 +95,7 @@ data class Habit(
             originalEntries = entriesWithAutoChecks(entriesWithPauses()),
             frequency = effectiveFrequency,
             isNumerical = isNumerical,
-            calendarWeek = calendarWeek
+            calendarPeriod = calendarPeriod
         )
 
         computedEntries.recomputeCompletion(
@@ -103,7 +103,7 @@ data class Habit(
             isNumerical = isNumerical,
             targetType = targetType,
             targetValue = targetValue,
-            calendarWeek = calendarWeek
+            calendarPeriod = calendarPeriod
         )
 
         clearCompletionBeforeCreation()
@@ -118,7 +118,7 @@ data class Habit(
             frequency = effectiveFrequency,
             isNumerical = isNumerical,
             numericalHabitType = targetType,
-            calendarWeek = calendarWeek,
+            calendarPeriod = calendarPeriod,
             targetValue = targetValue,
             computedEntries = computedEntries,
             from = from,
@@ -217,7 +217,7 @@ data class Habit(
         this.unit = other.unit
         this.uuid = other.uuid
         this.negativeSince = other.negativeSince
-        this.calendarWeek = other.calendarWeek
+        this.calendarPeriod = other.calendarPeriod
     }
 
     override fun equals(other: Any?): Boolean {
@@ -240,7 +240,7 @@ data class Habit(
         if (unit != other.unit) return false
         if (uuid != other.uuid) return false
         if (negativeSince != other.negativeSince) return false
-        if (calendarWeek != other.calendarWeek) return false
+        if (calendarPeriod != other.calendarPeriod) return false
 
         return true
     }
@@ -262,7 +262,7 @@ data class Habit(
         result = 31 * result + unit.hashCode()
         result = 31 * result + (uuid?.hashCode() ?: 0)
         result = 31 * result + (negativeSince?.hashCode() ?: 0)
-        result = 31 * result + calendarWeek.hashCode()
+        result = 31 * result + calendarPeriod.hashCode()
         return result
     }
 }
