@@ -23,13 +23,9 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.provider.Settings
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
 import me.tatarka.inject.annotations.Inject
-import nl.dionsegijn.konfetti.core.Party
-import nl.dionsegijn.konfetti.core.Position
-import nl.dionsegijn.konfetti.core.emitter.Emitter
 import org.isoron.platform.gui.toInt
 import org.isoron.platform.io.JavaUserFile
 import org.isoron.uhabits.R
@@ -77,7 +73,6 @@ import org.isoron.uhabits.intents.IntentFactory
 import org.isoron.uhabits.tasks.ExportDBTaskFactory
 import org.isoron.uhabits.tasks.ImportDataTask
 import org.isoron.uhabits.tasks.ImportDataTaskFactory
-import org.isoron.uhabits.utils.ColorUtils
 import org.isoron.uhabits.utils.copyTo
 import org.isoron.uhabits.utils.currentTheme
 import org.isoron.uhabits.utils.dismissCurrentAndShow
@@ -87,7 +82,6 @@ import org.isoron.uhabits.utils.showSendEmailScreen
 import org.isoron.uhabits.utils.showSendFileScreen
 import java.io.File
 import java.io.IOException
-import java.util.concurrent.TimeUnit
 
 const val RESULT_IMPORT_DATA = 101
 const val RESULT_EXPORT_CSV = 102
@@ -257,38 +251,6 @@ class ListHabitsScreen(
 
     override fun showSendFileScreen(filename: String) {
         activity.showSendFileScreen(filename)
-    }
-
-    override fun showConfetti(color: PaletteColor, x: Float, y: Float) {
-        if (x == 0f && y == 0f) return
-        if (preferences.isConfettiAnimationDisabled) return
-        if (Settings.Global.getFloat(
-                activity.contentResolver,
-                Settings.Global.ANIMATOR_DURATION_SCALE,
-                1f
-            ) == 0f
-        ) {
-            return
-        }
-        val baseColor = themeSwitcher.currentTheme!!.color(color).toInt()
-        rootView.value.konfettiView.start(
-            Party(
-                speed = 0f,
-                maxSpeed = 16f,
-                damping = 0.9f,
-                spread = 360,
-                angle = 0,
-                colors = listOf(
-                    ColorUtils.changeHue(baseColor, 180f),
-                    ColorUtils.changeHue(baseColor, 20f),
-                    ColorUtils.changeHue(baseColor, -20f),
-                    baseColor
-                ),
-                position = Position.Absolute(x, y),
-                emitter = Emitter(duration = 25, TimeUnit.MILLISECONDS).max(25),
-                timeToLive = 0
-            )
-        )
     }
 
     override fun showSettingsScreen() {

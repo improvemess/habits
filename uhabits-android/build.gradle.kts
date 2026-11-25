@@ -140,7 +140,6 @@ dependencies {
     implementation(libs.material)
     implementation(libs.documentfile)
     implementation(libs.opencsv)
-    implementation(libs.konfetti.xml)
     implementation(libs.work.runtime.ktx)
     implementation(libs.zxing.core)
     implementation(project(":uhabits-core"))
