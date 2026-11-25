@@ -18,14 +18,17 @@
  */
 package org.isoron.uhabits.core.events
 
+import org.isoron.uhabits.core.commands.AddPauseCommand
 import org.isoron.uhabits.core.commands.ArchiveHabitsCommand
 import org.isoron.uhabits.core.commands.ChangeHabitCategoryCommand
 import org.isoron.uhabits.core.commands.ChangeHabitColorCommand
+import org.isoron.uhabits.core.commands.ChangePauseEndCommand
 import org.isoron.uhabits.core.commands.Command
 import org.isoron.uhabits.core.commands.CommandRunner
 import org.isoron.uhabits.core.commands.CreateRepetitionCommand
 import org.isoron.uhabits.core.commands.DeleteHabitsCommand
 import org.isoron.uhabits.core.commands.EditHabitCommand
+import org.isoron.uhabits.core.commands.RemovePauseCommand
 import org.isoron.uhabits.core.commands.RenameCategoryCommand
 import org.isoron.uhabits.core.commands.ReorderHabitCommand
 import org.isoron.uhabits.core.commands.UnarchiveHabitsCommand
@@ -37,8 +40,8 @@ import org.isoron.uhabits.core.models.Habit
  * - a [HabitEvent] for every entry change. All entry changes (list, habit
  *   screen, widgets, notifications, automation) go through
  *   [CreateRepetitionCommand], so this is the single hook point for them.
- * - a [HabitLifecycleEvent] when a habit is edited, archived, unarchived or
- *   deleted. [HabitLifecycleEvent.Updated] is only sent when the habit's
+ * - a [HabitLifecycleEvent] when a habit is edited, paused, archived,
+ *   unarchived or deleted. [HabitLifecycleEvent.Updated] is only sent when the habit's
  *   [HabitSnapshot] differs from the one last sent, so that e.g. reordering
  *   does not produce events. Imports change habits without commands and
  *   produce no events.
@@ -72,6 +75,9 @@ class HabitEventPublisher(
             is RenameCategoryCommand ->
                 publishUpdates(command.habitList.filter { it.category == command.newCategory })
             is ReorderHabitCommand -> publishUpdates(listOf(command.habit))
+            is AddPauseCommand -> publishUpdates(listOf(command.habit))
+            is ChangePauseEndCommand -> publishUpdates(listOf(command.habit))
+            is RemovePauseCommand -> publishUpdates(listOf(command.habit))
             is ArchiveHabitsCommand ->
                 publishEach(command.selected) { HabitLifecycleEvent.Archived(it) }
             is UnarchiveHabitsCommand ->
