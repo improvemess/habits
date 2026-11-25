@@ -146,18 +146,33 @@ class HeaderView(
         private fun monthName(month: Int, style: TextStyle): String =
             Month.of(month).getDisplayName(style, Locale.getDefault())
 
-        /** Month (and year) of the visible days, e.g. "November 2026" or "Oct – Nov 2026". */
-        private fun monthLabel(newest: LocalDate, oldest: LocalDate): String {
-            if (newest.year == oldest.year && newest.month == oldest.month) {
-                return "${monthName(newest.month, TextStyle.FULL_STANDALONE)} ${newest.year}"
+        /**
+         * Month (and year) that has the most days among the visible columns, e.g. "November 2026".
+         * On a tie the newer month wins.
+         */
+        private fun monthLabel(newest: LocalDate, count: Int): String {
+            var bestMonth = newest.month
+            var bestYear = newest.year
+            var bestCount = 0
+            var curMonth = newest.month
+            var curYear = newest.year
+            var curCount = 0
+            for (i in 0 until count) {
+                val d = newest.minus(i)
+                if (d.month == curMonth && d.year == curYear) {
+                    curCount++
+                } else {
+                    curMonth = d.month
+                    curYear = d.year
+                    curCount = 1
+                }
+                if (curCount > bestCount) {
+                    bestCount = curCount
+                    bestMonth = curMonth
+                    bestYear = curYear
+                }
             }
-            val from = monthName(oldest.month, TextStyle.SHORT_STANDALONE)
-            val to = monthName(newest.month, TextStyle.SHORT_STANDALONE)
-            return if (newest.year == oldest.year) {
-                "$from – $to ${newest.year}"
-            } else {
-                "$from ${oldest.year} – $to ${newest.year}"
-            }
+            return "${monthName(bestMonth, TextStyle.FULL_STANDALONE)} $bestYear"
         }
 
         private val chipPaint = TextPaint().apply {
@@ -178,8 +193,7 @@ class HeaderView(
             if (count <= 0) return
             val today = getToday()
             val newest = today.minus(dataOffset)
-            val oldest = today.minus(count - 1 + dataOffset)
-            val label = monthLabel(newest, oldest)
+            val label = monthLabel(newest, count)
             val margin = dp(16.0f)
             val available = canvas.width - count * width - 2 * margin
             if (available <= 0) return
