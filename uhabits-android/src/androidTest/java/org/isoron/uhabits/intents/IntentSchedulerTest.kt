@@ -19,6 +19,7 @@
 package org.isoron.uhabits.intents
 
 import android.content.ContentUris.parseId
+import android.os.SystemClock
 import androidx.test.filters.MediumTest
 import org.hamcrest.Matchers.equalTo
 import org.isoron.uhabits.BaseAndroidTest
@@ -59,31 +60,37 @@ class IntentSchedulerTest : BaseAndroidTest() {
     @Throws(Exception::class)
     fun testSetSystemTime() {
         setSystemTime("America/Chicago", 2020, JUNE, 1, 12, 40)
-        var cal = GregorianCalendar()
-        assertThat(cal.timeZone, equalTo(TimeZone.getTimeZone("America/Chicago")))
-        assertThat(cal[YEAR], equalTo(2020))
-        assertThat(cal[MONTH], equalTo(JUNE))
-        assertThat(cal[DAY_OF_MONTH], equalTo(1))
-        assertThat(cal[HOUR_OF_DAY], equalTo(12))
-        assertThat(cal[MINUTE], equalTo(40))
+        eventually {
+            val cal = GregorianCalendar()
+            assertThat(cal.timeZone, equalTo(TimeZone.getTimeZone("America/Chicago")))
+            assertThat(cal[YEAR], equalTo(2020))
+            assertThat(cal[MONTH], equalTo(JUNE))
+            assertThat(cal[DAY_OF_MONTH], equalTo(1))
+            assertThat(cal[HOUR_OF_DAY], equalTo(12))
+            assertThat(cal[MINUTE], equalTo(40))
+        }
 
         setSystemTime("Europe/Paris", 2019, MAY, 15, 6, 30)
-        cal = GregorianCalendar()
-        assertThat(cal.timeZone, equalTo(TimeZone.getTimeZone("Europe/Paris")))
-        assertThat(cal[YEAR], equalTo(2019))
-        assertThat(cal[MONTH], equalTo(MAY))
-        assertThat(cal[DAY_OF_MONTH], equalTo(15))
-        assertThat(cal[HOUR_OF_DAY], equalTo(6))
-        assertThat(cal[MINUTE], equalTo(30))
+        eventually {
+            val cal = GregorianCalendar()
+            assertThat(cal.timeZone, equalTo(TimeZone.getTimeZone("Europe/Paris")))
+            assertThat(cal[YEAR], equalTo(2019))
+            assertThat(cal[MONTH], equalTo(MAY))
+            assertThat(cal[DAY_OF_MONTH], equalTo(15))
+            assertThat(cal[HOUR_OF_DAY], equalTo(6))
+            assertThat(cal[MINUTE], equalTo(30))
+        }
 
         setSystemTime("Asia/Tokyo", 2021, DECEMBER, 20, 18, 0)
-        cal = GregorianCalendar()
-        assertThat(cal.timeZone, equalTo(TimeZone.getTimeZone("Asia/Tokyo")))
-        assertThat(cal[YEAR], equalTo(2021))
-        assertThat(cal[MONTH], equalTo(DECEMBER))
-        assertThat(cal[DAY_OF_MONTH], equalTo(20))
-        assertThat(cal[HOUR_OF_DAY], equalTo(18))
-        assertThat(cal[MINUTE], equalTo(0))
+        eventually {
+            val cal = GregorianCalendar()
+            assertThat(cal.timeZone, equalTo(TimeZone.getTimeZone("Asia/Tokyo")))
+            assertThat(cal[YEAR], equalTo(2021))
+            assertThat(cal[MONTH], equalTo(DECEMBER))
+            assertThat(cal[DAY_OF_MONTH], equalTo(20))
+            assertThat(cal[HOUR_OF_DAY], equalTo(18))
+            assertThat(cal[MINUTE], equalTo(0))
+        }
     }
 
     @Test
@@ -103,7 +110,7 @@ class IntentSchedulerTest : BaseAndroidTest() {
         assertNull(ReminderReceiver.lastReceivedIntent)
 
         setSystemTime("America/Chicago", 2020, JUNE, 2, 22, 46)
-        val intent = ReminderReceiver.lastReceivedIntent!!
+        val intent = eventually { ReminderReceiver.lastReceivedIntent!! }
         assertThat(parseId(intent.data!!), equalTo(habit.id))
     }
 
@@ -122,6 +129,26 @@ class IntentSchedulerTest : BaseAndroidTest() {
         assertNull(WidgetReceiver.lastReceivedIntent)
 
         setSystemTime("America/Chicago", 2020, JUNE, 2, 22, 46)
-        WidgetReceiver.lastReceivedIntent!!
+        eventually { WidgetReceiver.lastReceivedIntent!! }
+    }
+
+    /**
+     * Retries [block] until it no longer fails or [timeoutMillis] have passed.
+     * On a busy emulator (e.g. shortly after booting) time changes and alarms
+     * can take longer than the one second setSystemTime waits.
+     */
+    private fun <T> eventually(timeoutMillis: Long = 10_000, block: () -> T): T {
+        // elapsedRealtime is not affected by the system time the tests change.
+        val deadline = SystemClock.elapsedRealtime() + timeoutMillis
+        while (true) {
+            try {
+                return block()
+            } catch (e: AssertionError) {
+                if (SystemClock.elapsedRealtime() > deadline) throw e
+            } catch (e: NullPointerException) {
+                if (SystemClock.elapsedRealtime() > deadline) throw e
+            }
+            Thread.sleep(100)
+        }
     }
 }
