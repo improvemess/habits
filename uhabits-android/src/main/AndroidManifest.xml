@@ -115,6 +115,43 @@
         </activity>
 
         <activity
+            android:name=".sharing.FriendsActivity"
+            android:label="@string/friends">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.habits.list.ListHabitsActivity" />
+        </activity>
+
+        <!-- Invite links to follow a friend's habit (#35). -->
+        <activity
+            android:name=".sharing.AcceptInviteActivity"
+            android:exported="true"
+            android:label="@string/accept_invite"
+            android:theme="@style/Theme.AppCompat.Light.Dialog.Alert">
+            <!-- From the invite landing page of any sharing server. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="uhabits" android:host="invite" />
+            </intent-filter>
+            <!-- Links of the default server; open the app directly once the server serves
+                 assetlinks.json (uhabits-server#10). -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="uhabits.oliverlorenz.com" android:pathPrefix="/invite/" />
+            </intent-filter>
+            <!-- "Share to Loop" with an invite link from a messenger. -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+
+        <activity
             android:name=".sharing.ShareHabitActivity"
             android:label="@string/share_with_friends">
             <meta-data
