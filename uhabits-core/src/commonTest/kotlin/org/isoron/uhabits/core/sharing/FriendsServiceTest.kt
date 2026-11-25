@@ -24,6 +24,7 @@ import org.isoron.platform.io.TestDatabaseHelper
 import org.isoron.platform.time.LocalDate
 import org.isoron.platform.time.setToday
 import org.isoron.uhabits.core.events.HabitEvent
+import org.isoron.uhabits.core.events.PausePeriod
 import org.isoron.uhabits.core.io.StandardLogging
 import org.isoron.uhabits.core.models.Entry
 import kotlin.test.AfterTest
@@ -184,5 +185,24 @@ class FriendsServiceTest {
         assertEquals(Entry.UNKNOWN, habit.originalEntries.get(today.minus(5)).value)
         assertEquals(3, habit.streaks.getBest(1).single().length)
         assertTrue(habit.scores[today].value > 0)
+    }
+
+    @Test
+    fun testHabitOfKeepsStreakThroughPauses() = runTest {
+        init()
+        val paused = metadata.copy(pauses = listOf(PausePeriod(today.minus(2), today.minus(1))))
+        api.shareContents["share-of-c1"] = ShareContent(
+            status = "active",
+            meta = SharePayloads.sealMetadata(key, "share-of-c1", paused),
+            entries = listOf(today, today.minus(3)).map { date ->
+                ReadEntry(date, SharePayloads.sealEntry(key, "share-of-c1", date, yes), 1)
+            },
+            revision = 1
+        )
+        val share = (service.accept(link, null) as AcceptResult.Accepted).friendShare
+        val habit = service.habitOf(share)!!
+        assertTrue(habit.pauses.isPaused(today.minus(1)))
+        assertEquals(Entry.SKIP, habit.computedEntries.get(today.minus(1)).value)
+        assertEquals(4, habit.streaks.getBest(1).single().length)
     }
 }

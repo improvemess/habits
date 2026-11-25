@@ -26,6 +26,7 @@ import org.isoron.uhabits.core.models.Habit
 import org.isoron.uhabits.core.models.HabitType
 import org.isoron.uhabits.core.models.NumericalHabitType
 import org.isoron.uhabits.core.models.PaletteColor
+import org.isoron.uhabits.core.models.Pause
 import org.isoron.uhabits.core.models.memory.MemoryModelFactory
 
 /** Result of [FriendsService.accept]. */
@@ -170,6 +171,7 @@ class FriendsService(
         }
         habit.negativeSince = meta.negativeSince
         habit.calendarPeriod = meta.calendarPeriod
+        for (pause in meta.pauses) habit.pauses.add(Pause(pause.start, pause.end))
         for ((date, value) in store.entries(friendShare.id)) {
             if (date >= meta.historyStart) habit.originalEntries.add(Entry(date, value))
         }

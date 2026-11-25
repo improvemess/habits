@@ -63,5 +63,10 @@ data class HabitSnapshot(
     /** First day an avoided ("negative") habit counts as done; null for normal habits. */
     val negativeSince: LocalDate? = null,
     /** Weekly goals count per calendar week instead of per rolling 7 days. */
-    val calendarPeriod: Boolean = false
+    val calendarPeriod: Boolean = false,
+    /** Paused periods; their titles are private and left out. */
+    val pauses: List<PausePeriod> = emptyList()
 )
+
+/** A paused period of a habit, both days inclusive. */
+data class PausePeriod(val start: LocalDate, val end: LocalDate)

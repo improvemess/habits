@@ -20,13 +20,16 @@ package org.isoron.uhabits.core.events
 
 import org.isoron.platform.time.getToday
 import org.isoron.uhabits.core.BaseUnitTest
+import org.isoron.uhabits.core.commands.AddPauseCommand
 import org.isoron.uhabits.core.commands.ArchiveHabitsCommand
 import org.isoron.uhabits.core.commands.ChangeHabitCategoryCommand
 import org.isoron.uhabits.core.commands.ChangeHabitColorCommand
+import org.isoron.uhabits.core.commands.ChangePauseEndCommand
 import org.isoron.uhabits.core.commands.CreateRepetitionCommand
 import org.isoron.uhabits.core.commands.DeleteHabitsCommand
 import org.isoron.uhabits.core.commands.EditHabitCommand
 import org.isoron.uhabits.core.commands.EntrySource
+import org.isoron.uhabits.core.commands.RemovePauseCommand
 import org.isoron.uhabits.core.commands.RenameCategoryCommand
 import org.isoron.uhabits.core.commands.ReorderHabitCommand
 import org.isoron.uhabits.core.commands.ReorderTarget
@@ -223,5 +226,19 @@ class HabitLifecycleEventPublisherTest : BaseUnitTest() {
         edit { name = "Read" }
         assertIs<HabitLifecycleEvent.Updated>(events.single())
         assertEquals(habit.uuid, events.single().habitUuid)
+    }
+
+    @Test
+    fun testPausesArePublishedWithoutTitle() {
+        publisher()
+        val today = getToday()
+        commandRunner.run(AddPauseCommand(habitList, habit, today, today.plus(3), "Holiday in Rome"))
+        assertEquals(listOf(PausePeriod(today, today.plus(3))), updates().last().snapshot.pauses)
+        val pause = habit.pauses.getAll().single()
+        commandRunner.run(ChangePauseEndCommand(habitList, habit, pause, today.plus(5)))
+        assertEquals(listOf(PausePeriod(today, today.plus(5))), updates().last().snapshot.pauses)
+        commandRunner.run(RemovePauseCommand(habitList, habit, habit.pauses.getAll().single()))
+        assertEquals(emptyList(), updates().last().snapshot.pauses)
+        assertEquals(3, updates().size)
     }
 }

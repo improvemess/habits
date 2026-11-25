@@ -24,6 +24,7 @@ import kotlinx.serialization.json.Json
 import org.isoron.platform.time.LocalDate
 import org.isoron.uhabits.core.events.HabitEvent
 import org.isoron.uhabits.core.events.HabitSnapshot
+import org.isoron.uhabits.core.events.PausePeriod
 import org.isoron.uhabits.core.models.Entry
 import kotlin.math.roundToInt
 
@@ -47,7 +48,9 @@ data class SharedHabitMetadata(
     /** First day an avoided ("negative") habit counts as done; null for normal habits. */
     val negativeSince: LocalDate? = null,
     /** Weekly goals count per calendar week instead of per rolling 7 days. */
-    val calendarPeriod: Boolean = false
+    val calendarPeriod: Boolean = false,
+    /** Paused periods (without their private titles). */
+    val pauses: List<PausePeriod> = emptyList()
 ) {
     companion object {
         fun from(snapshot: HabitSnapshot, historyStart: LocalDate) = SharedHabitMetadata(
@@ -63,7 +66,8 @@ data class SharedHabitMetadata(
             targetType = snapshot.targetType,
             historyStart = historyStart,
             negativeSince = snapshot.negativeSince,
-            calendarPeriod = snapshot.calendarPeriod
+            calendarPeriod = snapshot.calendarPeriod,
+            pauses = snapshot.pauses
         )
     }
 }
@@ -126,7 +130,9 @@ class SharePayloadException(message: String, cause: Throwable? = null) : Excepti
  *   "color":3,"freqNum":3,"freqDen":7,"type":"YES_NO","unit":"","historyStart":"2026-11-24"}`
  *
  * Optional: `"negativeSince":"2026-11-01"` for avoided habits and
- * `"calendarPeriod":true` for weekly goals per calendar week.
+ * `"calendarPeriod":true` for weekly goals per calendar week,
+ * `"pauses":[{"start":"2026-12-20","end":"2027-01-02"}]` for paused periods
+ * (their titles stay private).
  *
  * Entry, e.g. `{"v":1,"state":"YES"}` or `{"v":1,"state":"VALUE","value":2.5}`.
  */
@@ -154,7 +160,10 @@ object SharePayloads {
             targetType = metadata.targetType?.name,
             historyStart = metadata.historyStart.toCSVString(),
             negativeSince = metadata.negativeSince?.toCSVString(),
-            calendarPeriod = if (metadata.calendarPeriod) true else null
+            calendarPeriod = if (metadata.calendarPeriod) true else null,
+            pauses = metadata.pauses.takeIf { it.isNotEmpty() }?.map {
+                PauseV1(it.start.toCSVString(), it.end.toCSVString())
+            }
         )
     )
 
@@ -176,7 +185,13 @@ object SharePayloads {
             targetType = m.targetType?.let { HabitEvent.TargetType.valueOf(it) },
             historyStart = parseDate(m.historyStart),
             negativeSince = m.negativeSince?.let { parseDate(it) },
-            calendarPeriod = m.calendarPeriod == true
+            calendarPeriod = m.calendarPeriod == true,
+            pauses = m.pauses.orEmpty().map { pause ->
+                val start = parseDate(pause.start)
+                val end = parseDate(pause.end)
+                require(!end.isOlderThan(start)) { "pause ends before it starts" }
+                PausePeriod(start, end)
+            }
         )
     }
 
@@ -244,8 +259,12 @@ object SharePayloads {
         val historyStart: String,
         // Optional since the start of v1; omitted for normal habits.
         val negativeSince: String? = null,
-        val calendarPeriod: Boolean? = null
+        val calendarPeriod: Boolean? = null,
+        val pauses: List<PauseV1>? = null
     )
+
+    @Serializable
+    private data class PauseV1(val start: String, val end: String)
 
     @Serializable
     private data class EntryV1(
