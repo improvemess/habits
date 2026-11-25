@@ -51,8 +51,8 @@ android {
     }
 
     defaultConfig {
-        versionCode = 21501
-        versionName = "2.15.1"
+        versionCode = 21600
+        versionName = "2.16.0"
         minSdk = 28
         targetSdk = 36
         applicationId = "org.isoron.uhabits"
@@ -140,7 +140,6 @@ dependencies {
     implementation(libs.material)
     implementation(libs.documentfile)
     implementation(libs.opencsv)
-    implementation(libs.konfetti.xml)
     implementation(libs.work.runtime.ktx)
     implementation(libs.zxing.core)
     implementation(project(":uhabits-core"))
