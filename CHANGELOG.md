@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.25.0](https://github.com/oliverlorenz/uhabits/compare/v2.24.0...v2.25.0) (2026-11-25)
+
+* run Android assemble, unit tests and lint as parallel jobs ([#89](https://github.com/oliverlorenz/uhabits/issues/89)) ([097c0ba](https://github.com/oliverlorenz/uhabits/commit/097c0ba937c68b31fdd95975bed281c6110191ea))
+
+### Features
+
+* share pauses with friends ([#93](https://github.com/oliverlorenz/uhabits/issues/93)) ([c563c95](https://github.com/oliverlorenz/uhabits/commit/c563c95c3e86aa71ea94336fdfdf45b880ad11a9)), closes [#84](https://github.com/oliverlorenz/uhabits/issues/84) [#36](https://github.com/oliverlorenz/uhabits/issues/36), references [#22](https://github.com/oliverlorenz/uhabits/issues/22)
+
 ## [2.24.0](https://github.com/oliverlorenz/uhabits/compare/v2.23.0...v2.24.0) (2026-11-25)
 
 ### Features
