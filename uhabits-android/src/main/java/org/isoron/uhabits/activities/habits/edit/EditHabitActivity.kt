@@ -61,13 +61,23 @@ import org.isoron.uhabits.utils.dismissCurrentAndShow
 import org.isoron.uhabits.utils.formatTime
 import org.isoron.uhabits.utils.toFormattedString
 
-fun formatFrequency(freqNum: Int, freqDen: Int, resources: Resources) = when {
-    freqNum == 1 && (freqDen == 30 || freqDen == 31) -> resources.getString(R.string.every_month)
-    freqDen == 30 || freqDen == 31 -> resources.getString(R.string.x_times_per_month, freqNum)
+fun formatFrequency(freqNum: Int, freqDen: Int, resources: Resources, calendarPeriod: Boolean = false) = when {
+    freqNum == 1 && (freqDen == 30 || freqDen == 31) ->
+        resources.getString(if (calendarPeriod) R.string.every_calendar_month else R.string.every_month)
+    freqDen == 30 || freqDen == 31 ->
+        resources.getString(
+            if (calendarPeriod) R.string.x_times_per_calendar_month else R.string.x_times_per_month,
+            freqNum
+        )
     freqNum == 1 && freqDen == 1 -> resources.getString(R.string.every_day)
-    freqNum == 1 && freqDen == 7 -> resources.getString(R.string.every_week)
+    freqNum == 1 && freqDen == 7 ->
+        resources.getString(if (calendarPeriod) R.string.every_calendar_week else R.string.every_week)
     freqNum == 1 && freqDen > 1 -> resources.getString(R.string.every_x_days, freqDen)
-    freqDen == 7 -> resources.getString(R.string.x_times_per_week, freqNum)
+    freqDen == 7 ->
+        resources.getString(
+            if (calendarPeriod) R.string.x_times_per_calendar_week else R.string.x_times_per_week,
+            freqNum
+        )
     else -> resources.getString(R.string.x_times_per_y_days, freqNum, freqDen)
 }
 
@@ -389,15 +399,25 @@ class EditHabitActivity : AppCompatActivity() {
 
     @SuppressLint("StringFormatMatches")
     private fun populateFrequency() {
-        binding.booleanFrequencyPicker.text = formatFrequency(freqNum, freqDen, resources)
+        binding.booleanFrequencyPicker.text = formatFrequency(freqNum, freqDen, resources, calendarPeriod)
         binding.numericalFrequencyPicker.text = periodText(freqDen) ?: "$freqNum/$freqDen"
     }
 
     /** Day, week or month period of a measurable habit; "per ..." wording for limits. */
     private fun periodText(den: Int): String? = when (den) {
         1 -> getString(if (isNegative) R.string.quit_per_day else R.string.every_day)
-        7 -> getString(if (isNegative) R.string.quit_per_week else R.string.every_week)
-        30 -> getString(if (isNegative) R.string.quit_per_month else R.string.every_month)
+        7 -> getString(
+            when {
+                isNegative -> if (calendarPeriod) R.string.quit_per_calendar_week else R.string.quit_per_rolling_week
+                else -> if (calendarPeriod) R.string.every_calendar_week else R.string.every_rolling_week
+            }
+        )
+        30 -> getString(
+            when {
+                isNegative -> if (calendarPeriod) R.string.quit_per_calendar_month else R.string.quit_per_rolling_month
+                else -> if (calendarPeriod) R.string.every_calendar_month else R.string.every_rolling_month
+            }
+        )
         else -> null
     }
 

@@ -107,7 +107,7 @@
             android:paddingEnd="8dp"
             android:background="@drawable/bg_input_box"
             android:drawableEnd="@drawable/ic_arrow_drop_down_dark"
-            android:text="@string/week_mode_rolling" />
+            android:text="@string/per_rolling_week" />
 
     <LinearLayout
             android:id="@+id/xTimesPerMonthContainer"
@@ -145,7 +145,7 @@
             android:paddingEnd="8dp"
             android:background="@drawable/bg_input_box"
             android:drawableEnd="@drawable/ic_arrow_drop_down_dark"
-            android:text="@string/month_mode_rolling" />
+            android:text="@string/per_rolling_month" />
 
     <LinearLayout
         android:id="@+id/xTimesPerYDaysContainer"

@@ -23,6 +23,7 @@ import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.PopupMenu
@@ -42,6 +43,10 @@ class FrequencyPickerDialog(
     /** Wording "per week" instead of "every week" for limits of habits to quit. */
     private val quit: Boolean = false
 ) : AppCompatDialogFragment() {
+    // The rolling or calendar choice of the week row and of the month row are independent; only the
+    // choice of the selected row is kept.
+    private var weekCalendar = calendarPeriod && freqDenominator == 7
+    private var monthCalendar = calendarPeriod && (freqDenominator == 30 || freqDenominator == 31)
     private var _binding: FrequencyPickerDialogBinding? = null
     private val binding get() = _binding!!
 
@@ -66,12 +71,12 @@ class FrequencyPickerDialog(
             )
 
             addBeforeAfterText(
-                this.getString(R.string.x_times_per_week),
+                "%d " + getString(R.string.times),
                 binding.xTimesPerWeekContainer
             )
 
             addBeforeAfterText(
-                this.getString(R.string.x_times_per_month),
+                "%d " + getString(R.string.times),
                 binding.xTimesPerMonthContainer
             )
 
@@ -82,18 +87,8 @@ class FrequencyPickerDialog(
         }
 
         updateModeTexts()
-        setUpModePicker(
-            binding.weekModePicker,
-            binding.xTimesPerWeekRadioButton,
-            R.string.week_mode_rolling,
-            R.string.week_mode_calendar
-        )
-        setUpModePicker(
-            binding.monthModePicker,
-            binding.xTimesPerMonthRadioButton,
-            R.string.month_mode_rolling,
-            R.string.month_mode_calendar
-        )
+        setUpModePicker(binding.weekModePicker, binding.xTimesPerWeekRadioButton, isWeek = true)
+        setUpModePicker(binding.monthModePicker, binding.xTimesPerMonthRadioButton, isWeek = false)
 
         binding.everyDayRadioButton.setOnClickListener {
             check(binding.everyDayRadioButton)
@@ -153,16 +148,18 @@ class FrequencyPickerDialog(
         binding.xTimesPerWeekTextView.visibility = View.GONE
         binding.xTimesPerMonthTextView.visibility = View.GONE
         binding.everyDayText.setText(if (quit) R.string.quit_per_day else R.string.every_day)
-        binding.xTimesPerWeekContainer.addView(
-            TextView(activity).apply {
-                setText(if (quit) R.string.quit_per_week else R.string.every_week)
-                setPadding((8 * resources.displayMetrics.density).toInt(), 0, 0, 0)
-            }
-        )
-        binding.xTimesPerMonthContainer.addView(
-            TextView(activity).apply {
-                setText(if (quit) R.string.quit_per_month else R.string.every_month)
-                setPadding((8 * resources.displayMetrics.density).toInt(), 0, 0, 0)
+        // Without a number, the dropdown takes the place of the text: "Every rolling week"
+        moveIntoRow(binding.weekModePicker, binding.xTimesPerWeekContainer)
+        moveIntoRow(binding.monthModePicker, binding.xTimesPerMonthContainer)
+    }
+
+    private fun moveIntoRow(picker: TextView, row: LinearLayout) {
+        (picker.parent as ViewGroup).removeView(picker)
+        val density = resources.displayMetrics.density
+        row.addView(
+            picker,
+            LinearLayout.LayoutParams(0, (40 * density).toInt(), 1f).apply {
+                marginStart = (8 * density).toInt()
             }
         )
     }
@@ -189,7 +186,7 @@ class FrequencyPickerDialog(
                 binding.xTimesPerMonthRadioButton.isChecked -> 30
                 else -> 1
             }
-            onFrequencyPicked(1, denominator, denominator > 1 && calendarPeriod)
+            onFrequencyPicked(1, denominator, selectedCalendar(denominator))
             dismiss()
             return
         }
@@ -234,25 +231,37 @@ class FrequencyPickerDialog(
         onFrequencyPicked(
             numerator,
             denominator,
-            (denominator == 7 || denominator == 30) && calendarPeriod
+            selectedCalendar(denominator)
         )
         dismiss()
     }
 
-    /** The rolling or calendar choice is a dropdown in the week row and in the month row; one value is kept. */
-    private fun setUpModePicker(
-        picker: TextView,
-        radio: RadioButton,
-        rolling: Int,
-        calendar: Int
-    ) {
+    private fun modeText(isWeek: Boolean, calendar: Boolean): Int = when {
+        measurable && quit -> if (isWeek) {
+            if (calendar) R.string.quit_per_calendar_week else R.string.quit_per_rolling_week
+        } else {
+            if (calendar) R.string.quit_per_calendar_month else R.string.quit_per_rolling_month
+        }
+        measurable -> if (isWeek) {
+            if (calendar) R.string.every_calendar_week else R.string.every_rolling_week
+        } else {
+            if (calendar) R.string.every_calendar_month else R.string.every_rolling_month
+        }
+        else -> if (isWeek) {
+            if (calendar) R.string.per_calendar_week else R.string.per_rolling_week
+        } else {
+            if (calendar) R.string.per_calendar_month else R.string.per_rolling_month
+        }
+    }
+
+    private fun setUpModePicker(picker: TextView, radio: RadioButton, isWeek: Boolean) {
         picker.setOnClickListener {
             check(radio)
             val menu = PopupMenu(requireActivity(), picker)
-            menu.menu.add(0, 0, 0, rolling)
-            menu.menu.add(0, 1, 1, calendar)
+            menu.menu.add(0, 0, 0, modeText(isWeek, false))
+            menu.menu.add(0, 1, 1, modeText(isWeek, true))
             menu.setOnMenuItemClickListener {
-                calendarPeriod = it.itemId == 1
+                if (isWeek) weekCalendar = it.itemId == 1 else monthCalendar = it.itemId == 1
                 updateModeTexts()
                 true
             }
@@ -260,13 +269,15 @@ class FrequencyPickerDialog(
         }
     }
 
+    private fun selectedCalendar(denominator: Int) = when (denominator) {
+        7 -> weekCalendar
+        30 -> monthCalendar
+        else -> false
+    }
+
     private fun updateModeTexts() {
-        binding.weekModePicker.setText(
-            if (calendarPeriod) R.string.week_mode_calendar else R.string.week_mode_rolling
-        )
-        binding.monthModePicker.setText(
-            if (calendarPeriod) R.string.month_mode_calendar else R.string.month_mode_rolling
-        )
+        binding.weekModePicker.setText(modeText(true, weekCalendar))
+        binding.monthModePicker.setText(modeText(false, monthCalendar))
     }
 
     private fun check(view: RadioButton) {
