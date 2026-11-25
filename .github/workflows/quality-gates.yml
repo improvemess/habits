@@ -2,8 +2,15 @@ name: Quality Gates
 
 # Kein paths-ignore: "Quality gate" ist Pflicht-Check auf dev und muss daher
 # bei jedem PR laufen, sonst bliebe er dauerhaft ausstehend.
+#
+# Der Lauf auf dev füllt die Caches für die PRs: GitHub-Caches gelten pro
+# Branch, PRs dürfen nur die von dev lesen. setup-gradle speichert den
+# Gradle-Build-Cache nur auf dev (in PRs nur lesend), und der AVD-Snapshot wird
+# unten ebenfalls nur auf dev gespeichert.
 on:
   pull_request:
+  push:
+    branches: [dev]
   workflow_dispatch:
 
 concurrency:
@@ -245,9 +252,11 @@ jobs:
       # Frisch gebooteter AVD als Snapshot; spätere Läufe starten daraus statt
       # kalt zu booten. Bei Änderungen an der Emulator-Konfiguration (Profil,
       # Optionen) das Suffix des Schlüssels erhöhen, damit ein neuer entsteht.
+      # Gespeichert wird nur auf dev (siehe "Save AVD snapshot"), damit alle PRs
+      # denselben Snapshot nutzen und der 2-GB-Eintrag nicht pro PR entsteht.
       - name: Restore AVD snapshot
         id: avd-cache
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: |
             ~/.android/avd/*
@@ -266,6 +275,18 @@ jobs:
           disable-animations: false
           emulator-options: -no-window -no-audio -gpu swiftshader_indirect -no-boot-anim -camera-back none
           script: echo "AVD snapshot created."
+
+      - name: Save AVD snapshot
+        if: >-
+          steps.avd-cache.outputs.cache-hit != 'true'
+          && github.ref == 'refs/heads/dev'
+          && matrix.shard == 0
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: ${{ steps.avd-cache.outputs.cache-primary-key }}
 
       - name: Run instrumented tests
         uses: reactivecircus/android-emulator-runner@v2
