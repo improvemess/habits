@@ -110,6 +110,7 @@ class ListHabitsRootView(
         )
         addView(rootView, MATCH_PARENT, MATCH_PARENT)
         listAdapter.setListView(listView)
+        listView.horizontalScrollTarget = header
     }
 
     override fun onModelChange() {

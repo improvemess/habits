@@ -26,8 +26,10 @@ import android.graphics.Paint
 import android.graphics.RectF
 import android.graphics.Typeface
 import android.text.TextPaint
+import android.text.TextUtils
 import android.view.View.MeasureSpec.EXACTLY
 import org.isoron.platform.time.JavaLocalDateFormatter
+import org.isoron.platform.time.LocalDate
 import org.isoron.platform.time.getToday
 import org.isoron.uhabits.R
 import org.isoron.uhabits.activities.common.views.ScrollableChart
@@ -38,6 +40,8 @@ import org.isoron.uhabits.utils.dp
 import org.isoron.uhabits.utils.isRTL
 import org.isoron.uhabits.utils.sres
 import org.isoron.uhabits.utils.toMeasureSpec
+import java.time.Month
+import java.time.format.TextStyle
 import java.util.Locale
 
 data class HeaderState(
@@ -120,11 +124,57 @@ class HeaderView(
             color = sres.getColor(R.attr.contrast60)
         }
 
+        private val monthPaint = TextPaint().apply {
+            isAntiAlias = true
+            textSize = dim(R.dimen.smallTextSize)
+            typeface = Typeface.DEFAULT_BOLD
+            color = sres.getColor(R.attr.contrast60)
+        }
+
+        private fun monthName(month: Int, style: TextStyle): String =
+            Month.of(month).getDisplayName(style, Locale.getDefault())
+
+        /** Month (and year) of the visible days, e.g. "November 2026" or "Oct – Nov 2026". */
+        private fun monthLabel(newest: LocalDate, oldest: LocalDate): String {
+            if (newest.year == oldest.year && newest.month == oldest.month) {
+                return "${monthName(newest.month, TextStyle.FULL_STANDALONE)} ${newest.year}"
+            }
+            val from = monthName(oldest.month, TextStyle.SHORT_STANDALONE)
+            val to = monthName(newest.month, TextStyle.SHORT_STANDALONE)
+            return if (newest.year == oldest.year) {
+                "$from – $to ${newest.year}"
+            } else {
+                "$from ${oldest.year} – $to ${newest.year}"
+            }
+        }
+
+        private fun drawMonth(canvas: Canvas, count: Int, width: Float) {
+            if (count <= 0) return
+            val today = getToday()
+            val newest = today.minus(dataOffset)
+            val oldest = today.minus(count - 1 + dataOffset)
+            val label = monthLabel(newest, oldest)
+            val margin = dp(16.0f)
+            val available = canvas.width - count * width - 2 * margin
+            if (available <= 0) return
+            val text = TextUtils.ellipsize(label, monthPaint, available, TextUtils.TruncateAt.END)
+            val baseline = canvas.height / 2f - (monthPaint.ascent() + monthPaint.descent()) / 2
+            if (isRTL()) {
+                monthPaint.textAlign = Paint.Align.RIGHT
+                canvas.drawText(text, 0, text.length, canvas.width - margin, baseline, monthPaint)
+            } else {
+                monthPaint.textAlign = Paint.Align.LEFT
+                canvas.drawText(text, 0, text.length, margin, baseline, monthPaint)
+            }
+        }
+
         fun draw(canvas: Canvas) {
             val today = getToday()
             val width = dim(R.dimen.checkmarkWidth)
             val height = dim(R.dimen.checkmarkHeight)
             val isReversed = prefs.isCheckmarkSequenceReversed
+
+            drawMonth(canvas, state?.buttonCount ?: 0, width)
 
             val em = paint.measureText("m")
 
