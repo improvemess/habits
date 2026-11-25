@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.22.0](https://github.com/oliverlorenz/uhabits/compare/v2.21.0...v2.22.0) (2026-11-25)
+
+* run instrumented tests on an emulator ([#59](https://github.com/oliverlorenz/uhabits/issues/59)) ([7111ae3](https://github.com/oliverlorenz/uhabits/commit/7111ae38cd55a82c2ea610c659658d1c878be5e0)), closes [#58](https://github.com/oliverlorenz/uhabits/issues/58), references [#57](https://github.com/oliverlorenz/uhabits/issues/57) [#57](https://github.com/oliverlorenz/uhabits/issues/57)
+* update reference images changed on purpose by [#62](https://github.com/oliverlorenz/uhabits/issues/62) and [#49](https://github.com/oliverlorenz/uhabits/issues/49) ([#88](https://github.com/oliverlorenz/uhabits/issues/88)) ([bf3a944](https://github.com/oliverlorenz/uhabits/commit/bf3a94441042f33688c65a82b11f3b2ec3eb58b7)), closes [#86](https://github.com/oliverlorenz/uhabits/issues/86) [#87](https://github.com/oliverlorenz/uhabits/issues/87), references [#58](https://github.com/oliverlorenz/uhabits/issues/58) [#59](https://github.com/oliverlorenz/uhabits/issues/59) [#85](https://github.com/oliverlorenz/uhabits/issues/85) [#67](https://github.com/oliverlorenz/uhabits/issues/67) [#72](https://github.com/oliverlorenz/uhabits/issues/72) [#85](https://github.com/oliverlorenz/uhabits/issues/85)
+
+### Features
+
+* follow friends' shared habits (core) ([#85](https://github.com/oliverlorenz/uhabits/issues/85)) ([499d07b](https://github.com/oliverlorenz/uhabits/commit/499d07bc32bc6d27ead7290565d6bf4af973f04d)), references [#35](https://github.com/oliverlorenz/uhabits/issues/35) [#36](https://github.com/oliverlorenz/uhabits/issues/36) [#16](https://github.com/oliverlorenz/uhabits/issues/16) [#23](https://github.com/oliverlorenz/uhabits/issues/23)
+
+### Bug Fixes
+
+* use uhabits.oliverlorenz.com as default sharing server ([#91](https://github.com/oliverlorenz/uhabits/issues/91)) ([deec635](https://github.com/oliverlorenz/uhabits/commit/deec635aeb91304084570eb53e3a42b76306cc93)), references [#36](https://github.com/oliverlorenz/uhabits/issues/36) [oliverlorenz/mash-inventories#12](https://github.com/oliverlorenz/mash-inventories/issues/12) [oliverlorenz/mash-playbook#838](https://github.com/oliverlorenz/mash-playbook/issues/838) [#53](https://github.com/oliverlorenz/uhabits/issues/53)
+
 ## [2.21.0](https://github.com/oliverlorenz/uhabits/compare/v2.20.0...v2.21.0) (2026-11-25)
 
 * **release:** 2.21.0 [skip ci] ([e428e80](https://github.com/oliverlorenz/uhabits/commit/e428e8026a380085b2a22e7df0425b8a9998f4cc))
