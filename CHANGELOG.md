@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.18.0](https://github.com/oliverlorenz/uhabits/compare/v2.17.0...v2.18.0) (2026-11-25)
+
+### Features
+
+* Feld „mindestens/maximal“ beim Angewöhnen entfernt ([#63](https://github.com/oliverlorenz/uhabits/issues/63)) ([#73](https://github.com/oliverlorenz/uhabits/issues/73)) ([14ff92d](https://github.com/oliverlorenz/uhabits/commit/14ff92d982620e09ea1efa411bb2a6f8456d431f))
+
 ## [2.17.0](https://github.com/oliverlorenz/uhabits/compare/v2.16.0...v2.17.0) (2026-11-25)
 
 ### Features
