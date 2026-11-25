@@ -9,6 +9,7 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
+import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import androidx.appcompat.app.AppCompatDialogFragment
 import org.isoron.uhabits.HabitsApplication
@@ -17,7 +18,6 @@ import org.isoron.uhabits.core.models.Entry
 import org.isoron.uhabits.databinding.CheckmarkPopupBinding
 import org.isoron.uhabits.utils.InterfaceUtils
 import org.isoron.uhabits.utils.getCenter
-import org.isoron.uhabits.utils.requestFocusWithKeyboard
 import org.isoron.uhabits.utils.sres
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
@@ -86,11 +86,16 @@ class NumberDialog : AppCompatDialogFragment() {
             save()
             true
         }
-        view.value.requestFocusWithKeyboard()
+        // Focus the value right away and let the dialog window open the keyboard together
+        // with the dialog, instead of simulating a tap 250 ms later (#66). The delayed tap
+        // made the keyboard appear late and could interfere with a fast tap by the user.
+        view.value.requestFocus()
+        view.value.setSelection(view.value.length())
         val dialog = Dialog(requireContext())
         dialog.setContentView(view.root)
         dialog.window?.apply {
             setBackgroundDrawableResource(android.R.color.transparent)
+            setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
         }
         return dialog
     }
