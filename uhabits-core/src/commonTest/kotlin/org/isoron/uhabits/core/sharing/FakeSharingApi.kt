@@ -27,6 +27,11 @@ class FakeSharingApi : SharingApi {
     var apiVersions = listOf("v1")
     val readers = mutableMapOf<String, MutableList<Reader>>()
     private var shareCount = 0
+
+    /** Content returned by [readShare] per share id; tests fill it in. */
+    val shareContents = mutableMapOf<String, ShareContent>()
+    val sinceRequests = mutableListOf<Long>()
+    val left = mutableListOf<String>()
     private var inviteCount = 0
     private val failures = ArrayDeque<Pair<String, Int?>>()
 
@@ -71,6 +76,23 @@ class FakeSharingApi : SharingApi {
     override suspend fun removeReader(serverUrl: String, deviceToken: String, shareId: String, readerId: String) {
         record("removeReader")
         readers[shareId]?.removeAll { it.readerId == readerId }
+    }
+
+    override suspend fun redeemInvite(serverUrl: String, code: String, displayName: String?): Redemption {
+        record("redeemInvite")
+        return Redemption("share-of-$code", "reader-$code", "rt_$code", "active")
+    }
+
+    override suspend fun readShare(serverUrl: String, readerToken: String, shareId: String, since: Long): ShareContent {
+        record("readShare")
+        sinceRequests.add(since)
+        val content = shareContents[shareId] ?: throw SharingApiException(404, "Share not found")
+        return content.copy(entries = content.entries.filter { it.revision > since })
+    }
+
+    override suspend fun leaveShare(serverUrl: String, readerToken: String) {
+        record("leaveShare")
+        left.add(readerToken)
     }
 
     override suspend fun createOwner(serverUrl: String, identity: OwnerIdentity) = record("createOwner")

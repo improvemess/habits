@@ -254,6 +254,14 @@
     <string name="first_day_of_the_week">First day of the week</string>
     <string name="notes">Notes</string>
     <string name="category">Category</string>
+    <string name="streak_unit">Streak unit</string>
+    <string name="streak_unit_auto">Automatic (%s)</string>
+    <string name="streak_unit_days">Days</string>
+    <string name="streak_unit_weeks">Weeks</string>
+    <string name="streak_unit_months">Months</string>
+    <string name="streak_unit_days_short">d</string>
+    <string name="streak_unit_weeks_short">w</string>
+    <string name="streak_unit_months_short">mo</string>
     <string name="example_notes">(Optional)</string>
     <string name="yes_or_no_example">e.g. Did you wake up early today? Did you exercise? Did you play chess?</string>
     <string name="measurable">Measurable</string>
@@ -314,4 +322,22 @@
     <string name="pref_sharing_server">Sharing server</string>
     <string name="pref_sharing_server_summary">%1$s\nUsed for new shares; existing shares keep their server.</string>
     <string name="pref_sharing_server_invalid">This is not a valid server address. Use https://, e.g. https://habits.example.com</string>
+    <string name="friends">Friends</string>
+    <string name="friends_empty">No friend shares a habit with you yet. When someone sends you an invite link, open it, or copy it and choose \"Accept invite\" here.</string>
+    <string name="friends_loading">Loading a habit from %1$s…</string>
+    <string name="friends_status_inactive">Your friend has not been active for a while.</string>
+    <string name="friends_status_ended">Your friend stopped sharing this habit.</string>
+    <string name="friends_status_removed">Your friend removed you from this habit.</string>
+    <string name="friends_leave">Stop following</string>
+    <string name="friends_leave_title">Stop following \"%1$s\"?</string>
+    <string name="friends_leave_message">You will no longer see this habit. To follow it again, you need a new invite.</string>
+    <string name="accept_invite">Accept invite</string>
+    <string name="accept_invite_button">Accept</string>
+    <string name="accept_invite_message">A friend invites you to follow one of their habits via %1$s. You will see their check marks, streak and score, but you cannot check it off.</string>
+    <string name="accept_invite_name_hint">Your name (your friend sees it)</string>
+    <string name="accept_invite_no_link">This is not a valid invite link.</string>
+    <string name="accept_invite_insecure">This invite uses an unencrypted connection (http) and cannot be accepted.</string>
+    <string name="accept_invite_incompatible">The server of this invite is not a compatible sharing server.</string>
+    <string name="accept_invite_gone">This invite has already been used or has expired. Ask your friend for a new one.</string>
+    <string name="refresh">Refresh</string>
 </resources>

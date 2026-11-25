@@ -63,7 +63,10 @@ object HabitEventFactory {
         habitType = if (habit.isNumerical) HabitEvent.Type.NUMERICAL else HabitEvent.Type.YES_NO,
         unit = habit.unit,
         target = if (habit.isNumerical) habit.targetValue else null,
-        targetType = if (habit.isNumerical) targetTypeOf(habit.targetType) else null
+        targetType = if (habit.isNumerical) targetTypeOf(habit.targetType) else null,
+        negativeSince = habit.negativeSince,
+        calendarPeriod = habit.calendarPeriod,
+        pauses = habit.pauses.getAll().map { PausePeriod(it.start, it.end) }
     )
 
     private fun stateOf(habit: Habit, raw: Int): EntryState = when {

@@ -18,6 +18,8 @@
  */
 package org.isoron.uhabits.core.events
 
+import org.isoron.platform.time.LocalDate
+
 /**
  * Transport-agnostic description of a change to a habit itself (as opposed to
  * one of its entries, see [HabitEvent]).
@@ -57,5 +59,14 @@ data class HabitSnapshot(
     /** Target value (numerical habits only, null otherwise). */
     val target: Double?,
     /** Target type (numerical habits only, null otherwise). */
-    val targetType: HabitEvent.TargetType?
+    val targetType: HabitEvent.TargetType?,
+    /** First day an avoided ("negative") habit counts as done; null for normal habits. */
+    val negativeSince: LocalDate? = null,
+    /** Weekly goals count per calendar week instead of per rolling 7 days. */
+    val calendarPeriod: Boolean = false,
+    /** Paused periods; their titles are private and left out. */
+    val pauses: List<PausePeriod> = emptyList()
 )
+
+/** A paused period of a habit, both days inclusive. */
+data class PausePeriod(val start: LocalDate, val end: LocalDate)

@@ -27,6 +27,7 @@ import org.isoron.uhabits.core.models.HabitList.Order
 import org.isoron.uhabits.core.models.HabitMatcher
 import org.isoron.uhabits.core.models.PaletteColor
 import org.isoron.uhabits.core.models.Pause
+import org.isoron.uhabits.core.models.StreakUnit
 import org.isoron.uhabits.core.ui.views.LightTheme
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -236,7 +237,7 @@ class ListHabitsPresenterTest : BaseUnitTest() {
     }
 
     private fun streakCard(habit: Habit): HabitCardState {
-        habitList.add(habit)
+        if (habit.id == null) habitList.add(habit)
         return ListHabitsPresenter.buildState(
             allHabits = habitList,
             filter = null,
@@ -278,5 +279,102 @@ class ListHabitsPresenterTest : BaseUnitTest() {
         habit.pauses.add(Pause(getToday(), getToday().plus(3)))
         habit.recompute()
         assertEquals(false, streakCard(habit).streakDoneToday)
+    }
+
+    @Test
+    fun testStreakUnitDefaultsToFrequencyAndConvertsStreak() {
+        val habit = fixtures.createEmptyHabit()
+        val today = getToday()
+        for (i in 0 until 30) habit.originalEntries.add(Entry(today.minus(i), Entry.YES_MANUAL))
+        habit.recompute()
+        val days = streakCard(habit)
+        assertEquals(StreakUnit.DAYS, days.streakUnit)
+        assertEquals(30, days.streak)
+
+        // Switching the unit only converts the number, the streak itself stays the same
+        habit.streakUnit = StreakUnit.WEEKS
+        val weeks = streakCard(habit)
+        assertEquals(StreakUnit.WEEKS, weeks.streakUnit)
+        assertEquals(4, weeks.streak)
+    }
+
+    @Test
+    fun testBrokenStreakStaysBrokenAfterUnitChange() {
+        val habit = fixtures.createEmptyHabit()
+        val today = getToday()
+        for (i in 10 until 40) habit.originalEntries.add(Entry(today.minus(i), Entry.YES_MANUAL))
+        habit.streakUnit = StreakUnit.WEEKS
+        habit.recompute()
+        assertEquals(0, streakCard(habit).streak)
+    }
+
+    @Test
+    fun testWeeklyHabitDefaultsToWeeks() {
+        val habit = fixtures.createEmptyHabit()
+        habit.frequency = Frequency.THREE_TIMES_PER_WEEK
+        habit.recompute()
+        assertEquals(StreakUnit.WEEKS, streakCard(habit).streakUnit)
+    }
+
+    @Test
+    fun testFlameIsGrayUntilFirstPeriodIsComplete() {
+        val habit = fixtures.createEmptyHabit()
+        val today = getToday()
+        for (i in 0 until 3) habit.originalEntries.add(Entry(today.minus(i), Entry.YES_MANUAL))
+        habit.recompute()
+        assertEquals(true, streakCard(habit).streakDoneToday)
+
+        habit.streakUnit = StreakUnit.MONTHS
+        val card = streakCard(habit)
+        assertEquals(0, card.streak)
+        assertEquals(false, card.streakDoneToday)
+    }
+
+    @Test
+    fun testWeeklyGoalReachedCountsAsOneWeek() {
+        val habit = fixtures.createEmptyHabit()
+        habit.frequency = Frequency.THREE_TIMES_PER_WEEK
+        val today = getToday()
+        for (i in intArrayOf(0, 1, 4)) habit.originalEntries.add(Entry(today.minus(i), Entry.YES_MANUAL))
+        habit.recompute()
+        val card = streakCard(habit)
+        assertEquals(StreakUnit.WEEKS, card.streakUnit)
+        assertEquals(1, card.streak)
+        assertEquals(true, card.streakDoneToday)
+    }
+
+    @Test
+    fun testSixChecksInARowAreOnlyOneFullWeek() {
+        val habit = fixtures.createEmptyHabit()
+        habit.frequency = Frequency.THREE_TIMES_PER_WEEK
+        val today = getToday()
+        for (i in 0 until 6) habit.originalEntries.add(Entry(today.minus(i), Entry.YES_MANUAL))
+        habit.recompute()
+        // The streak lasts 10 days with the days the goal filled in: one full week, not two
+        val streak = habit.streaks.getOngoingStreak()!!
+        assertEquals(10, streak.start.daysUntil(streak.end) + 1)
+        assertEquals(1, streakCard(habit).streak)
+    }
+
+    @Test
+    fun testWeeksOnlyCountFullSevenDays() {
+        val habit = fixtures.createEmptyHabit()
+        habit.frequency = Frequency.WEEKLY
+        val today = getToday()
+        for (i in 0 until 7) habit.originalEntries.add(Entry(today.minus(i), Entry.YES_MANUAL))
+        habit.recompute()
+        val streak = habit.streaks.getOngoingStreak()!!
+        assertEquals(13, streak.start.daysUntil(streak.end) + 1)
+        assertEquals(1, streakCard(habit).streak)
+    }
+
+    @Test
+    fun testWeeklyGoalNotReachedYetIsZero() {
+        val habit = fixtures.createEmptyHabit()
+        habit.frequency = Frequency.THREE_TIMES_PER_WEEK
+        val today = getToday()
+        habit.originalEntries.add(Entry(today, Entry.YES_MANUAL))
+        habit.recompute()
+        assertEquals(0, streakCard(habit).streak)
     }
 }

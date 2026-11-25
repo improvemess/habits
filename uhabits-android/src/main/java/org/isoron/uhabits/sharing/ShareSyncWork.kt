@@ -32,6 +32,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import org.isoron.uhabits.HabitsApplication
+import org.isoron.uhabits.core.sharing.FriendsService
 import org.isoron.uhabits.core.sharing.ShareSyncer
 import java.util.concurrent.TimeUnit
 
@@ -59,6 +60,34 @@ object ShareSyncWork {
             .build()
         WorkManager.getInstance(context)
             .enqueueUniquePeriodicWork(HEARTBEAT, ExistingPeriodicWorkPolicy.KEEP, request)
+    }
+}
+
+/** Keeps friends' habits up to date: every 6 hours, and once right away. */
+fun ShareSyncWork.scheduleFriendsSync(context: Context) {
+    val online = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
+    val manager = WorkManager.getInstance(context)
+    manager.enqueueUniquePeriodicWork(
+        "friends-sync",
+        ExistingPeriodicWorkPolicy.KEEP,
+        PeriodicWorkRequestBuilder<FriendsSyncWorker>(6, TimeUnit.HOURS).setConstraints(online).build()
+    )
+    manager.enqueueUniqueWork(
+        "friends-sync-now",
+        ExistingWorkPolicy.REPLACE,
+        OneTimeWorkRequestBuilder<FriendsSyncWorker>().setConstraints(online).build()
+    )
+}
+
+class FriendsSyncWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
+    override suspend fun doWork(): Result = try {
+        when (HabitsApplication.component.friendsService.sync()) {
+            FriendsService.Result.DONE -> Result.success()
+            FriendsService.Result.RETRY -> Result.retry()
+        }
+    } catch (e: Exception) {
+        Log.e("ShareSyncWork", "Syncing friends' habits failed", e)
+        Result.retry()
     }
 }
 

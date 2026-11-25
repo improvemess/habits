@@ -38,6 +38,8 @@ import org.isoron.uhabits.core.preferences.WidgetPreferences
 import org.isoron.uhabits.core.reminders.ReminderScheduler
 import org.isoron.uhabits.core.sharing.DeviceIdentity
 import org.isoron.uhabits.core.sharing.DeviceTokenStore
+import org.isoron.uhabits.core.sharing.FriendStore
+import org.isoron.uhabits.core.sharing.FriendsService
 import org.isoron.uhabits.core.sharing.FriendsTransport
 import org.isoron.uhabits.core.sharing.HttpSharingApi
 import org.isoron.uhabits.core.sharing.OwnerIdentityStore
@@ -81,6 +83,7 @@ abstract class HabitsApplicationComponent(
     @get:AppContext
     abstract val context: Context
     abstract val deviceIdentity: DeviceIdentity
+    abstract val friendsService: FriendsService
     abstract val friendsTransport: FriendsTransport
     abstract val genericImporter: GenericImporter
     abstract val habitList: HabitList
@@ -193,6 +196,15 @@ abstract class HabitsApplicationComponent(
         ServerSessions(sharingApi, deviceTokenStore, ownerIdentityStore, deviceIdentity),
         { System.currentTimeMillis() }
     ) { ShareSyncWork.scheduleSync(appContext) }
+
+    @AppScope
+    @Provides
+    open fun friendStore(): FriendStore = FriendStore(providedDb)
+
+    @AppScope
+    @Provides
+    open fun friendsService(friendStore: FriendStore, sharingApi: SharingApi, logging: Logging): FriendsService =
+        FriendsService(friendStore, sharingApi, { System.currentTimeMillis() }, logging)
 
     @AppScope
     @Provides

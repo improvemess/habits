@@ -43,6 +43,7 @@ import org.isoron.uhabits.activities.AndroidThemeSwitcher
 import org.isoron.uhabits.activities.common.dialogs.ColorPickerDialogFactory
 import org.isoron.uhabits.activities.common.dialogs.FrequencyPickerDialog
 import org.isoron.uhabits.activities.common.dialogs.WeekdayPickerDialog
+import org.isoron.uhabits.activities.common.views.nameRes
 import org.isoron.uhabits.core.commands.CommandRunner
 import org.isoron.uhabits.core.commands.CreateHabitCommand
 import org.isoron.uhabits.core.commands.EditHabitCommand
@@ -52,6 +53,7 @@ import org.isoron.uhabits.core.models.HabitType
 import org.isoron.uhabits.core.models.NumericalHabitType
 import org.isoron.uhabits.core.models.PaletteColor
 import org.isoron.uhabits.core.models.Reminder
+import org.isoron.uhabits.core.models.StreakUnit
 import org.isoron.uhabits.core.models.WeekdayList
 import org.isoron.uhabits.databinding.ActivityEditHabitBinding
 import org.isoron.uhabits.utils.applyBottomInset
@@ -95,6 +97,7 @@ class EditHabitActivity : AppCompatActivity() {
     var freqNum = 1
     var freqDen = 1
     var calendarPeriod = false
+    var streakUnit: StreakUnit? = null
     var reminderHour = -1
     var reminderMin = -1
     var reminderDays: WeekdayList = WeekdayList.EVERY_DAY
@@ -124,6 +127,7 @@ class EditHabitActivity : AppCompatActivity() {
             freqNum = habit.frequency.numerator
             freqDen = habit.frequency.denominator
             calendarPeriod = habit.calendarPeriod
+            streakUnit = habit.streakUnit
             targetType = habit.targetType
             negativeSince = habit.negativeSince
             isNegative = habit.isNegative
@@ -151,6 +155,7 @@ class EditHabitActivity : AppCompatActivity() {
             freqNum = state.getInt("freqNum")
             freqDen = state.getInt("freqDen")
             calendarPeriod = state.getBoolean("calendarPeriod")
+            streakUnit = StreakUnit.fromId(state.getInt("streakUnit", StreakUnit.AUTO_ID))
             reminderHour = state.getInt("reminderHour")
             reminderMin = state.getInt("reminderMin")
             reminderDays = WeekdayList(state.getInt("reminderDays"))
@@ -205,6 +210,19 @@ class EditHabitActivity : AppCompatActivity() {
                 populateFrequency()
             }
             picker.dismissCurrentAndShow(supportFragmentManager, "frequencyPicker")
+        }
+
+        binding.streakUnitPicker.setOnClickListener {
+            val names = mutableListOf(getString(R.string.streak_unit_auto, getString(defaultStreakUnit().nameRes)))
+            StreakUnit.entries.forEach { names.add(getString(it.nameRes)) }
+            AlertDialog.Builder(this)
+                .setItems(names.toTypedArray()) { dialog, which ->
+                    streakUnit = if (which == 0) null else StreakUnit.entries[which - 1]
+                    populateStreakUnit()
+                    dialog.dismiss()
+                }
+                .create()
+                .dismissCurrentAndShow()
         }
 
         populateTargetType()
@@ -313,6 +331,7 @@ class EditHabitActivity : AppCompatActivity() {
 
         habit.frequency = Frequency(freqNum, freqDen)
         habit.calendarPeriod = calendarPeriod && (freqDen == 7 || freqDen >= 30)
+        habit.streakUnit = streakUnit
         if (habitType == HabitType.NUMERICAL) {
             habit.targetValue = binding.targetInput.text.toString().toDouble()
             habit.targetType = targetType
@@ -398,7 +417,19 @@ class EditHabitActivity : AppCompatActivity() {
     }
 
     @SuppressLint("StringFormatMatches")
+    private fun defaultStreakUnit() = StreakUnit.defaultFor(Frequency(freqNum, freqDen))
+
+    private fun populateStreakUnit() {
+        val unit = streakUnit
+        binding.streakUnitPicker.text = if (unit == null) {
+            getString(R.string.streak_unit_auto, getString(defaultStreakUnit().nameRes))
+        } else {
+            getString(unit.nameRes)
+        }
+    }
+
     private fun populateFrequency() {
+        populateStreakUnit()
         binding.booleanFrequencyPicker.text = formatFrequency(freqNum, freqDen, resources, calendarPeriod)
         binding.numericalFrequencyPicker.text = periodText(freqDen) ?: "$freqNum/$freqDen"
     }
@@ -452,6 +483,7 @@ class EditHabitActivity : AppCompatActivity() {
             putInt("freqNum", freqNum)
             putInt("freqDen", freqDen)
             putBoolean("calendarPeriod", calendarPeriod)
+            putInt("streakUnit", streakUnit?.id ?: StreakUnit.AUTO_ID)
             putInt("reminderHour", reminderHour)
             putInt("reminderMin", reminderMin)
             putInt("reminderDays", reminderDays.toInteger())

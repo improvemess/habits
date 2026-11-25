@@ -216,7 +216,11 @@ open class Preferences(private val storage: Storage) {
 
     /** Server for new shares; existing shares keep theirs (see [org.isoron.uhabits.core.sharing.Share]). */
     open var sharingServerUrl: String
-        get() = storage.getString(SHARING_SERVER_KEY, SharingServers.DEFAULT).ifBlank { SharingServers.DEFAULT }
+        get() {
+            val url = storage.getString(SHARING_SERVER_KEY, SharingServers.DEFAULT)
+            // The first default never went live; installs that stored it use the real server.
+            return if (url.isBlank() || url == SharingServers.FORMER_DEFAULT) SharingServers.DEFAULT else url
+        }
         set(url) {
             storage.putString(SHARING_SERVER_KEY, url)
         }

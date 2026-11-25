@@ -283,6 +283,20 @@
                         android:inputType="textCapSentences" />
                 </LinearLayout>
             </FrameLayout>
+
+            <!-- Streak unit -->
+            <FrameLayout style="@style/FormOuterBox">
+                <LinearLayout style="@style/FormInnerBox">
+                    <TextView
+                        style="@style/FormLabel"
+                        android:text="@string/streak_unit" />
+
+                    <TextView
+                        style="@style/FormDropdown"
+                        android:id="@+id/streakUnitPicker"
+                        android:textColor="?attr/contrast100" />
+                </LinearLayout>
+            </FrameLayout>
         </LinearLayout>
     </ScrollView>
 

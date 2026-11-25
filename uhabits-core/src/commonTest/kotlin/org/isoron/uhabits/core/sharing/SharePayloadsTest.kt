@@ -22,10 +22,12 @@ import kotlinx.coroutines.test.runTest
 import org.isoron.platform.time.LocalDate
 import org.isoron.uhabits.core.events.HabitEvent
 import org.isoron.uhabits.core.events.HabitSnapshot
+import org.isoron.uhabits.core.events.PausePeriod
 import org.isoron.uhabits.core.models.Entry
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertTrue
 
 class SharePayloadsTest {
     private val start = LocalDate(2026, 11, 24)
@@ -75,6 +77,15 @@ class SharePayloadsTest {
     fun testMetadataRoundTrip() {
         assertEquals(yesNo, SharePayloads.decodeMetadata(SharePayloads.encodeMetadata(yesNo)))
         assertEquals(numerical, SharePayloads.decodeMetadata(SharePayloads.encodeMetadata(numerical)))
+    }
+
+    @Test
+    fun testOptionalFieldsOfNewerHabitFeatures() {
+        val negative = yesNo.copy(negativeSince = LocalDate(2026, 11, 1), calendarPeriod = true)
+        val encoded = SharePayloads.encodeMetadata(negative)
+        assertTrue(encoded.contains("\"negativeSince\":\"2026-11-01\""), encoded)
+        assertTrue(encoded.contains("\"calendarPeriod\":true"), encoded)
+        assertEquals(negative, SharePayloads.decodeMetadata(encoded))
     }
 
     @Test
@@ -183,5 +194,15 @@ class SharePayloadsTest {
         assertFailsWith<ShareDecryptionException> {
             SharePayloads.openEntry(key, "share-1", start.plus(1), sealedEntry)
         }
+    }
+
+    @Test
+    fun testPauses() {
+        val paused = yesNo.copy(pauses = listOf(PausePeriod(LocalDate(2026, 12, 20), LocalDate(2027, 1, 2))))
+        val encoded = SharePayloads.encodeMetadata(paused)
+        assertTrue(encoded.contains("\"pauses\":[{\"start\":\"2026-12-20\",\"end\":\"2027-01-02\"}]"), encoded)
+        assertEquals(paused, SharePayloads.decodeMetadata(encoded))
+        val reversed = encoded.replace("\"start\":\"2026-12-20\",\"end\":\"2027-01-02\"", "\"start\":\"2027-01-02\",\"end\":\"2026-12-20\"")
+        assertFailsWith<SharePayloadException> { SharePayloads.decodeMetadata(reversed) }
     }
 }

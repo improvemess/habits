@@ -24,6 +24,7 @@ import kotlinx.serialization.json.Json
 import org.isoron.platform.time.LocalDate
 import org.isoron.uhabits.core.events.HabitEvent
 import org.isoron.uhabits.core.events.HabitSnapshot
+import org.isoron.uhabits.core.events.PausePeriod
 import org.isoron.uhabits.core.models.Entry
 import kotlin.math.roundToInt
 
@@ -43,7 +44,13 @@ data class SharedHabitMetadata(
     /** Target type (numerical habits only, null otherwise). */
     val targetType: HabitEvent.TargetType?,
     /** First day that is shared; friends show the days before it as neutral. */
-    val historyStart: LocalDate
+    val historyStart: LocalDate,
+    /** First day an avoided ("negative") habit counts as done; null for normal habits. */
+    val negativeSince: LocalDate? = null,
+    /** Weekly goals count per calendar week instead of per rolling 7 days. */
+    val calendarPeriod: Boolean = false,
+    /** Paused periods (without their private titles). */
+    val pauses: List<PausePeriod> = emptyList()
 ) {
     companion object {
         fun from(snapshot: HabitSnapshot, historyStart: LocalDate) = SharedHabitMetadata(
@@ -57,7 +64,10 @@ data class SharedHabitMetadata(
             unit = snapshot.unit,
             target = snapshot.target,
             targetType = snapshot.targetType,
-            historyStart = historyStart
+            historyStart = historyStart,
+            negativeSince = snapshot.negativeSince,
+            calendarPeriod = snapshot.calendarPeriod,
+            pauses = snapshot.pauses
         )
     }
 }
@@ -119,6 +129,11 @@ class SharePayloadException(message: String, cause: Throwable? = null) : Excepti
  * `{"v":1,"name":"Run","description":"","category":"",
  *   "color":3,"freqNum":3,"freqDen":7,"type":"YES_NO","unit":"","historyStart":"2026-11-24"}`
  *
+ * Optional: `"negativeSince":"2026-11-01"` for avoided habits and
+ * `"calendarPeriod":true` for weekly goals per calendar week,
+ * `"pauses":[{"start":"2026-12-20","end":"2027-01-02"}]` for paused periods
+ * (their titles stay private).
+ *
  * Entry, e.g. `{"v":1,"state":"YES"}` or `{"v":1,"state":"VALUE","value":2.5}`.
  */
 object SharePayloads {
@@ -143,7 +158,12 @@ object SharePayloads {
             unit = metadata.unit,
             target = metadata.target,
             targetType = metadata.targetType?.name,
-            historyStart = metadata.historyStart.toCSVString()
+            historyStart = metadata.historyStart.toCSVString(),
+            negativeSince = metadata.negativeSince?.toCSVString(),
+            calendarPeriod = if (metadata.calendarPeriod) true else null,
+            pauses = metadata.pauses.takeIf { it.isNotEmpty() }?.map {
+                PauseV1(it.start.toCSVString(), it.end.toCSVString())
+            }
         )
     )
 
@@ -163,7 +183,15 @@ object SharePayloads {
             unit = m.unit,
             target = m.target,
             targetType = m.targetType?.let { HabitEvent.TargetType.valueOf(it) },
-            historyStart = parseDate(m.historyStart)
+            historyStart = parseDate(m.historyStart),
+            negativeSince = m.negativeSince?.let { parseDate(it) },
+            calendarPeriod = m.calendarPeriod == true,
+            pauses = m.pauses.orEmpty().map { pause ->
+                val start = parseDate(pause.start)
+                val end = parseDate(pause.end)
+                require(!end.isOlderThan(start)) { "pause ends before it starts" }
+                PausePeriod(start, end)
+            }
         )
     }
 
@@ -228,8 +256,15 @@ object SharePayloads {
         val unit: String = "",
         val target: Double? = null,
         val targetType: String? = null,
-        val historyStart: String
+        val historyStart: String,
+        // Optional since the start of v1; omitted for normal habits.
+        val negativeSince: String? = null,
+        val calendarPeriod: Boolean? = null,
+        val pauses: List<PauseV1>? = null
     )
+
+    @Serializable
+    private data class PauseV1(val start: String, val end: String)
 
     @Serializable
     private data class EntryV1(

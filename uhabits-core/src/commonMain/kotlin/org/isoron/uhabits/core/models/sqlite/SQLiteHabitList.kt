@@ -32,6 +32,7 @@ import org.isoron.uhabits.core.models.ModelFactory
 import org.isoron.uhabits.core.models.NumericalHabitType
 import org.isoron.uhabits.core.models.PaletteColor
 import org.isoron.uhabits.core.models.Reminder
+import org.isoron.uhabits.core.models.StreakUnit
 import org.isoron.uhabits.core.models.WeekdayList
 import org.isoron.uhabits.core.models.memory.MemoryHabitList
 
@@ -275,7 +276,8 @@ class SQLiteHabitList(private val modelFactory: ModelFactory) : HabitList() {
                 category = habit.category,
                 stepSize = habit.stepSize,
                 negativeSince = habit.negativeSince?.unixTime,
-                calendarPeriod = if (habit.calendarPeriod) 1 else 0
+                calendarPeriod = if (habit.calendarPeriod) 1 else 0,
+                streakUnit = habit.streakUnit?.id ?: StreakUnit.AUTO_ID
             )
         }
 
@@ -296,6 +298,7 @@ class SQLiteHabitList(private val modelFactory: ModelFactory) : HabitList() {
             habit.stepSize = data.stepSize
             habit.negativeSince = data.negativeSince?.let { LocalDate.fromUnixTime(it) }
             habit.calendarPeriod = data.calendarPeriod != 0
+            habit.streakUnit = StreakUnit.fromId(data.streakUnit)
             if (data.reminderHour != null && data.reminderMin != null) {
                 habit.reminder = Reminder(
                     data.reminderHour!!,
