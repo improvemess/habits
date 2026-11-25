@@ -212,14 +212,14 @@ open class Preferences(private val storage: Storage) {
         }
 
     open var areQuestionMarksEnabled: Boolean
-        get() = storage.getBoolean("pref_unknown_enabled", false)
+        get() = storage.getBoolean("pref_unknown_enabled", true)
         set(value) {
             storage.putBoolean("pref_unknown_enabled", value)
             for (l in listeners) l.onQuestionMarksChanged()
         }
 
     open var isStreakFlameEnabled: Boolean
-        get() = storage.getBoolean("pref_streak_flame", false)
+        get() = storage.getBoolean("pref_streak_flame", true)
         set(enabled) {
             storage.putBoolean("pref_streak_flame", enabled)
         }

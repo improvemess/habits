@@ -91,10 +91,10 @@ class SharedPreferencesStorage(
             "pref_sticky_notifications" ->
                 preferences.setNotificationsSticky(getBoolean(key, false))
             "pref_unknown_enabled" -> {
-                preferences.areQuestionMarksEnabled = getBoolean(key, false)
+                preferences.areQuestionMarksEnabled = getBoolean(key, true)
             }
             "pref_streak_flame" -> {
-                preferences.isStreakFlameEnabled = getBoolean(key, false)
+                preferences.isStreakFlameEnabled = getBoolean(key, true)
             }
         }
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
