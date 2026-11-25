@@ -150,7 +150,8 @@ class NumberButtonView(
             val activeColor = when {
                 state.isNegative && !state.completed && state.value > 0.0 -> NEGATIVE_RED
                 state.completed -> state.color
-                state.value < 0.0 -> lowContrast
+                // A day without entry and an entry reset to 0 look the same
+                state.value <= 0.0 -> lowContrast
                 else -> mediumContrast
             }
 
