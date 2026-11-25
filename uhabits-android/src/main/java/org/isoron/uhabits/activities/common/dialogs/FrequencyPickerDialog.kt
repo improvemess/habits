@@ -22,8 +22,11 @@ package org.isoron.uhabits.activities.common.dialogs
 import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.PopupMenu
 import android.widget.RadioButton
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
@@ -33,12 +36,21 @@ import org.isoron.uhabits.databinding.FrequencyPickerDialogBinding
 
 class FrequencyPickerDialog(
     var freqNumerator: Int,
-    var freqDenominator: Int
+    var freqDenominator: Int,
+    var calendarPeriod: Boolean = false,
+    /** Measurable habits only choose day, week or month, there is no number of repetitions. */
+    private val measurable: Boolean = false,
+    /** Wording "per week" instead of "every week" for limits of habits to quit. */
+    private val quit: Boolean = false
 ) : AppCompatDialogFragment() {
+    // The rolling or calendar choice of the week row and of the month row are independent; only the
+    // choice of the selected row is kept.
+    private var weekCalendar = calendarPeriod && freqDenominator == 7
+    private var monthCalendar = calendarPeriod && (freqDenominator == 30 || freqDenominator == 31)
     private var _binding: FrequencyPickerDialogBinding? = null
     private val binding get() = _binding!!
 
-    var onFrequencyPicked: (num: Int, den: Int) -> Unit = { _, _ -> }
+    var onFrequencyPicked: (num: Int, den: Int, calendarPeriod: Boolean) -> Unit = { _, _, _ -> }
 
     constructor() : this(1, 1)
 
@@ -50,25 +62,33 @@ class FrequencyPickerDialog(
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         _binding = FrequencyPickerDialogBinding.inflate(LayoutInflater.from(requireActivity()))
 
-        addBeforeAfterText(
-            this.getString(R.string.every_x_days),
-            binding.everyXDaysContainer
-        )
+        if (measurable) {
+            setUpMeasurableRows()
+        } else {
+            addBeforeAfterText(
+                this.getString(R.string.every_x_days),
+                binding.everyXDaysContainer
+            )
 
-        addBeforeAfterText(
-            this.getString(R.string.x_times_per_week),
-            binding.xTimesPerWeekContainer
-        )
+            addBeforeAfterText(
+                "%d " + getString(R.string.times),
+                binding.xTimesPerWeekContainer
+            )
 
-        addBeforeAfterText(
-            this.getString(R.string.x_times_per_month),
-            binding.xTimesPerMonthContainer
-        )
+            addBeforeAfterText(
+                "%d " + getString(R.string.times),
+                binding.xTimesPerMonthContainer
+            )
 
-        addBeforeAfterText(
-            this.getString(R.string.x_times_per_y_days),
-            binding.xTimesPerYDaysContainer
-        )
+            addBeforeAfterText(
+                this.getString(R.string.x_times_per_y_days),
+                binding.xTimesPerYDaysContainer
+            )
+        }
+
+        updateModeTexts()
+        setUpModePicker(binding.weekModePicker, binding.xTimesPerWeekRadioButton, isWeek = true)
+        setUpModePicker(binding.monthModePicker, binding.xTimesPerMonthRadioButton, isWeek = false)
 
         binding.everyDayRadioButton.setOnClickListener {
             check(binding.everyDayRadioButton)
@@ -121,6 +141,29 @@ class FrequencyPickerDialog(
             .create()
     }
 
+    /** Measurable habits: only the rows every day, every week and every month, without numbers. */
+    private fun setUpMeasurableRows() {
+        binding.everyXDaysContainer.visibility = View.GONE
+        binding.xTimesPerYDaysContainer.visibility = View.GONE
+        binding.xTimesPerWeekTextView.visibility = View.GONE
+        binding.xTimesPerMonthTextView.visibility = View.GONE
+        binding.everyDayText.setText(if (quit) R.string.quit_per_day else R.string.every_day)
+        // Without a number, the dropdown takes the place of the text: "Every rolling week"
+        moveIntoRow(binding.weekModePicker, binding.xTimesPerWeekContainer)
+        moveIntoRow(binding.monthModePicker, binding.xTimesPerMonthContainer)
+    }
+
+    private fun moveIntoRow(picker: TextView, row: LinearLayout) {
+        (picker.parent as ViewGroup).removeView(picker)
+        val density = resources.displayMetrics.density
+        row.addView(
+            picker,
+            LinearLayout.LayoutParams(0, (40 * density).toInt(), 1f).apply {
+                marginStart = (8 * density).toInt()
+            }
+        )
+    }
+
     private fun addBeforeAfterText(
         str: String,
         container: LinearLayout
@@ -137,6 +180,16 @@ class FrequencyPickerDialog(
     private fun onSaveClicked() {
         var numerator = 1
         var denominator = 1
+        if (measurable) {
+            denominator = when {
+                binding.xTimesPerWeekRadioButton.isChecked -> 7
+                binding.xTimesPerMonthRadioButton.isChecked -> 30
+                else -> 1
+            }
+            onFrequencyPicked(1, denominator, selectedCalendar(denominator))
+            dismiss()
+            return
+        }
         when {
             binding.everyDayRadioButton.isChecked -> {
                 // NOP
@@ -175,8 +228,56 @@ class FrequencyPickerDialog(
             numerator = 1
             denominator = 1
         }
-        onFrequencyPicked(numerator, denominator)
+        onFrequencyPicked(
+            numerator,
+            denominator,
+            selectedCalendar(denominator)
+        )
         dismiss()
+    }
+
+    private fun modeText(isWeek: Boolean, calendar: Boolean): Int = when {
+        measurable && quit -> if (isWeek) {
+            if (calendar) R.string.quit_per_calendar_week else R.string.quit_per_rolling_week
+        } else {
+            if (calendar) R.string.quit_per_calendar_month else R.string.quit_per_rolling_month
+        }
+        measurable -> if (isWeek) {
+            if (calendar) R.string.every_calendar_week else R.string.every_rolling_week
+        } else {
+            if (calendar) R.string.every_calendar_month else R.string.every_rolling_month
+        }
+        else -> if (isWeek) {
+            if (calendar) R.string.per_calendar_week else R.string.per_rolling_week
+        } else {
+            if (calendar) R.string.per_calendar_month else R.string.per_rolling_month
+        }
+    }
+
+    private fun setUpModePicker(picker: TextView, radio: RadioButton, isWeek: Boolean) {
+        picker.setOnClickListener {
+            check(radio)
+            val menu = PopupMenu(requireActivity(), picker)
+            menu.menu.add(0, 0, 0, modeText(isWeek, false))
+            menu.menu.add(0, 1, 1, modeText(isWeek, true))
+            menu.setOnMenuItemClickListener {
+                if (isWeek) weekCalendar = it.itemId == 1 else monthCalendar = it.itemId == 1
+                updateModeTexts()
+                true
+            }
+            menu.show()
+        }
+    }
+
+    private fun selectedCalendar(denominator: Int) = when (denominator) {
+        7 -> weekCalendar
+        30 -> monthCalendar
+        else -> false
+    }
+
+    private fun updateModeTexts() {
+        binding.weekModePicker.setText(modeText(true, weekCalendar))
+        binding.monthModePicker.setText(modeText(false, monthCalendar))
     }
 
     private fun check(view: RadioButton) {
@@ -192,12 +293,20 @@ class FrequencyPickerDialog(
 
     private fun populateViews() {
         uncheckAll()
+        if (measurable) {
+            when (freqDenominator) {
+                7 -> binding.xTimesPerWeekRadioButton.isChecked = true
+                30, 31 -> binding.xTimesPerMonthRadioButton.isChecked = true
+                else -> binding.everyDayRadioButton.isChecked = true
+            }
+            return
+        }
         if (freqDenominator == 30 || freqDenominator == 31) {
             binding.xTimesPerMonthRadioButton.isChecked = true
             binding.xTimesPerMonthTextView.setText(freqNumerator.toString())
             selectInputField(binding.xTimesPerMonthTextView)
         } else {
-            if (freqNumerator == 1) {
+            if (freqNumerator == 1 && !(freqDenominator == 7 && calendarPeriod)) {
                 if (freqDenominator == 1) {
                     binding.everyDayRadioButton.isChecked = true
                 } else {

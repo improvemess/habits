@@ -61,13 +61,23 @@ import org.isoron.uhabits.utils.dismissCurrentAndShow
 import org.isoron.uhabits.utils.formatTime
 import org.isoron.uhabits.utils.toFormattedString
 
-fun formatFrequency(freqNum: Int, freqDen: Int, resources: Resources) = when {
-    freqNum == 1 && (freqDen == 30 || freqDen == 31) -> resources.getString(R.string.every_month)
-    freqDen == 30 || freqDen == 31 -> resources.getString(R.string.x_times_per_month, freqNum)
+fun formatFrequency(freqNum: Int, freqDen: Int, resources: Resources, calendarPeriod: Boolean = false) = when {
+    freqNum == 1 && (freqDen == 30 || freqDen == 31) ->
+        resources.getString(if (calendarPeriod) R.string.every_calendar_month else R.string.every_month)
+    freqDen == 30 || freqDen == 31 ->
+        resources.getString(
+            if (calendarPeriod) R.string.x_times_per_calendar_month else R.string.x_times_per_month,
+            freqNum
+        )
     freqNum == 1 && freqDen == 1 -> resources.getString(R.string.every_day)
-    freqNum == 1 && freqDen == 7 -> resources.getString(R.string.every_week)
+    freqNum == 1 && freqDen == 7 ->
+        resources.getString(if (calendarPeriod) R.string.every_calendar_week else R.string.every_week)
     freqNum == 1 && freqDen > 1 -> resources.getString(R.string.every_x_days, freqDen)
-    freqDen == 7 -> resources.getString(R.string.x_times_per_week, freqNum)
+    freqDen == 7 ->
+        resources.getString(
+            if (calendarPeriod) R.string.x_times_per_calendar_week else R.string.x_times_per_week,
+            freqNum
+        )
     else -> resources.getString(R.string.x_times_per_y_days, freqNum, freqDen)
 }
 
@@ -84,6 +94,7 @@ class EditHabitActivity : AppCompatActivity() {
     var androidColor = 0
     var freqNum = 1
     var freqDen = 1
+    var calendarPeriod = false
     var reminderHour = -1
     var reminderMin = -1
     var reminderDays: WeekdayList = WeekdayList.EVERY_DAY
@@ -112,6 +123,7 @@ class EditHabitActivity : AppCompatActivity() {
             color = habit.color
             freqNum = habit.frequency.numerator
             freqDen = habit.frequency.denominator
+            calendarPeriod = habit.calendarPeriod
             targetType = habit.targetType
             negativeSince = habit.negativeSince
             isNegative = habit.isNegative
@@ -138,6 +150,7 @@ class EditHabitActivity : AppCompatActivity() {
             color = PaletteColor(state.getInt("paletteColor"))
             freqNum = state.getInt("freqNum")
             freqDen = state.getInt("freqDen")
+            calendarPeriod = state.getBoolean("calendarPeriod")
             reminderHour = state.getInt("reminderHour")
             reminderMin = state.getInt("reminderMin")
             reminderDays = WeekdayList(state.getInt("reminderDays"))
@@ -184,10 +197,11 @@ class EditHabitActivity : AppCompatActivity() {
 
         populateFrequency()
         binding.booleanFrequencyPicker.setOnClickListener {
-            val picker = FrequencyPickerDialog(freqNum, freqDen)
-            picker.onFrequencyPicked = { num, den ->
+            val picker = FrequencyPickerDialog(freqNum, freqDen, calendarPeriod)
+            picker.onFrequencyPicked = { num, den, week ->
                 freqNum = num
                 freqDen = den
+                calendarPeriod = week
                 populateFrequency()
             }
             picker.dismissCurrentAndShow(supportFragmentManager, "frequencyPicker")
@@ -212,21 +226,20 @@ class EditHabitActivity : AppCompatActivity() {
         }
 
         binding.numericalFrequencyPicker.setOnClickListener {
-            val builder = AlertDialog.Builder(this)
-            val arrayAdapter = ArrayAdapter<String>(this, android.R.layout.select_dialog_item)
-            arrayAdapter.add(periodText(1)!!)
-            arrayAdapter.add(periodText(7)!!)
-            arrayAdapter.add(periodText(30)!!)
-            builder.setAdapter(arrayAdapter) { dialog, which ->
-                freqDen = when (which) {
-                    1 -> 7
-                    2 -> 30
-                    else -> 1
-                }
+            val picker = FrequencyPickerDialog(
+                freqNum,
+                freqDen,
+                calendarPeriod,
+                measurable = true,
+                quit = isNegative
+            )
+            picker.onFrequencyPicked = { num, den, period ->
+                freqNum = num
+                freqDen = den
+                calendarPeriod = period
                 populateFrequency()
-                dialog.dismiss()
             }
-            builder.show()
+            picker.dismissCurrentAndShow(supportFragmentManager, "frequencyPicker")
         }
 
         populateReminder()
@@ -299,6 +312,7 @@ class EditHabitActivity : AppCompatActivity() {
         }
 
         habit.frequency = Frequency(freqNum, freqDen)
+        habit.calendarPeriod = calendarPeriod && (freqDen == 7 || freqDen >= 30)
         if (habitType == HabitType.NUMERICAL) {
             habit.targetValue = binding.targetInput.text.toString().toDouble()
             habit.targetType = targetType
@@ -385,15 +399,25 @@ class EditHabitActivity : AppCompatActivity() {
 
     @SuppressLint("StringFormatMatches")
     private fun populateFrequency() {
-        binding.booleanFrequencyPicker.text = formatFrequency(freqNum, freqDen, resources)
+        binding.booleanFrequencyPicker.text = formatFrequency(freqNum, freqDen, resources, calendarPeriod)
         binding.numericalFrequencyPicker.text = periodText(freqDen) ?: "$freqNum/$freqDen"
     }
 
     /** Day, week or month period of a measurable habit; "per ..." wording for limits. */
     private fun periodText(den: Int): String? = when (den) {
         1 -> getString(if (isNegative) R.string.quit_per_day else R.string.every_day)
-        7 -> getString(if (isNegative) R.string.quit_per_week else R.string.every_week)
-        30 -> getString(if (isNegative) R.string.quit_per_month else R.string.every_month)
+        7 -> getString(
+            when {
+                isNegative -> if (calendarPeriod) R.string.quit_per_calendar_week else R.string.quit_per_rolling_week
+                else -> if (calendarPeriod) R.string.every_calendar_week else R.string.every_rolling_week
+            }
+        )
+        30 -> getString(
+            when {
+                isNegative -> if (calendarPeriod) R.string.quit_per_calendar_month else R.string.quit_per_rolling_month
+                else -> if (calendarPeriod) R.string.every_calendar_month else R.string.every_rolling_month
+            }
+        )
         else -> null
     }
 
@@ -427,6 +451,7 @@ class EditHabitActivity : AppCompatActivity() {
             putInt("androidColor", androidColor)
             putInt("freqNum", freqNum)
             putInt("freqDen", freqDen)
+            putBoolean("calendarPeriod", calendarPeriod)
             putInt("reminderHour", reminderHour)
             putInt("reminderMin", reminderMin)
             putInt("reminderDays", reminderDays.toInteger())

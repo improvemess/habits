@@ -20,6 +20,7 @@ package org.isoron.uhabits.core.models
 
 import org.isoron.platform.Synchronized
 import org.isoron.platform.time.LocalDate
+import org.isoron.platform.time.getFirstWeekday
 import org.isoron.uhabits.core.models.Score.Companion.compute
 import kotlin.math.max
 import kotlin.math.min
@@ -70,9 +71,15 @@ class ScoreList {
         targetValue: Double,
         computedEntries: EntryList,
         from: LocalDate,
-        to: LocalDate
+        to: LocalDate,
+        calendarPeriod: Boolean = false
     ) {
         map.clear()
+        // Calendar week or month: the counting starts over on the first day of every period
+        val firstWeekday = getFirstWeekday()
+        // (measurable habits keep their rolling score, only their completion follows the week mode)
+        val isMonthly = frequency.denominator == 30 || frequency.denominator == 31
+        val restartsPeriodically = calendarPeriod && !isNumerical && (frequency.denominator == 7 || isMonthly)
         var rollingSum = 0.0
         var numerator = frequency.numerator
         var denominator = frequency.denominator
@@ -83,7 +90,7 @@ class ScoreList {
         // For non-daily boolean habits, we double the numerator and the denominator to smooth
         // out irregular repetition schedules (for example, weekly habits performed on different
         // days of the week)
-        if (!isNumerical && freq < 1.0) {
+        if (!isNumerical && freq < 1.0 && !restartsPeriodically) {
             numerator *= 2
             denominator *= 2
         }
@@ -93,6 +100,12 @@ class ScoreList {
         for (i in values.indices) {
             val offset = values.size - i - 1
             val value = values[offset]
+            val date = from.plus(i)
+            val startsPeriod = if (isMonthly) date.day == 1 else date.startOfWeek(firstWeekday) == date
+            if (restartsPeriodically && startsPeriod) {
+                window.clear()
+                rollingSum = 0.0
+            }
             if (value != Entry.SKIP) {
                 window.addLast(value)
                 if (window.size > denominator) {
@@ -133,7 +146,6 @@ class ScoreList {
                     previousValue = compute(freq, previousValue, percentageCompleted)
                 }
             }
-            val date = from.plus(i)
             map[date] = Score(date, previousValue)
         }
     }
