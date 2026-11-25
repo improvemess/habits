@@ -95,6 +95,24 @@ class NegativeHabitLimitTest : BaseUnitTest() {
     }
 
     @Test
+    fun testQuestionMarkBeforeTheCreationDayIsNeverDone() {
+        val h = limitHabit(3.0, 1)
+        h.negativeSince = getToday().minus(5)
+        // A question mark set on days before the habit existed
+        h.originalEntries.add(Entry(getToday().minus(7), Entry.UNKNOWN))
+        h.recompute()
+        assertEquals(Entry.UNKNOWN, h.computedEntries.get(getToday().minus(7)).value)
+        assertFalse(h.isCompletedOn(getToday().minus(7)))
+        assertFalse(h.isCompletedOn(getToday().minus(6)))
+        // From the creation day on, days are done
+        assertTrue(h.isCompletedOn(getToday().minus(5)))
+        assertTrue(h.isCompletedOn(getToday()))
+        // The streak starts on the creation day, not on the question mark
+        val streak = h.streaks.getBest(1).first()
+        assertEquals(getToday().minus(5), streak.start)
+    }
+
+    @Test
     fun testDailyLimit() {
         val h = limitHabit(3.0, 1)
         h.originalEntries.add(Entry(getToday(), 4000))
