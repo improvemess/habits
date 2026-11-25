@@ -27,6 +27,7 @@ import android.graphics.RectF
 import android.graphics.Typeface
 import android.text.TextPaint
 import android.text.TextUtils
+import android.view.MotionEvent
 import android.view.View.MeasureSpec.EXACTLY
 import org.isoron.platform.time.JavaLocalDateFormatter
 import org.isoron.platform.time.LocalDate
@@ -43,6 +44,7 @@ import org.isoron.uhabits.utils.toMeasureSpec
 import java.time.Month
 import java.time.format.TextStyle
 import java.util.Locale
+import kotlin.math.min
 
 data class HeaderState(
     val buttonCount: Int,
@@ -105,6 +107,16 @@ class HeaderView(
         setMeasuredDimension(widthMeasureSpec, height.toMeasureSpec(EXACTLY))
     }
 
+    override fun onSingleTapUp(e: MotionEvent): Boolean {
+        val count = state?.buttonCount ?: 0
+        if (dataOffset == 0 || count <= 0) return false
+        val columnsWidth = count * dim(R.dimen.checkmarkWidth)
+        val inLabelArea = if (isRTL()) e.x > columnsWidth else e.x < width - columnsWidth
+        if (!inLabelArea) return false
+        scrollToStart()
+        return true
+    }
+
     private fun updateScrollDirection() {
         var direction = -1
         if (prefs.isCheckmarkSequenceReversed) direction *= -1
@@ -148,6 +160,20 @@ class HeaderView(
             }
         }
 
+        private val chipPaint = TextPaint().apply {
+            isAntiAlias = true
+            textSize = dim(R.dimen.tinyTextSize)
+            typeface = Typeface.DEFAULT_BOLD
+            color = sres.getColor(R.attr.contrast60)
+        }
+
+        private val chipStroke = Paint().apply {
+            isAntiAlias = true
+            style = Paint.Style.STROKE
+            strokeWidth = dp(1.0f)
+            color = sres.getColor(R.attr.contrast60)
+        }
+
         private fun drawMonth(canvas: Canvas, count: Int, width: Float) {
             if (count <= 0) return
             val today = getToday()
@@ -158,13 +184,34 @@ class HeaderView(
             val available = canvas.width - count * width - 2 * margin
             if (available <= 0) return
             val text = TextUtils.ellipsize(label, monthPaint, available, TextUtils.TruncateAt.END)
-            val baseline = canvas.height / 2f - (monthPaint.ascent() + monthPaint.descent()) / 2
-            if (isRTL()) {
-                monthPaint.textAlign = Paint.Align.RIGHT
-                canvas.drawText(text, 0, text.length, canvas.width - margin, baseline, monthPaint)
-            } else {
-                monthPaint.textAlign = Paint.Align.LEFT
-                canvas.drawText(text, 0, text.length, margin, baseline, monthPaint)
+            val scrolled = dataOffset > 0
+            val centerY = if (scrolled) canvas.height * 0.32f else canvas.height / 2f
+            val baseline = centerY - (monthPaint.ascent() + monthPaint.descent()) / 2
+            val rtl = isRTL()
+            monthPaint.textAlign = if (rtl) Paint.Align.RIGHT else Paint.Align.LEFT
+            val x = if (rtl) canvas.width - margin else margin
+            canvas.drawText(text, 0, text.length, x, baseline, monthPaint)
+
+            // "Today" chip, shown only while scrolled away from today; tapping the left part of
+            // the header jumps back (see onSingleTapUp).
+            if (scrolled) {
+                val chipText = context.getString(R.string.today)
+                val textWidth = chipPaint.measureText(chipText)
+                val padH = dp(8.0f)
+                val padV = dp(3.0f)
+                val chipHeight = chipPaint.descent() - chipPaint.ascent() + 2 * padV
+                val chipWidth = min(textWidth + 2 * padH, available)
+                val top = canvas.height * 0.56f
+                val left = if (rtl) canvas.width - margin - chipWidth else margin
+                rect.set(left, top, left + chipWidth, top + chipHeight)
+                canvas.drawRoundRect(rect, chipHeight / 2, chipHeight / 2, chipStroke)
+                chipPaint.textAlign = Paint.Align.CENTER
+                canvas.drawText(
+                    chipText,
+                    rect.centerX(),
+                    rect.centerY() - (chipPaint.ascent() + chipPaint.descent()) / 2,
+                    chipPaint
+                )
             }
         }
 

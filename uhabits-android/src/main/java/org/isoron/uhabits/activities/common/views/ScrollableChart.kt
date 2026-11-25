@@ -176,6 +176,17 @@ abstract class ScrollableChart : View, GestureDetector.OnGestureListener, Animat
         scrollController = object : ScrollController {}
     }
 
+    /** Animates back to the newest data (offset 0). */
+    fun scrollToStart() {
+        if (scroller.currX == 0) return
+        scroller.forceFinished(true)
+        scroller.startScroll(scroller.currX, scroller.currY, -scroller.currX, 0, 300)
+        scrollAnimator.cancel()
+        scrollAnimator.duration = 300
+        scrollAnimator.start()
+        invalidate()
+    }
+
     fun reset() {
         scroller.finalX = 0
         scroller.computeScrollOffset()
