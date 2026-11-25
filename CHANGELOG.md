@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.18.1](https://github.com/oliverlorenz/uhabits/compare/v2.18.0...v2.18.1) (2026-11-25)
+
+### Bug Fixes
+
+* Tastatur im Zahlen-Dialog sofort öffnen ([#66](https://github.com/oliverlorenz/uhabits/issues/66)) ([#74](https://github.com/oliverlorenz/uhabits/issues/74)) ([02cb2e8](https://github.com/oliverlorenz/uhabits/commit/02cb2e85d7e0f5f95e6ded6745eac417836a630e))
+
 ## [2.18.0](https://github.com/oliverlorenz/uhabits/compare/v2.17.0...v2.18.0) (2026-11-25)
 
 ### Features
