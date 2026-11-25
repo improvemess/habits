@@ -28,10 +28,8 @@ import org.isoron.uhabits.core.commands.RenameCategoryCommand
 import org.isoron.uhabits.core.commands.ReorderHabitCommand
 import org.isoron.uhabits.core.commands.ReorderTarget
 import org.isoron.uhabits.core.models.Entry
-import org.isoron.uhabits.core.models.Entry.Companion.YES_MANUAL
 import org.isoron.uhabits.core.models.HabitList
 import org.isoron.uhabits.core.models.HabitType
-import org.isoron.uhabits.core.models.NumericalHabitType.AT_LEAST
 import org.isoron.uhabits.core.models.PaletteColor
 import org.isoron.uhabits.core.preferences.Preferences
 import org.isoron.uhabits.core.tasks.ExportCSVTask
@@ -62,9 +60,6 @@ open class ListHabitsBehavior(
             val oldValue = entry.value.toDouble() / 1000
             screen.showNumberPopup(oldValue, entry.notes, habit.isUnknownAllowedOn(date)) { newValue: Double, newNotes: String ->
                 val value = (newValue * 1000).roundToInt()
-                if (newValue != oldValue && habit.targetType == AT_LEAST) {
-                    screen.showConfetti(habit.color, x, y)
-                }
                 commandRunner.run(CreateRepetitionCommand(habitList, habit, date, value, newNotes))
             }
         } else {
@@ -75,7 +70,6 @@ open class ListHabitsBehavior(
                 habit.isNegative,
                 habit.isUnknownAllowedOn(date)
             ) { newValue: Int, newNotes: String ->
-                if (newValue != entry.value && newValue == YES_MANUAL) screen.showConfetti(habit.color, x, y)
                 commandRunner.run(CreateRepetitionCommand(habitList, habit, date, newValue, newNotes))
             }
         }
@@ -96,9 +90,6 @@ open class ListHabitsBehavior(
         commandRunner.run(
             CreateRepetitionCommand(habitList, habit, date, (newValue * 1000).roundToInt(), entry.notes)
         )
-        if (habit.targetType == AT_LEAST && oldValue < habit.targetValue && newValue >= habit.targetValue) {
-            screen.showConfetti(habit.color, x, y)
-        }
         screen.showIncrementUndo(newValue, habit.unit) {
             commandRunner.run(CreateRepetitionCommand(habitList, habit, date, oldRaw, entry.notes))
         }
@@ -173,7 +164,6 @@ open class ListHabitsBehavior(
         commandRunner.run(
             CreateRepetitionCommand(habitList, habit, date, value, notes)
         )
-        if (value == YES_MANUAL) screen.showConfetti(habit.color, x, y)
     }
 
     enum class Message {
@@ -216,7 +206,6 @@ open class ListHabitsBehavior(
         )
         fun showSendBugReportToDeveloperScreen(log: String)
         fun showSendFileScreen(filename: String)
-        fun showConfetti(color: PaletteColor, x: Float, y: Float)
         fun showIncrementUndo(newValue: Double, unit: String, onUndo: () -> Unit)
     }
 }
