@@ -20,6 +20,7 @@
 package org.isoron.uhabits.activities.habits.list
 
 import android.content.Context
+import android.content.Intent
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -33,6 +34,7 @@ import org.isoron.uhabits.core.ui.ThemeSwitcher
 import org.isoron.uhabits.core.ui.screens.habits.list.ListHabitsMenuBehavior
 import org.isoron.uhabits.inject.ActivityContext
 import org.isoron.uhabits.inject.ActivityScope
+import org.isoron.uhabits.sharing.FriendsActivity
 import org.isoron.uhabits.utils.StyledResources
 
 @Inject
@@ -135,6 +137,11 @@ class ListHabitsMenu(
 
             R.id.actionAbout -> {
                 behavior.onViewAbout()
+                return true
+            }
+
+            R.id.actionFriends -> {
+                activity.startActivity(Intent(activity, FriendsActivity::class.java))
                 return true
             }
 

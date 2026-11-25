@@ -1,1 +1,2 @@
-alter table Habits add column streak_unit integer not null default -1;
+create table FriendShares (id integer primary key autoincrement, server_url text not null, share_id text not null, share_key text not null, reader_id text not null, reader_token text not null, status text not null default 'active', revision integer not null default 0, meta text, created_at integer not null, unique (server_url, share_id));
+create table FriendEntries (friend_share integer not null, timestamp integer not null, value integer not null, primary key (friend_share, timestamp));

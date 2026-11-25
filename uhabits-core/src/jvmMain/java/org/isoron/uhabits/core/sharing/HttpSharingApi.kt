@@ -22,6 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import org.isoron.platform.time.LocalDate
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URI
@@ -75,6 +76,31 @@ class HttpSharingApi(
             "/api/v1/shares/${path(shareId)}/readers/${path(readerId)}",
             token = deviceToken
         )
+    }
+
+    override suspend fun redeemInvite(serverUrl: String, code: String, displayName: String?): Redemption {
+        val response = request(
+            serverUrl,
+            "POST",
+            "/api/v1/invites/${path(code)}/redeem",
+            body = json.encodeToString(Redeem.serializer(), Redeem(displayName))
+        )
+        val r = decode(serverUrl) { json.decodeFromString(Redeemed.serializer(), response) }
+        return Redemption(r.shareId, r.readerId, r.readerToken, r.status)
+    }
+
+    override suspend fun readShare(serverUrl: String, readerToken: String, shareId: String, since: Long): ShareContent {
+        val response = request(serverUrl, "GET", "/api/v1/shares/${path(shareId)}?since=$since", token = readerToken)
+        val share = decode(serverUrl) { json.decodeFromString(ShareResponse.serializer(), response) }
+        val entries = share.entries.map {
+            val date = decode(serverUrl) { parseDate(it.date) }
+            ReadEntry(date, it.data, it.revision)
+        }
+        return ShareContent(share.status, share.meta, entries, share.revision)
+    }
+
+    override suspend fun leaveShare(serverUrl: String, readerToken: String) {
+        request(serverUrl, "DELETE", "/api/v1/subscriptions/self", token = readerToken)
     }
 
     override suspend fun createOwner(serverUrl: String, identity: OwnerIdentity) {
@@ -195,6 +221,12 @@ class HttpSharingApi(
         ""
     }
 
+    private fun parseDate(s: String): LocalDate {
+        val parts = s.split("-").map { it.toInt() }
+        require(parts.size == 3) { "invalid date $s" }
+        return LocalDate(parts[0], parts[1], parts[2])
+    }
+
     private fun path(segment: String): String = URLEncoder.encode(segment, "UTF-8")
 
     @Serializable
@@ -229,6 +261,23 @@ class HttpSharingApi(
 
     @Serializable
     private data class Readers(val readers: List<ReaderResponse>)
+
+    @Serializable
+    private data class Redeem(val displayName: String? = null)
+
+    @Serializable
+    private data class Redeemed(val shareId: String, val readerId: String, val readerToken: String, val status: String)
+
+    @Serializable
+    private data class ReadEntryResponse(val date: String, val data: String, val revision: Long)
+
+    @Serializable
+    private data class ShareResponse(
+        val status: String,
+        val meta: String? = null,
+        val entries: List<ReadEntryResponse> = emptyList(),
+        val revision: Long
+    )
 
     @Serializable
     private data class Error(val error: String = "")

@@ -302,4 +302,22 @@
     <string name="streak_unit_days_short">T</string>
     <string name="streak_unit_weeks_short">W</string>
     <string name="streak_unit_months_short">M</string>
+    <string name="friends">Freunde</string>
+    <string name="friends_empty">Noch teilt kein Freund eine Gewohnheit mit dir. Wenn dir jemand einen Einladungslink schickt, öffne ihn, oder kopiere ihn und wähle hier „Einladung annehmen“.</string>
+    <string name="friends_loading">Gewohnheit von %1$s wird geladen …</string>
+    <string name="friends_status_inactive">Dein Freund war eine Weile nicht aktiv.</string>
+    <string name="friends_status_ended">Dein Freund teilt diese Gewohnheit nicht mehr.</string>
+    <string name="friends_status_removed">Dein Freund hat dich von dieser Gewohnheit entfernt.</string>
+    <string name="friends_leave">Nicht mehr folgen</string>
+    <string name="friends_leave_title">„%1$s“ nicht mehr folgen?</string>
+    <string name="friends_leave_message">Du siehst diese Gewohnheit dann nicht mehr. Um ihr wieder zu folgen, brauchst du eine neue Einladung.</string>
+    <string name="accept_invite">Einladung annehmen</string>
+    <string name="accept_invite_button">Annehmen</string>
+    <string name="accept_invite_message">Ein Freund lädt dich über %1$s ein, einer seiner Gewohnheiten zu folgen. Du siehst seine Häkchen, Streak und Score, kannst sie aber nicht abhaken.</string>
+    <string name="accept_invite_name_hint">Dein Name (sieht dein Freund)</string>
+    <string name="accept_invite_no_link">Das ist kein gültiger Einladungslink.</string>
+    <string name="accept_invite_insecure">Diese Einladung nutzt eine unverschlüsselte Verbindung (http) und kann nicht angenommen werden.</string>
+    <string name="accept_invite_incompatible">Der Server dieser Einladung ist kein passender Server zum Teilen.</string>
+    <string name="accept_invite_gone">Diese Einladung wurde schon benutzt oder ist abgelaufen. Bitte deinen Freund um eine neue.</string>
+    <string name="refresh">Aktualisieren</string>
 </resources>

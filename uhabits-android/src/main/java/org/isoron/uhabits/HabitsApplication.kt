@@ -31,6 +31,7 @@ import org.isoron.uhabits.core.ui.NotificationTray
 import org.isoron.uhabits.inject.HabitsApplicationComponent
 import org.isoron.uhabits.inject.create
 import org.isoron.uhabits.sharing.ShareSyncWork
+import org.isoron.uhabits.sharing.scheduleFriendsSync
 import org.isoron.uhabits.utils.DatabaseUtils
 import org.isoron.uhabits.widgets.WidgetUpdater
 import java.io.File
@@ -110,6 +111,7 @@ class HabitsApplication : Application() {
         if (!isTestMode()) {
             ShareSyncWork.scheduleHeartbeat(this)
             if (component.shareStore.sharesWithPending().isNotEmpty()) ShareSyncWork.scheduleSync(this)
+            if (component.friendsService.friendShares().isNotEmpty()) ShareSyncWork.scheduleFriendsSync(this)
         }
 
         val taskRunner = component.taskRunner
