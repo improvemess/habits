@@ -26,6 +26,7 @@ import org.isoron.uhabits.core.models.Entry
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertTrue
 
 class SharePayloadsTest {
     private val start = LocalDate(2026, 11, 24)
@@ -75,6 +76,15 @@ class SharePayloadsTest {
     fun testMetadataRoundTrip() {
         assertEquals(yesNo, SharePayloads.decodeMetadata(SharePayloads.encodeMetadata(yesNo)))
         assertEquals(numerical, SharePayloads.decodeMetadata(SharePayloads.encodeMetadata(numerical)))
+    }
+
+    @Test
+    fun testOptionalFieldsOfNewerHabitFeatures() {
+        val negative = yesNo.copy(negativeSince = LocalDate(2026, 11, 1), calendarPeriod = true)
+        val encoded = SharePayloads.encodeMetadata(negative)
+        assertTrue(encoded.contains("\"negativeSince\":\"2026-11-01\""), encoded)
+        assertTrue(encoded.contains("\"calendarPeriod\":true"), encoded)
+        assertEquals(negative, SharePayloads.decodeMetadata(encoded))
     }
 
     @Test

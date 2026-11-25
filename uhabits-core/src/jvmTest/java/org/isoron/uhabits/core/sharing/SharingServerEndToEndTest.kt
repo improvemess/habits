@@ -102,13 +102,36 @@ class SharingServerEndToEndTest : BaseUnitTest() {
         }
         assertEquals(mapOf(start to SharedEntry.State.YES, start.plus(1) to SharedEntry.State.SKIP), entries)
 
+        // The friend's app: accept the same kind of link with FriendsService (a second invite,
+        // invites work once) and compute the habit locally.
+        val friendDb = buildMemoryDatabase()
+        val friends = FriendsService(FriendStore(friendDb), api, { System.currentTimeMillis() }, StandardLogging())
+        val accepted = friends.accept(service.createInvite(share).url, "Ben", allowInsecure = true)
+        check(accepted is AcceptResult.Accepted) { "accept failed: $accepted" }
+        val followed = accepted.friendShare
+        assertEquals(habit.name, followed.metadata?.name)
+        val friendHabit = friends.habitOf(followed)!!
+        assertEquals(Entry.YES_MANUAL, friendHabit.originalEntries.get(start).value)
+        assertEquals(Entry.SKIP, friendHabit.originalEntries.get(start.plus(1)).value)
+        assertEquals(listOf("Anna", "Ben"), service.readers(share).map { it.displayName })
+
+        // A new check mark reaches the friend with the next incremental sync.
+        habit.originalEntries.add(Entry(start.plus(2), Entry.YES_MANUAL))
+        store.enqueue(OutboxItem(share.id, OutboxItem.Kind.ENTRY, start.plus(2), System.currentTimeMillis()))
+        assertEquals(ShareSyncer.Result.DONE, syncer.sync())
+        assertEquals(FriendsService.Result.DONE, friends.sync())
+        assertEquals(Entry.YES_MANUAL, friends.habitOf(friends.friendShares().single())!!.originalEntries.get(start.plus(2)).value)
+
         service.removeReader(share, redeemed["readerId"]!!.jsonPrimitive.content)
-        assertEquals(emptyList(), service.readers(share))
+        assertEquals(listOf("Ben"), service.readers(share).map { it.displayName })
 
         service.stopSharing(share)
         assertEquals(ShareSyncer.Result.DONE, syncer.sync())
         val token = tokens.get(url)!!
         assertEquals("ended", get(url, "/api/v1/shares/$shareId", token)["status"]!!.jsonPrimitive.content)
+        friends.sync()
+        assertEquals(FriendShare.Status.ENDED, friends.friendShares().single().status)
+        friendDb.close()
         db.close()
     }
     private fun post(url: String, path: String, token: String?, body: String): JsonObject =
