@@ -2,8 +2,15 @@ name: Quality Gates
 
 # Kein paths-ignore: "Quality gate" ist Pflicht-Check auf dev und muss daher
 # bei jedem PR laufen, sonst bliebe er dauerhaft ausstehend.
+#
+# Der Lauf auf dev füllt die Caches für die PRs: GitHub-Caches gelten pro
+# Branch, PRs dürfen nur die von dev lesen. setup-gradle speichert den
+# Gradle-Build-Cache nur auf dev (in PRs nur lesend); ohne diesen Lauf fänden
+# PRs keine Debug-Kompilate im Cache.
 on:
   pull_request:
+  push:
+    branches: [dev]
   workflow_dispatch:
 
 concurrency:
@@ -21,7 +28,7 @@ permissions:
 #   unit-tests ──────────────────────────┼──> quality-gate (+ APK)
 #   lint ────────────────────────────────┤
 #   assemble ──┬─────────────────────────┤
-#              └──> instrumented ────────┘
+#              └──> instrumented ×3 ─────┘   (Shards, je ein Emulator)
 jobs:
   ktlint:
     name: Code style (ktlint)
@@ -199,15 +206,25 @@ jobs:
           path: uhabits-android/build/reports/
           if-no-files-found: ignore
 
-  # Instrumentation-Tests (size medium + large) auf einem Emulator in der
-  # Konfiguration, auf die die Referenzbilder der View-Tests ausgelegt sind
-  # (docs/TEST.md: Nexus 4, en-US). Fehlgeschlagene Tests bekommen einen
+  # Instrumentation-Tests (size medium + large), verteilt auf mehrere Emulatoren
+  # in der Konfiguration, auf die die Referenzbilder der View-Tests ausgelegt
+  # sind (docs/TEST.md: Nexus 4, en-US). Fehlgeschlagene Tests bekommen einen
   # zweiten Versuch; was nur so grün wird, erscheint als Warnung.
   instrumented:
-    name: Android (instrumented tests)
+    name: Android (instrumented tests, shard ${{ matrix.shard }})
     needs: [assemble]
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    # Die Tests werden per AndroidJUnitRunner-Sharding auf mehrere Emulatoren
+    # verteilt (tools/ci/run-instrumented-tests.sh). Bei Änderung der Anzahl
+    # auch NUM_SHARDS anpassen.
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2]
+    env:
+      NUM_SHARDS: 3
+      SHARD_INDEX: ${{ matrix.shard }}
     steps:
       - uses: actions/checkout@v4
 
@@ -224,10 +241,8 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      # tools/parseInstrument.py erwartet Zeitstempel von `ts`.
-      - name: Install moreutils
-        run: sudo apt-get install -y --no-install-recommends moreutils
-
+      # Kalter Start ohne Snapshot-Cache: Der Snapshot (2,2 GB) zu laden dauerte
+      # länger, als er beim Booten sparte.
       - name: Run instrumented tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -248,7 +263,7 @@ jobs:
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v7
         with:
-          name: instrumented-results
+          name: instrumented-results-${{ matrix.shard }}
           path: instrumented-output/
           if-no-files-found: ignore
 

@@ -9,6 +9,9 @@
 # Environment:
 #   ADB       adb command (default: adb)
 #   ATTEMPTS  runs per test size; failed tests are retried once by default
+#   NUM_SHARDS, SHARD_INDEX
+#             run only one shard of the tests (AndroidJUnitRunner sharding),
+#             e.g. one per emulator in a CI matrix; default: all tests
 #
 # Exit code 0 if every test passed in some attempt. Tests that needed a retry
 # are listed as flaky (and reported as GitHub warnings in CI).
@@ -21,8 +24,22 @@ TEST_APK=$2
 OUT=$3
 ADB=${ADB:-adb}
 ATTEMPTS=${ATTEMPTS:-2}
+NUM_SHARDS=${NUM_SHARDS:-1}
+SHARD_INDEX=${SHARD_INDEX:-0}
 PACKAGE=org.isoron.uhabits
 RUNNER=$PACKAGE.test/androidx.test.runner.AndroidJUnitRunner
+
+shard_args=""
+if [ "$NUM_SHARDS" -gt 1 ]; then
+    shard_args="-e numShards $NUM_SHARDS -e shardIndex $SHARD_INDEX"
+    echo "Running shard $SHARD_INDEX of $NUM_SHARDS"
+fi
+
+# Prefixes each line with the Unix time, as tools/parseInstrument.py expects
+# (same output as `ts "%.s"` from moreutils, without the extra package).
+timestamp() {
+    perl -MTime::HiRes=time -ne '$| = 1; printf "%.6f %s", time, $_'
+}
 
 mkdir -p "$OUT"
 
@@ -35,14 +52,17 @@ $ADB install -r -t "$TEST_APK" || exit 1
 
 status=0
 for size in medium large; do
+    # The first attempt runs this shard; retries name the failed tests
+    # explicitly and must not be filtered by the shard again.
+    filter=$shard_args
     failed=""
     first_failures=""
     passed=1
     for ((attempt = 1; attempt <= ATTEMPTS; attempt++)); do
         log="$OUT/instrument-$size-$attempt.txt"
         echo "::group::$size tests, attempt $attempt ${failed:+(retrying failed tests only)}"
-        # shellcheck disable=SC2086 # $failed is "-e class a,b,c" or empty
-        $ADB shell am instrument -r -e size "$size" $failed -w "$RUNNER" | ts "%.s" > "$log"
+        # shellcheck disable=SC2086 # $filter is "-e key value ..." or empty
+        $ADB shell am instrument -r -e size "$size" $filter -w "$RUNNER" | timestamp > "$log"
         failed=$(python3 tools/parseInstrument.py "$log")
         passed=$?
         echo "::endgroup::"
@@ -55,6 +75,8 @@ for size in medium large; do
             break
         fi
         echo "$size: failed on attempt $attempt: ${failed#-e class }"
+        # Without a list of failed tests (e.g. a crash), rerun the whole shard.
+        filter=${failed:-$shard_args}
     done
     if [ $passed -ne 0 ]; then
         echo "::error::Some $size instrumented tests failed: ${failed#-e class }"
