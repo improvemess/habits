@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.20.0](https://github.com/oliverlorenz/uhabits/compare/v2.19.0...v2.20.0) (2026-11-25)
+
+### Features
+
+* Standardansicht lädt 14 Tage, Lazy Loading, Monat und Heute-Chip im Kopf ([#21](https://github.com/oliverlorenz/uhabits/issues/21)) ([#77](https://github.com/oliverlorenz/uhabits/issues/77)) ([0a9c62b](https://github.com/oliverlorenz/uhabits/commit/0a9c62b9a18d81085e6377fc1fffb18a5574046c))
+
 ## [2.19.0](https://github.com/oliverlorenz/uhabits/compare/v2.18.1...v2.19.0) (2026-11-25)
 
 ### Features
