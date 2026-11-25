@@ -222,7 +222,7 @@ open class Preferences(private val storage: Storage) {
         }
 
     open var isStreakFlameEnabled: Boolean
-        get() = storage.getBoolean("pref_streak_flame", false)
+        get() = storage.getBoolean("pref_streak_flame", true)
         set(enabled) {
             storage.putBoolean("pref_streak_flame", enabled)
         }

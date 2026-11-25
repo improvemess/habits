@@ -94,7 +94,7 @@ class SharedPreferencesStorage(
                 preferences.areQuestionMarksEnabled = getBoolean(key, false)
             }
             "pref_streak_flame" -> {
-                preferences.isStreakFlameEnabled = getBoolean(key, false)
+                preferences.isStreakFlameEnabled = getBoolean(key, true)
             }
         }
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)

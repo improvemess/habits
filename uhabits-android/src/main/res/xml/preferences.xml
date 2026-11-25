@@ -60,7 +60,7 @@
                 app:iconSpaceReserved="false" />
 
         <SwitchPreferenceCompat
-                android:defaultValue="false"
+                android:defaultValue="true"
                 android:key="pref_streak_flame"
                 android:summary="@string/pref_streak_flame_description"
                 android:title="@string/pref_streak_flame_title"
