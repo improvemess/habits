@@ -185,8 +185,6 @@
     <string name="target_type">סוג יעד</string>
     <string name="target_type_at_least">לכל הפחות</string>
     <string name="target_type_at_most">לכל היותר</string>
-    <string name="example_question_boolean">למשל: עשית כושר היום?</string>
-    <string name="question">שאלה</string>
     <string name="target">יעד</string>
     <string name="yes">כן</string>
     <string name="no">לא</string>
@@ -198,7 +196,6 @@
     <string name="widget_opacity_title">אטימות היישומונים</string>
     <string name="widget_opacity_description">הפיכת היישומונים במסך הבית לשקופים או אטומים יותר.</string>
     <string name="first_day_of_the_week">היום הראשון בשבוע</string>
-    <string name="default_reminder_question">השלמת את ההרגל הזה היום?</string>
     <string name="notes">הערות</string>
     <string name="example_notes">(רשות)</string>
     <string name="yes_or_no_example">למשל: התעוררת מוקדם היום? עשית כושר? שיחקת שחמט?</string>
@@ -211,7 +208,6 @@
     <string name="color">צבע</string>
     <string name="example_target">למשל: 15</string>
     <string name="measurable_short_example">למשל: ריצה</string>
-    <string name="measurable_question_example">למשל: כמה קילומטרים רצת היום?</string>
     <string name="measurable_units_example">למשל: קילומטרים</string>
     <string name="every_month">כל חודש</string>
     <string name="validation_cannot_be_blank">זהו שדה חובה</string>

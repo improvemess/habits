@@ -143,8 +143,6 @@
     <string name="value">Valor</string>
     <string name="calendar">Calendário</string>
     <string name="unit">Unidade</string>
-    <string name="example_question_boolean">ex.: Você se exercitou hoje?</string>
-    <string name="question">Pergunta</string>
     <string name="target">Alvo</string>
     <string name="yes">Sim</string>
     <string name="no">Não</string>
@@ -156,7 +154,6 @@
     <string name="widget_opacity_title">Opacidade do widget</string>
     <string name="widget_opacity_description">Torna os widgets mais transparentes ou mais opacos na sua tela inicial.</string>
     <string name="first_day_of_the_week">Primeiro dia da semana</string>
-    <string name="default_reminder_question">Concluiu este hábito hoje?</string>
     <string name="notes">Notas</string>
     <string name="example_notes">(Opcional)</string>
     <string name="yes_or_no_example">ex. Acordou cedo hoje? Fez exercício? Jogou xadrez?</string>
@@ -168,7 +165,6 @@
     <string name="color">Cor</string>
     <string name="example_target">ex. 15</string>
     <string name="measurable_short_example">ex. Correr</string>
-    <string name="measurable_question_example">ex. Quantas km você correu hoje?</string>
     <string name="measurable_units_example">ex. km</string>
     <string name="every_month">Todos os meses</string>
     <string name="validation_cannot_be_blank">Não pode ficar em branco</string>

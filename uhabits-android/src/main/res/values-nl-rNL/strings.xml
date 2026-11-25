@@ -173,8 +173,6 @@
     <string name="target_type">Doeltype</string>
     <string name="target_type_at_least">Minimaal</string>
     <string name="target_type_at_most">Maximaal</string>
-    <string name="example_question_boolean">bijv. Heb je vandaag gesport?</string>
-    <string name="question">Vraag</string>
     <string name="target">Doel</string>
     <string name="yes">Ja</string>
     <string name="no">Nee</string>
@@ -186,7 +184,6 @@
     <string name="widget_opacity_title">Widget doorzichtigheid</string>
     <string name="widget_opacity_description">Maakt widgets transparanter of minder doorschijnend op je start scherm.</string>
     <string name="first_day_of_the_week">Eerste dag van de week</string>
-    <string name="default_reminder_question">Heb je deze gewoonte vandaag voltooid?</string>
     <string name="notes">Notities</string>
     <string name="example_notes">(Optioneel)</string>
     <string name="yes_or_no_example">bijv. Ben je vandaag vroeg wakker geworden? Heb je gesport? Heb je geschaakt?</string>
@@ -199,7 +196,6 @@
     <string name="color">Kleur</string>
     <string name="example_target">bijv. 15</string>
     <string name="measurable_short_example">bijv. Hardlopen</string>
-    <string name="measurable_question_example">bijv. Hoeveel kilometer heb je vandaag hardgelopen?</string>
     <string name="measurable_units_example">bijv. kilometers</string>
     <string name="every_month">Elke maand</string>
     <string name="validation_cannot_be_blank">Mag niet leeg zijn</string>

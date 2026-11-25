@@ -64,10 +64,6 @@ object EditHabitSteps {
         typeTextWithId(R.id.nameInput, name)
     }
 
-    fun typeQuestion(name: String) {
-        typeTextWithId(R.id.questionInput, name)
-    }
-
     fun typeDescription(description: String) {
         typeTextWithId(R.id.notesInput, description)
     }

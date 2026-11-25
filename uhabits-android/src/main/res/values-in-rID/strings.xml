@@ -176,8 +176,6 @@
     <string name="target_type">Jenis Target</string>
     <string name="target_type_at_least">Paling sedikit</string>
     <string name="target_type_at_most">Paling banyak</string>
-    <string name="example_question_boolean">mis. Apakah kamu sudah berolahraga hari ini?</string>
-    <string name="question">Pertanyaan</string>
     <string name="target">Target</string>
     <string name="yes">Ya</string>
     <string name="no">Tidak</string>
@@ -189,7 +187,6 @@
     <string name="widget_opacity_title">Opasitas widget</string>
     <string name="widget_opacity_description">Menjadikan widget lebih transparan atau lebih pekat di layar berandamu.</string>
     <string name="first_day_of_the_week">Hari pertama dalam seminggu</string>
-    <string name="default_reminder_question">Sudahkah kamu menyelesaikan kebiasaan ini hari ini?</string>
     <string name="notes">Catatan</string>
     <string name="example_notes">(Opsional)</string>
     <string name="yes_or_no_example">mis. Apakah kamu bangun awal hari ini? Apakah kamu sudah berolahraga? Apakah kamu sudah bermain catur?</string>
@@ -202,7 +199,6 @@
     <string name="color">Warna</string>
     <string name="example_target">mis. 15</string>
     <string name="measurable_short_example">mis. Lari</string>
-    <string name="measurable_question_example">mis. Berapa km kamu berlari hari ini?</string>
     <string name="measurable_units_example">mis. km</string>
     <string name="every_month">Setiap bulan</string>
     <string name="validation_cannot_be_blank">Tidak boleh kosong</string>

@@ -194,8 +194,6 @@
     <string name="target_type">Тип цілі</string>
     <string name="target_type_at_least">Щонайменше</string>
     <string name="target_type_at_most">Щонайбільше</string>
-    <string name="example_question_boolean">напр.: Ви робили сьогодні вправи?</string>
-    <string name="question">Запитання</string>
     <string name="target">Мета</string>
     <string name="yes">Так</string>
     <string name="no">Ні</string>
@@ -207,7 +205,6 @@
     <string name="widget_opacity_title">Прозорість віджета</string>
     <string name="widget_opacity_description">Робить віджети прозорішими, або більш видимими на вашому домашньому екрані.</string>
     <string name="first_day_of_the_week">Перший день тижня</string>
-    <string name="default_reminder_question">Ви вже виконали сьогодні цю звичку?</string>
     <string name="notes">Нотатки</string>
     <string name="example_notes">(необов\'язково)</string>
     <string name="yes_or_no_example">напр., чи прокинулися сьогодні зрання? Чи виконали вправи? Або грали в шахи?</string>
@@ -220,7 +217,6 @@
     <string name="color">Колір</string>
     <string name="example_target">напр., 15</string>
     <string name="measurable_short_example">напр., біг</string>
-    <string name="measurable_question_example">напр., скільки кілометрів сьогодні пробігли?</string>
     <string name="measurable_units_example">напр., кілометри</string>
     <string name="every_month">Щомісяця</string>
     <string name="validation_cannot_be_blank">Обов\'язкове поле</string>

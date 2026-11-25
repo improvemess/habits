@@ -56,7 +56,6 @@ object HabitEventFactory {
         habitUuid = habit.uuid!!,
         name = habit.name,
         description = habit.description,
-        question = habit.question,
         category = habit.category,
         color = habit.color.paletteIndex,
         frequencyNumerator = habit.frequency.numerator,

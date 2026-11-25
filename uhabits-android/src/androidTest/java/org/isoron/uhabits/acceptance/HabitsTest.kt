@@ -40,7 +40,6 @@ import org.isoron.uhabits.acceptance.steps.EditHabitSteps.pickColor
 import org.isoron.uhabits.acceptance.steps.EditHabitSteps.pickFrequency
 import org.isoron.uhabits.acceptance.steps.EditHabitSteps.typeDescription
 import org.isoron.uhabits.acceptance.steps.EditHabitSteps.typeName
-import org.isoron.uhabits.acceptance.steps.EditHabitSteps.typeQuestion
 import org.isoron.uhabits.acceptance.steps.ListHabitsSteps.MenuItem.ADD
 import org.isoron.uhabits.acceptance.steps.ListHabitsSteps.MenuItem.ARCHIVE
 import org.isoron.uhabits.acceptance.steps.ListHabitsSteps.MenuItem.DELETE
@@ -80,7 +79,6 @@ class HabitsTest : BaseUserInterfaceTest() {
         verifyShowsScreen(EDIT_HABIT)
         val testName = "Hello world"
         typeName(testName)
-        typeQuestion("Did you say hello to the world today?")
         typeDescription(description)
         pickFrequency()
         pickColor(5)
@@ -131,7 +129,6 @@ class HabitsTest : BaseUserInterfaceTest() {
         clickMenu(EDIT)
         verifyShowsScreen(EDIT_HABIT)
         typeName("Take a walk")
-        typeQuestion("Did you take a walk today?")
         typeDescription(description)
         clickSave()
         verifyShowsScreen(LIST_HABITS)
@@ -149,7 +146,6 @@ class HabitsTest : BaseUserInterfaceTest() {
         clickMenu(EDIT)
         verifyShowsScreen(EDIT_HABIT)
         typeName("Take a walk")
-        typeQuestion("Did you take a walk today?")
         pickColor(10)
         clickSave()
         verifyShowsScreen(SHOW_HABIT)

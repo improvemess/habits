@@ -167,8 +167,6 @@
     <string name="target_type">목표 유형</string>
     <string name="target_type_at_least">적어도</string>
     <string name="target_type_at_most">최대</string>
-    <string name="example_question_boolean">예 : 오늘 운동을 했습니까?</string>
-    <string name="question">질문</string>
     <string name="target">목표</string>
     <string name="yes">네</string>
     <string name="no">아니요</string>
@@ -180,7 +178,6 @@
     <string name="widget_opacity_title">위젯 투명도</string>
     <string name="widget_opacity_description">위젯을 홈 화면에서 더 투명하게 또는 더 불투명하게 합니다.</string>
     <string name="first_day_of_the_week">첫번째 요일</string>
-    <string name="default_reminder_question">오늘 습관을 지키셨나요?</string>
     <string name="notes">메모</string>
     <string name="example_notes">(선택사항)</string>
     <string name="yes_or_no_example">예) 오늘 일찍 일어났나요? 운동 하셨나요? 체스를 하셨나요?</string>
@@ -193,7 +190,6 @@
     <string name="color">색</string>
     <string name="example_target">예) 15</string>
     <string name="measurable_short_example">예) 달리기</string>
-    <string name="measurable_question_example">예) 오늘 몇 km를 달렸나요?</string>
     <string name="measurable_units_example">예) km</string>
     <string name="every_month">매월</string>
     <string name="validation_cannot_be_blank">비워 둘 수 없습니다</string>

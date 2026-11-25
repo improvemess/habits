@@ -43,7 +43,6 @@ class HabitFixtures(private val modelFactory: ModelFactory, private val habitLis
     fun createEmptyHabit(): Habit {
         val habit = modelFactory.buildHabit()
         habit.name = "Meditate"
-        habit.question = "Did you meditate this morning?"
         habit.description = "This is a test description"
         habit.color = PaletteColor(5)
         habit.frequency = DAILY
@@ -101,7 +100,6 @@ class HabitFixtures(private val modelFactory: ModelFactory, private val habitLis
     fun createLongNumericalHabit(): Habit {
         val habit = modelFactory.buildHabit().apply {
             name = "Read"
-            question = "How many pages did you walk today?"
             type = HabitType.NUMERICAL
             targetType = NumericalHabitType.AT_LEAST
             targetValue = 200.0
@@ -120,7 +118,6 @@ class HabitFixtures(private val modelFactory: ModelFactory, private val habitLis
     fun createShortHabit(): Habit {
         val habit = modelFactory.buildHabit().apply {
             name = "Wake up early"
-            question = "Did you wake up before 6am?"
             frequency = Frequency(2, 3)
         }
         habitList.add(habit)

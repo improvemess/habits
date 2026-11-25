@@ -173,8 +173,6 @@
     <string name="target_type">მიზნის ტიპი</string>
     <string name="target_type_at_least">მინიმუმ</string>
     <string name="target_type_at_most">მაქსიმუმ</string>
-    <string name="example_question_boolean">მაგ. დღეს ივარჯიშე?</string>
-    <string name="question">კითხვა</string>
     <string name="target">მიზანი</string>
     <string name="yes">კი</string>
     <string name="no">არა</string>
@@ -186,7 +184,6 @@
     <string name="widget_opacity_title">ვიჯეტის გამჭვირვალობა</string>
     <string name="widget_opacity_description">ცვლის საწყისი ეკრანის ვიჯეტების გამჭვირვალობას.</string>
     <string name="first_day_of_the_week">კვირის პირველი დღე</string>
-    <string name="default_reminder_question">დღეს ეს ჩვევა შეასრულე?</string>
     <string name="notes">ჩანაწერები</string>
     <string name="example_notes">(სურვილისამებრ)</string>
     <string name="yes_or_no_example">მაგ. დღეს ადრე გაიღვიძე? ივარჯიშე? ჭადრაკი ითამაშე?</string>
@@ -199,7 +196,6 @@
     <string name="color">ფერი</string>
     <string name="example_target">მაგ. 15</string>
     <string name="measurable_short_example">მაგ. რბენა</string>
-    <string name="measurable_question_example">მაგ. დღეს რამდენი კილომეტრი დაფარე?</string>
     <string name="measurable_units_example">მაგ. კილომეტრი</string>
     <string name="every_month">ყოველთვე</string>
     <string name="validation_cannot_be_blank">ცარიელი ვერ იქნება</string>

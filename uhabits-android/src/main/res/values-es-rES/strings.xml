@@ -173,8 +173,6 @@
     <string name="target_type">Tipo de objetivo</string>
     <string name="target_type_at_least">Al menos</string>
     <string name="target_type_at_most">Como máximo</string>
-    <string name="example_question_boolean">ej. ¿Has ejercitado hoy?</string>
-    <string name="question">Pregunta</string>
     <string name="target">Objetivo</string>
     <string name="yes">Sí</string>
     <string name="no">No</string>
@@ -186,7 +184,6 @@
     <string name="widget_opacity_title">Opacidad del widget</string>
     <string name="widget_opacity_description">Hace que los widgets sean más transparentes u opacos en la pantalla de inicio.</string>
     <string name="first_day_of_the_week">Primer día de la semana</string>
-    <string name="default_reminder_question">¿Has completado este hábito hoy?</string>
     <string name="notes">Notas</string>
     <string name="example_notes">(Opcional)</string>
     <string name="yes_or_no_example">ej. ¿Te levantaste temprano hoy? ¿Hiciste ejercicio? ¿Jugaste al ajedrez?</string>
@@ -199,7 +196,6 @@
     <string name="color">Color</string>
     <string name="example_target">ej. 15</string>
     <string name="measurable_short_example">ej. Correr</string>
-    <string name="measurable_question_example">ej. ¿Cuántos kilómetros has corrido hoy?</string>
     <string name="measurable_units_example">ej. kilómetros</string>
     <string name="every_month">Cada mes</string>
     <string name="validation_cannot_be_blank">No puede estar en blanco</string>

@@ -176,8 +176,6 @@
     <string name="long_press_to_edit">Tryk-og-hold for at ændre værdien</string>
     <string name="calendar">Kalender</string>
     <string name="unit">Enhed</string>
-    <string name="example_question_boolean">f.eks. Har du trænet i dag?</string>
-    <string name="question">Spørgsmål</string>
     <string name="target">Mål</string>
     <string name="yes">Ja</string>
     <string name="no">Nej</string>
@@ -189,7 +187,6 @@
     <string name="widget_opacity_title">Gennemsigtighed af widget</string>
     <string name="widget_opacity_description">Gør widgets mere gennemsigtige eller mere uigennemsigtige på din startskærm.</string>
     <string name="first_day_of_the_week">Første dag i ugen</string>
-    <string name="default_reminder_question">Har du fuldført denne vane i dag?</string>
     <string name="notes">Noter</string>
     <string name="example_notes">(Valgfrit)</string>
     <string name="yes_or_no_example">F.eks. vågnede du tidligt i dag? Har du motioneret? Spillede du skak?</string>
@@ -202,7 +199,6 @@
     <string name="color">Farve</string>
     <string name="example_target">f.eks. 15</string>
     <string name="measurable_short_example">f.eks. Løb</string>
-    <string name="measurable_question_example">F.eks. Hvor mange kilometer har du løbet i dag?</string>
     <string name="measurable_units_example">f.eks. kilometer</string>
     <string name="every_month">Hver måned</string>
     <string name="validation_cannot_be_blank">skal udfyldes</string>

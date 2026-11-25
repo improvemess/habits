@@ -10,7 +10,6 @@ data class HabitData(
     var id: Long? = null,
     var name: String = "",
     var description: String = "",
-    var question: String = "",
     var freqNum: Int = 1,
     var freqDen: Int = 1,
     var color: Int = 0,
@@ -33,7 +32,7 @@ data class HabitData(
 class HabitRepository(private val db: Database) {
     private val findAllStmt by lazy {
         db.prepareStatement(
-            """SELECT id, name, description, question, freq_num, freq_den, color,
+            """SELECT id, name, description, freq_num, freq_den, color,
                position, reminder_hour, reminder_min, reminder_days, highlight,
                archived, type, target_value, target_type, unit, uuid, category, step_size, negative_since
                FROM Habits ORDER BY position"""
@@ -42,25 +41,25 @@ class HabitRepository(private val db: Database) {
 
     private val insertStmt by lazy {
         db.prepareStatement(
-            """INSERT INTO Habits(name, description, question, freq_num, freq_den,
+            """INSERT INTO Habits(name, description, freq_num, freq_den,
+               color, position, reminder_hour, reminder_min, reminder_days,
+               highlight, archived, type, target_value, target_type, unit, uuid, category, step_size, negative_since)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+        )
+    }
+
+    private val insertWithIdStmt by lazy {
+        db.prepareStatement(
+            """INSERT INTO Habits(id, name, description, freq_num, freq_den,
                color, position, reminder_hour, reminder_min, reminder_days,
                highlight, archived, type, target_value, target_type, unit, uuid, category, step_size, negative_since)
                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
         )
     }
 
-    private val insertWithIdStmt by lazy {
-        db.prepareStatement(
-            """INSERT INTO Habits(id, name, description, question, freq_num, freq_den,
-               color, position, reminder_hour, reminder_min, reminder_days,
-               highlight, archived, type, target_value, target_type, unit, uuid, category, step_size, negative_since)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
-        )
-    }
-
     private val updateStmt by lazy {
         db.prepareStatement(
-            """UPDATE Habits SET name=?, description=?, question=?, freq_num=?,
+            """UPDATE Habits SET name=?, description=?, freq_num=?,
                freq_den=?, color=?, position=?, reminder_hour=?, reminder_min=?,
                reminder_days=?, highlight=?, archived=?, type=?, target_value=?,
                target_type=?, unit=?, uuid=?, category=?, step_size=?, negative_since=? WHERE id=?"""
@@ -97,7 +96,7 @@ class HabitRepository(private val db: Database) {
     fun update(data: HabitData) {
         updateStmt.reset()
         bindForInsert(updateStmt, data)
-        updateStmt.bindLong(21, data.id!!)
+        updateStmt.bindLong(20, data.id!!)
         updateStmt.step()
     }
 
@@ -115,24 +114,23 @@ class HabitRepository(private val db: Database) {
         val o = offset
         stmt.bindText(1 + o, data.name)
         stmt.bindText(2 + o, data.description)
-        stmt.bindText(3 + o, data.question)
-        stmt.bindInt(4 + o, data.freqNum)
-        stmt.bindInt(5 + o, data.freqDen)
-        stmt.bindInt(6 + o, data.color)
-        stmt.bindInt(7 + o, data.position)
-        if (data.reminderHour != null) stmt.bindInt(8 + o, data.reminderHour!!) else stmt.bindNull(8 + o)
-        if (data.reminderMin != null) stmt.bindInt(9 + o, data.reminderMin!!) else stmt.bindNull(9 + o)
-        stmt.bindInt(10 + o, data.reminderDays)
-        stmt.bindInt(11 + o, data.highlight)
-        stmt.bindInt(12 + o, data.archived)
-        stmt.bindInt(13 + o, data.type)
-        stmt.bindReal(14 + o, data.targetValue)
-        stmt.bindInt(15 + o, data.targetType)
-        stmt.bindText(16 + o, data.unit)
-        if (data.uuid != null) stmt.bindText(17 + o, data.uuid!!) else stmt.bindNull(17 + o)
-        stmt.bindText(18 + o, data.category)
-        stmt.bindReal(19 + o, data.stepSize)
-        if (data.negativeSince != null) stmt.bindLong(20 + o, data.negativeSince!!) else stmt.bindNull(20 + o)
+        stmt.bindInt(3 + o, data.freqNum)
+        stmt.bindInt(4 + o, data.freqDen)
+        stmt.bindInt(5 + o, data.color)
+        stmt.bindInt(6 + o, data.position)
+        if (data.reminderHour != null) stmt.bindInt(7 + o, data.reminderHour!!) else stmt.bindNull(7 + o)
+        if (data.reminderMin != null) stmt.bindInt(8 + o, data.reminderMin!!) else stmt.bindNull(8 + o)
+        stmt.bindInt(9 + o, data.reminderDays)
+        stmt.bindInt(10 + o, data.highlight)
+        stmt.bindInt(11 + o, data.archived)
+        stmt.bindInt(12 + o, data.type)
+        stmt.bindReal(13 + o, data.targetValue)
+        stmt.bindInt(14 + o, data.targetType)
+        stmt.bindText(15 + o, data.unit)
+        if (data.uuid != null) stmt.bindText(16 + o, data.uuid!!) else stmt.bindNull(16 + o)
+        stmt.bindText(17 + o, data.category)
+        stmt.bindReal(18 + o, data.stepSize)
+        if (data.negativeSince != null) stmt.bindLong(19 + o, data.negativeSince!!) else stmt.bindNull(19 + o)
     }
 
     private fun readRow(stmt: PreparedStatement): HabitData {
@@ -140,24 +138,23 @@ class HabitRepository(private val db: Database) {
             id = stmt.getLong(0),
             name = stmt.getText(1),
             description = stmt.getText(2),
-            question = stmt.getText(3),
-            freqNum = stmt.getInt(4),
-            freqDen = stmt.getInt(5),
-            color = stmt.getInt(6),
-            position = stmt.getInt(7),
-            reminderHour = stmt.getIntOrNull(8),
-            reminderMin = stmt.getIntOrNull(9),
-            reminderDays = stmt.getInt(10),
-            highlight = stmt.getInt(11),
-            archived = stmt.getInt(12),
-            type = stmt.getInt(13),
-            targetValue = stmt.getReal(14),
-            targetType = stmt.getInt(15),
-            unit = stmt.getText(16),
-            uuid = stmt.getTextOrNull(17),
-            category = stmt.getText(18),
-            stepSize = stmt.getReal(19),
-            negativeSince = stmt.getLongOrNull(20)
+            freqNum = stmt.getInt(3),
+            freqDen = stmt.getInt(4),
+            color = stmt.getInt(5),
+            position = stmt.getInt(6),
+            reminderHour = stmt.getIntOrNull(7),
+            reminderMin = stmt.getIntOrNull(8),
+            reminderDays = stmt.getInt(9),
+            highlight = stmt.getInt(10),
+            archived = stmt.getInt(11),
+            type = stmt.getInt(12),
+            targetValue = stmt.getReal(13),
+            targetType = stmt.getInt(14),
+            unit = stmt.getText(15),
+            uuid = stmt.getTextOrNull(16),
+            category = stmt.getText(17),
+            stepSize = stmt.getReal(18),
+            negativeSince = stmt.getLongOrNull(19)
         )
     }
 }

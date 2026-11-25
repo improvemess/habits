@@ -185,8 +185,6 @@
     <string name="target_type">Rodzaj celu:</string>
     <string name="target_type_at_least">Co najmniej</string>
     <string name="target_type_at_most">Maksymalnie</string>
-    <string name="example_question_boolean">np. Czy ćwiczyłeś dzisiaj?</string>
-    <string name="question">Pytanie</string>
     <string name="target">Cel</string>
     <string name="yes">Tak</string>
     <string name="no">Nie</string>
@@ -198,7 +196,6 @@
     <string name="widget_opacity_title">Przezroczystość widżetu</string>
     <string name="widget_opacity_description">Sprawia, że widżety są bardziej lub mniej przezroczyste na ekranie głównym.</string>
     <string name="first_day_of_the_week">Pierwszy dzień tygodnia</string>
-    <string name="default_reminder_question">Czy wytrwałeś dziś w nawyku?</string>
     <string name="notes">Notatki</string>
     <string name="example_notes">(opcjonalne)</string>
     <string name="yes_or_no_example">np. Czy obudziłeś się dzisiaj wcześnie? Czy ćwiczyłeś? Czy grałeś w szachy?</string>
@@ -211,7 +208,6 @@
     <string name="color">Kolor</string>
     <string name="example_target">np. 15</string>
     <string name="measurable_short_example">np. Bieg</string>
-    <string name="measurable_question_example">np. Ile kilometrów dzisiaj przebiegłeś?</string>
     <string name="measurable_units_example">np. kilometry</string>
     <string name="every_month">Każdego miesiąca</string>
     <string name="validation_cannot_be_blank">Pole nie może być puste</string>

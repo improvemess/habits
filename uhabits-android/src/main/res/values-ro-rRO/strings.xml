@@ -152,8 +152,6 @@
     <string name="unit">Unități</string>
     <string name="target_type_at_least">Cel puțin</string>
     <string name="target_type_at_most">Cel mult</string>
-    <string name="example_question_boolean">ex.: Ai îndeplinit exerciții fizice azi?</string>
-    <string name="question">Întrebare</string>
     <string name="target">Obiectiv</string>
     <string name="yes">Da</string>
     <string name="no">Nu</string>
@@ -165,7 +163,6 @@
     <string name="widget_opacity_title">Opacitatea widget-ului</string>
     <string name="widget_opacity_description">Face widget-urile mai transparente sau mai opace pe ecranul de pornire.</string>
     <string name="first_day_of_the_week">Prima zi a săptămânii</string>
-    <string name="default_reminder_question">Ai efectuat astăzi acest obicei?</string>
     <string name="notes">Notițe</string>
     <string name="example_notes">(Opţional)</string>
     <string name="yes_or_no_example">ex. Te-ai trezit mai devreme astăzi? Ai făcut exerciții? Ai jucat șah?</string>
@@ -178,7 +175,6 @@
     <string name="color">Culoare</string>
     <string name="example_target">ex.: 15</string>
     <string name="measurable_short_example">ex.: Alergat</string>
-    <string name="measurable_question_example">ex.: Câți kilometri ai alergat astăzi?</string>
     <string name="measurable_units_example">de exemplu mile</string>
     <string name="every_month">În fiecare lună</string>
     <string name="validation_cannot_be_blank">nu poate fi gol</string>

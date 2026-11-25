@@ -173,8 +173,6 @@
     <string name="long_press_to_edit">Dug pritisak za promenu vrednosti</string>
     <string name="calendar">Kalendar</string>
     <string name="unit">Jedinica</string>
-    <string name="example_question_boolean">npr. Da li ste vežbali danas?</string>
-    <string name="question">Pitanje</string>
     <string name="target">Cilj</string>
     <string name="yes">Da</string>
     <string name="no">Ne</string>
@@ -186,7 +184,6 @@
     <string name="widget_opacity_title">Prozirnost vidžeta</string>
     <string name="widget_opacity_description">Menja prozirnost vidžeta na početnom ekranu.</string>
     <string name="first_day_of_the_week">Prvi dan u nedelji</string>
-    <string name="default_reminder_question">Da li ste danas ovo obavili?</string>
     <string name="notes">Napomene</string>
     <string name="example_notes">nije obavezno</string>
     <string name="yes_or_no_example">npr. Da li ste danas rano ustali? Da li ste vežbali? Jeste li igrali šah?</string>
@@ -198,7 +195,6 @@
     <string name="color">Boja</string>
     <string name="example_target">npr. 15</string>
     <string name="measurable_short_example">npr. trčanje</string>
-    <string name="measurable_question_example">npr. Koliko ste danas pretrčali?</string>
     <string name="measurable_units_example">npr. km</string>
     <string name="every_month">svakog meseca</string>
     <string name="validation_cannot_be_blank">ne može biti prazno</string>

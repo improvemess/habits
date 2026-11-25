@@ -173,7 +173,7 @@ class LoopDBImporter(
     private fun loadHabits(db: Database): List<HabitData> {
         val result = mutableListOf<HabitData>()
         db.query(
-            "SELECT id, name, description, question, freq_num, freq_den, color, " +
+            "SELECT id, name, description, freq_num, freq_den, color, " +
                 "position, reminder_hour, reminder_min, reminder_days, highlight, " +
                 "archived, type, target_value, target_type, unit, uuid, category, step_size, negative_since " +
                 "FROM Habits ORDER BY position"
@@ -183,24 +183,23 @@ class LoopDBImporter(
                     id = stmt.getLongOrNull(0),
                     name = stmt.getTextOrNull(1) ?: "",
                     description = stmt.getTextOrNull(2) ?: "",
-                    question = stmt.getTextOrNull(3) ?: "",
-                    freqNum = stmt.getIntOrNull(4) ?: 1,
-                    freqDen = stmt.getIntOrNull(5) ?: 1,
-                    color = stmt.getIntOrNull(6) ?: 0,
-                    position = stmt.getIntOrNull(7) ?: 0,
-                    reminderHour = stmt.getIntOrNull(8),
-                    reminderMin = stmt.getIntOrNull(9),
-                    reminderDays = stmt.getIntOrNull(10) ?: 0,
-                    highlight = stmt.getIntOrNull(11) ?: 0,
-                    archived = stmt.getIntOrNull(12) ?: 0,
-                    type = stmt.getIntOrNull(13) ?: 0,
-                    targetValue = stmt.getRealOrNull(14) ?: 0.0,
-                    targetType = stmt.getIntOrNull(15) ?: 0,
-                    unit = stmt.getTextOrNull(16) ?: "",
-                    uuid = stmt.getTextOrNull(17),
-                    category = stmt.getText(18),
-                    stepSize = stmt.getRealOrNull(19) ?: 1.0,
-                    negativeSince = stmt.getLongOrNull(20)
+                    freqNum = stmt.getIntOrNull(3) ?: 1,
+                    freqDen = stmt.getIntOrNull(4) ?: 1,
+                    color = stmt.getIntOrNull(5) ?: 0,
+                    position = stmt.getIntOrNull(6) ?: 0,
+                    reminderHour = stmt.getIntOrNull(7),
+                    reminderMin = stmt.getIntOrNull(8),
+                    reminderDays = stmt.getIntOrNull(9) ?: 0,
+                    highlight = stmt.getIntOrNull(10) ?: 0,
+                    archived = stmt.getIntOrNull(11) ?: 0,
+                    type = stmt.getIntOrNull(12) ?: 0,
+                    targetValue = stmt.getRealOrNull(13) ?: 0.0,
+                    targetType = stmt.getIntOrNull(14) ?: 0,
+                    unit = stmt.getTextOrNull(15) ?: "",
+                    uuid = stmt.getTextOrNull(16),
+                    category = stmt.getText(17),
+                    stepSize = stmt.getRealOrNull(18) ?: 1.0,
+                    negativeSince = stmt.getLongOrNull(19)
                 )
             )
         }

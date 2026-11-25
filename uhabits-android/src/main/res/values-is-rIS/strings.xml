@@ -132,8 +132,6 @@
     <string name="target_type">Tegund markmiðs</string>
     <string name="target_type_at_least">Að minnsta kosti</string>
     <string name="target_type_at_most">Í mesta lagi</string>
-    <string name="example_question_boolean">t.d., Æfðir þú þig í dag?</string>
-    <string name="question">Spurning</string>
     <string name="target">Markmið</string>
     <string name="yes">Já</string>
     <string name="no">Nei</string>
@@ -144,7 +142,6 @@
     <string name="database">Gagnagrunnur</string>
     <string name="widget_opacity_title">Ógegnsæi græju</string>
     <string name="first_day_of_the_week">Fyrsti dagur vikunar</string>
-    <string name="default_reminder_question">Hefurðu gert þetta í dag?</string>
     <string name="notes">Minnispunktur</string>
     <string name="example_notes">(Valfrjálst)</string>
     <string name="yes_or_no_example">t.d., Vaknaðir þú snemma í dag? Æfðir þú þig? Tefldir þú skák?</string>
@@ -157,7 +154,6 @@
     <string name="color">Litur</string>
     <string name="example_target">t.d., 15</string>
     <string name="measurable_short_example">t.d., Hlaupa</string>
-    <string name="measurable_question_example">t.d., Hversu marga kílómetra hljópstu í dag?</string>
     <string name="measurable_units_example">t.d., kílómetra</string>
     <string name="every_month">Hvern mánuð</string>
     <string name="validation_cannot_be_blank">Má ekki vera autt</string>

@@ -164,8 +164,6 @@
     <string name="unit">Unitat</string>
     <string name="target_type">Tipus objectiu</string>
     <string name="target_type_at_least">Al menys</string>
-    <string name="example_question_boolean">p.e. Has fet exercici avui?</string>
-    <string name="question">Pregunta</string>
     <string name="target">Objectiu</string>
     <string name="yes">Sí</string>
     <string name="no">No</string>
@@ -177,7 +175,6 @@
     <string name="widget_opacity_title">Opacitat del giny</string>
     <string name="widget_opacity_description">Fa que els ginys siguin més transparents o més opacs a la pantalla d\'inici.</string>
     <string name="first_day_of_the_week">Primer dia de la setmana</string>
-    <string name="default_reminder_question">Has completat aquest hàbit avui?</string>
     <string name="notes">Notes</string>
     <string name="example_notes">Opcional</string>
     <string name="yes_or_no_example">Per exemple, us heu despertat aviat? Heu fet exercici? Heu jugat a escacs?</string>
@@ -190,7 +187,6 @@
     <string name="color">Color</string>
     <string name="example_target">ex. 15</string>
     <string name="measurable_short_example">Per exemple: córrer</string>
-    <string name="measurable_question_example">Per exemple, quants quilòmetres heu recorregut avui?</string>
     <string name="measurable_units_example">per exemple, quilòmetres</string>
     <string name="every_month">Cada mes</string>
     <string name="validation_cannot_be_blank">No es pot deixar en blanc</string>

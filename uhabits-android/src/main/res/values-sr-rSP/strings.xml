@@ -179,8 +179,6 @@
     <string name="target_type">Врста циља</string>
     <string name="target_type_at_least">најмање</string>
     <string name="target_type_at_most">највише</string>
-    <string name="example_question_boolean">нпр. Да ли сте вежбали данас?</string>
-    <string name="question">Питање</string>
     <string name="target">Циљ</string>
     <string name="yes">Да</string>
     <string name="no">Не</string>
@@ -192,7 +190,6 @@
     <string name="widget_opacity_title">Прозирност виџета</string>
     <string name="widget_opacity_description">Мења прозирност виџета на почетном екрану.</string>
     <string name="first_day_of_the_week">Први дан у недељи</string>
-    <string name="default_reminder_question">Да ли сте данас ово обавили?</string>
     <string name="notes">Напомене</string>
     <string name="example_notes">није обавезно</string>
     <string name="yes_or_no_example">нпр. Да ли сте данас рано устали? Да ли сте вежбали? Јесте ли играли шах?</string>
@@ -205,7 +202,6 @@
     <string name="color">Боја</string>
     <string name="example_target">нпр. 15</string>
     <string name="measurable_short_example">нпр. трчање</string>
-    <string name="measurable_question_example">нпр. Колико сте данас претрчали?</string>
     <string name="measurable_units_example">нпр. km</string>
     <string name="every_month">сваког месеца</string>
     <string name="validation_cannot_be_blank">не може бити празно</string>

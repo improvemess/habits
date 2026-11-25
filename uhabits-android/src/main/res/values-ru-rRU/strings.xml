@@ -187,8 +187,6 @@
     <string name="target_type">Тип цели</string>
     <string name="target_type_at_least">Не меньше</string>
     <string name="target_type_at_most">Не больше</string>
-    <string name="example_question_boolean">напр.: Вы упражнялись сегодня?</string>
-    <string name="question">Вопрос</string>
     <string name="target">Цель</string>
     <string name="yes">Да</string>
     <string name="no">Нет</string>
@@ -200,7 +198,6 @@
     <string name="widget_opacity_title">Непрозрачность виджета</string>
     <string name="widget_opacity_description">Делает виджеты более прозрачными или непрозрачными на главном экране.</string>
     <string name="first_day_of_the_week">Первый день недели</string>
-    <string name="default_reminder_question">Вы выполнили эту привычку сегодня?</string>
     <string name="notes">Заметки</string>
     <string name="example_notes">(Необязательно)</string>
     <string name="yes_or_no_example">Например, вы рано проснулись сегодня? Вы занимались спортом? Вы играли в шахматы?</string>
@@ -213,7 +210,6 @@
     <string name="color">Цвет</string>
     <string name="example_target">напр.: 15</string>
     <string name="measurable_short_example">напр.: Побегать</string>
-    <string name="measurable_question_example">напр.: Сколько км вы пробежали сегодня?</string>
     <string name="measurable_units_example">напр.: км</string>
     <string name="every_month">Каждый месяц</string>
     <string name="validation_cannot_be_blank">Не может быть пустым</string>

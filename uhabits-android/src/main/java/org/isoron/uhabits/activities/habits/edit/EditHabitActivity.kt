@@ -121,7 +121,6 @@ class EditHabitActivity : AppCompatActivity() {
                 reminderDays = it.days
             }
             binding.nameInput.setText(habit.name)
-            binding.questionInput.setText(habit.question)
             binding.notesInput.setText(habit.description)
             binding.categoryInput.setText(habit.category)
             binding.unitInput.setText(habit.unit)
@@ -156,7 +155,6 @@ class EditHabitActivity : AppCompatActivity() {
             }
             HabitType.NUMERICAL -> {
                 binding.nameInput.hint = getString(R.string.measurable_short_example)
-                binding.questionInput.hint = getString(R.string.measurable_question_example)
             }
         }
 
@@ -285,7 +283,6 @@ class EditHabitActivity : AppCompatActivity() {
         }
 
         habit.name = binding.nameInput.text.trim().toString()
-        habit.question = binding.questionInput.text.trim().toString()
         habit.description = binding.notesInput.text.trim().toString()
         habit.category = binding.categoryInput.text.trim().toString()
         habit.color = color
@@ -334,10 +331,8 @@ class EditHabitActivity : AppCompatActivity() {
         if (habitId < 0) binding.toolbar.title = getString(R.string.quit_habit)
         if (habitType == HabitType.YES_NO) {
             binding.nameInput.hint = getString(R.string.quit_short_example)
-            binding.questionInput.hint = getString(R.string.quit_question_boolean)
         } else {
             binding.nameInput.hint = getString(R.string.quit_measurable_short_example)
-            binding.questionInput.hint = getString(R.string.quit_measurable_question_example)
             binding.unitInput.hint = getString(R.string.quit_units_example)
             binding.targetLabel.text = getString(R.string.quit_target)
             binding.numericalFrequencyLabel.text = getString(R.string.quit_period)

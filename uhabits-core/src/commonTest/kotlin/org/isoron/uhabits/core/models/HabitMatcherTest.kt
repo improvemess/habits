@@ -26,12 +26,10 @@ class HabitMatcherTest : BaseUnitTest() {
 
     private fun buildHabit(
         name: String,
-        question: String = "",
         description: String = ""
     ): Habit {
         val habit = modelFactory.buildHabit()
         habit.name = name
-        habit.question = question
         habit.description = description
         return habit
     }
@@ -39,8 +37,8 @@ class HabitMatcherTest : BaseUnitTest() {
     @Test
     fun testSearch() {
         val yogaPractice = buildHabit("Yoga practice")
-        val running = buildHabit("Running", question = "Did you run today?", description = "daily jog")
-        val exercise = buildHabit("Exercise", question = "Did you do yoga today?")
+        val running = buildHabit("Running", description = "daily jog")
+        val exercise = buildHabit("Exercise", description = "do yoga today")
         val mediter = buildHabit("Méditer", description = "mindfulness session")
         val stretching = buildHabit("🧘 Stretching")
         val run10k = buildHabit("10k Run")
@@ -50,7 +48,7 @@ class HabitMatcherTest : BaseUnitTest() {
         // Match by name
         assertMatches(habits, "yoga", listOf(yogaPractice, exercise))
 
-        // Match by question only
+        // Match by name only
         assertMatches(habits, "run", listOf(running, run10k))
 
         // Match by description only

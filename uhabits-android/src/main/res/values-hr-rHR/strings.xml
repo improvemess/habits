@@ -163,8 +163,6 @@
     <string name="target_type">Vrsta cilja</string>
     <string name="target_type_at_least">Najmanje</string>
     <string name="target_type_at_most">Najviše</string>
-    <string name="example_question_boolean">npr. Jesi li vježbao/la danas?</string>
-    <string name="question">Pitanje</string>
     <string name="target">Cilj</string>
     <string name="yes">Da</string>
     <string name="no">Ne</string>
@@ -176,7 +174,6 @@
     <string name="widget_opacity_title">Prozirnost widgeta</string>
     <string name="widget_opacity_description">Povećava ili smanjuje prozirnost widgeta na početnom zaslonu.</string>
     <string name="first_day_of_the_week">Prvi dan u tjednu</string>
-    <string name="default_reminder_question">Jesi li ispunio/la ovu naviku danas?</string>
     <string name="notes">Bilješke</string>
     <string name="example_notes">(Neobvezno)</string>
     <string name="yes_or_no_example">npr. Jesi li se danas rano probudio/la? Jesi li vježbao/la? Jesi li igrao/la šah?</string>
@@ -189,7 +186,6 @@
     <string name="color">Boja</string>
     <string name="example_target">npr. 15</string>
     <string name="measurable_short_example">npr. Trči</string>
-    <string name="measurable_question_example">npr. Koliko si kilometara danas trčao/la?</string>
     <string name="measurable_units_example">npr. kilometri</string>
     <string name="every_month">Svaki mjesec</string>
     <string name="validation_cannot_be_blank">Ne može ostati prazno</string>

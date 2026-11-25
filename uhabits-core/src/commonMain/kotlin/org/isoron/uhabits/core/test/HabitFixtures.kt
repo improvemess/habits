@@ -51,7 +51,6 @@ class HabitFixtures(
         val habit = modelFactory.buildHabit()
         habit.name = name
         habit.category = category
-        habit.question = "Did you meditate this morning?"
         habit.color = color
         habit.position = position
         habit.frequency = Frequency.DAILY
@@ -63,7 +62,6 @@ class HabitFixtures(
         val habit = modelFactory.buildHabit()
         habit.type = HabitType.NUMERICAL
         habit.name = "Run"
-        habit.question = "How many miles did you run today?"
         habit.unit = "miles"
         habit.targetType = targetType
         habit.targetValue = 2.0
@@ -91,7 +89,6 @@ class HabitFixtures(
         val habit = modelFactory.buildHabit()
         habit.type = HabitType.NUMERICAL
         habit.name = "Run"
-        habit.question = "How many miles did you run today?"
         habit.unit = "miles"
         habit.targetType = NumericalHabitType.AT_LEAST
         habit.targetValue = 2.0
@@ -112,7 +109,6 @@ class HabitFixtures(
         val habit = modelFactory.buildHabit()
         habit.type = HabitType.NUMERICAL
         habit.name = "Walk"
-        habit.question = "How many steps did you walk today?"
         habit.unit = "steps"
         habit.targetType = NumericalHabitType.AT_LEAST
         habit.targetValue = 100.0
@@ -146,7 +142,6 @@ class HabitFixtures(
     fun createShortHabit(): Habit {
         val habit = modelFactory.buildHabit()
         habit.name = "Wake up early"
-        habit.question = "Did you wake up before 6am?"
         habit.frequency = Frequency(2, 3)
         saveIfSQLite(habit)
         var timestamp = getToday()

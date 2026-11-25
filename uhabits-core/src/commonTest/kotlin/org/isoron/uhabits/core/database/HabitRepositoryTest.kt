@@ -19,7 +19,6 @@ class HabitRepositoryTest {
         val data = HabitData(
             name = "Wake up early",
             description = "Before 6am",
-            question = "Did you wake up early?",
             freqNum = 1,
             freqDen = 1,
             color = 3,
@@ -37,7 +36,6 @@ class HabitRepositoryTest {
         val all = repo.findAll()
         assertEquals(1, all.size)
         assertEquals("Wake up early", all[0].name)
-        assertEquals("Did you wake up early?", all[0].question)
         assertEquals("abc-123", all[0].uuid)
         assertEquals(id, all[0].id)
 
@@ -161,7 +159,6 @@ class HabitRepositoryTest {
         val original = HabitData(
             name = "Meditate",
             description = "10 minutes of mindfulness",
-            question = "Did you meditate today?",
             freqNum = 3,
             freqDen = 7,
             color = 5,
@@ -183,7 +180,6 @@ class HabitRepositoryTest {
         val loaded = repo.findAll().single()
         assertEquals(original.name, loaded.name)
         assertEquals(original.description, loaded.description)
-        assertEquals(original.question, loaded.question)
         assertEquals(original.freqNum, loaded.freqNum)
         assertEquals(original.freqDen, loaded.freqDen)
         assertEquals(original.color, loaded.color)
