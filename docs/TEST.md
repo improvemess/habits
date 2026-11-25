@@ -24,3 +24,14 @@ Note that instrumented tests are designed to run on a clean install, inside an e
 - All animations must be manually disabled.
 
 If there are failing view tests (that is, if some custom views do not render exactly like the prerendered images we have), then both the actual and expected images will be automatically downloaded from the device to the folder `uhabits-android/build/outputs`. After verifying the differences, if you feel that the actual images are actually fine and should replace the prerendered ones, then run `./build.sh android-accept-images`.
+
+## Instrumented tests in CI
+
+Pull requests run the medium and large instrumented tests on an emulator (job "Android (instrumented tests)" in `.github/workflows/quality-gates.yml`; API 34, `google_apis`, x86_64, Nexus 4). The job reuses the APKs built by the Android job and runs `tools/ci/run-instrumented-tests.sh`, which also works locally against any running emulator:
+
+    ADB="adb -s emulator-5554" tools/ci/run-instrumented-tests.sh \
+        uhabits-android/build/outputs/apk/debug/uhabits-android-debug.apk \
+        uhabits-android/build/outputs/apk/androidTest/debug/uhabits-android-debug-androidTest.apk \
+        build/instrumented
+
+Failed tests are retried once. Tests that only pass on the retry show up as warnings, and should be fixed. If tests still fail, the job uploads the `am instrument` output, `logcat` and the test screenshots as the artifact `instrumented-results`.
