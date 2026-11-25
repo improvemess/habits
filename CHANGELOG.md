@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.17.0](https://github.com/oliverlorenz/uhabits/compare/v2.16.0...v2.17.0) (2026-11-25)
+
+### Features
+
+* Frage-Feld entfernen, Habit-Titel statt Frage ([#49](https://github.com/oliverlorenz/uhabits/issues/49)) ([#72](https://github.com/oliverlorenz/uhabits/issues/72)) ([759caae](https://github.com/oliverlorenz/uhabits/commit/759caae76cbe851b3197d7bca6c50568f0a3c554))
+
 ## [2.16.0](https://github.com/oliverlorenz/uhabits/compare/v2.15.1...v2.16.0) (2026-11-25)
 
 ### Features
