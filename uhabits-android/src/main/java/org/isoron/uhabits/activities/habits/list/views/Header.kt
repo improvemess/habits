@@ -45,6 +45,7 @@ import java.time.Month
 import java.time.format.TextStyle
 import java.util.Locale
 import kotlin.math.max
+import kotlin.math.min
 
 data class HeaderState(
     val buttonCount: Int,
@@ -176,6 +177,13 @@ class HeaderView(
             return "$shortMonth '${(bestYear % 100).toString().padStart(2, '0')}"
         }
 
+        /** Width of the widest possible month label, so the "Today" chip never moves. */
+        private val monthSlot: Float by lazy {
+            (1..12).maxOf { m ->
+                monthPaint.measureText("${monthName(m, TextStyle.SHORT_STANDALONE).take(3)} '00")
+            }
+        }
+
         private val chipPaint = TextPaint().apply {
             isAntiAlias = true
             textSize = dim(R.dimen.tinyTextSize)
@@ -213,10 +221,10 @@ class HeaderView(
             val text = TextUtils.ellipsize(
                 label,
                 monthPaint,
-                max(available - reserved, 0f),
+                max(if (scrolled) min(monthSlot, available - reserved) else available, 0f),
                 TextUtils.TruncateAt.END
             )
-            val textWidth = monthPaint.measureText(text, 0, text.length)
+            val slotWidth = monthSlot
             val centerY = canvas.height / 2f
             val baseline = centerY - (monthPaint.ascent() + monthPaint.descent()) / 2
             val rtl = isRTL()
@@ -226,9 +234,9 @@ class HeaderView(
 
             if (scrolled) {
                 val left = if (rtl) {
-                    canvas.width - margin - textWidth - gap - chipWidth
+                    canvas.width - margin - slotWidth - gap - chipWidth
                 } else {
-                    margin + textWidth + gap
+                    margin + slotWidth + gap
                 }
                 rect.set(left, centerY - chipHeight / 2, left + chipWidth, centerY + chipHeight / 2)
                 canvas.drawRoundRect(rect, chipHeight / 2, chipHeight / 2, chipStroke)
