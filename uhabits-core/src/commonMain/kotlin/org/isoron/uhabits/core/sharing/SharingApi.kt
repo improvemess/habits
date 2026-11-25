@@ -39,6 +39,20 @@ data class Invite(val code: String, val url: String, val expiresAt: String)
 /** A friend who redeemed an invite. */
 data class Reader(val readerId: String, val displayName: String?, val lastSeenAt: String)
 
+/** Result of redeeming an invite: a read-only subscription to one share. */
+data class Redemption(val shareId: String, val readerId: String, val readerToken: String, val status: String)
+
+/** An entry as a reader receives it: plain date and revision, sealed data. */
+data class ReadEntry(val date: LocalDate, val data: String, val revision: Long)
+
+/** What a reader receives for a share; [meta] is null once the share has ended. */
+data class ShareContent(
+    val status: String,
+    val meta: String?,
+    val entries: List<ReadEntry>,
+    val revision: Long
+)
+
 /**
  * The calls of the sharing server (uhabits-server, API v1) that the owner's
  * devices need to keep shares up to date. Implemented per platform.
@@ -72,6 +86,17 @@ interface SharingApi {
     suspend fun listReaders(serverUrl: String, deviceToken: String, shareId: String): List<Reader>
 
     suspend fun removeReader(serverUrl: String, deviceToken: String, shareId: String, readerId: String)
+
+    // Friends (readers)
+
+    /** Redeems a one-time invite; needs no token. */
+    suspend fun redeemInvite(serverUrl: String, code: String, displayName: String?): Redemption
+
+    /** Reads a share; only entries changed after revision [since] are returned. */
+    suspend fun readShare(serverUrl: String, readerToken: String, shareId: String, since: Long): ShareContent
+
+    /** Stops following the share of [readerToken]. */
+    suspend fun leaveShare(serverUrl: String, readerToken: String)
 
     companion object {
         const val MAX_ENTRIES_PER_REQUEST = 500
