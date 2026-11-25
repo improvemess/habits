@@ -155,6 +155,12 @@ class EditHabitActivity : AppCompatActivity() {
             }
             HabitType.NUMERICAL -> {
                 binding.nameInput.hint = getString(R.string.measurable_short_example)
+                // The target type follows from "build" (at least) or "quit" (at most), see #63.
+                // Only legacy habits to build that are stored as "at most" still show the picker,
+                // so they are not silently changed and can still be switched.
+                if (targetType != NumericalHabitType.AT_MOST) {
+                    binding.targetTypeOuterBox.visibility = View.GONE
+                }
             }
         }
 
