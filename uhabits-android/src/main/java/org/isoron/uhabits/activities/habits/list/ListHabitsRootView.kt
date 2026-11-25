@@ -56,7 +56,16 @@ import org.isoron.uhabits.utils.sres
 import kotlin.math.max
 import kotlin.math.min
 
-const val MAX_CHECKMARK_COUNT = 60
+/** Number of days loaded when the list is opened. */
+const val INITIAL_CHECKMARK_COUNT = 14
+
+/** Number of additional days loaded each time the user scrolls close to the oldest loaded day. */
+const val CHECKMARK_LOAD_STEP = 14
+
+/** Upper limit of days the list can load. */
+const val MAX_CHECKMARK_COUNT = 365
+
+private const val LOAD_AHEAD_DAYS = 3
 
 @Inject
 @ActivityScope
@@ -101,6 +110,7 @@ class ListHabitsRootView(
         )
         addView(rootView, MATCH_PARENT, MATCH_PARENT)
         listAdapter.setListView(listView)
+        listView.horizontalScrollTarget = header
     }
 
     override fun onModelChange() {
@@ -112,9 +122,29 @@ class ListHabitsRootView(
             object : ScrollableChart.ScrollController {
                 override fun onDataOffsetChanged(newDataOffset: Int) {
                     listView.setDataOffset(newDataOffset)
+                    loadMoreDaysIfNeeded(newDataOffset)
                 }
             }
         )
+    }
+
+    /**
+     * Number of days for which data is currently loaded. Starts small and grows in steps while
+     * the user scrolls back in time.
+     */
+    var loadedDays = INITIAL_CHECKMARK_COUNT
+        private set
+
+    /** Called after [loadedDays] has grown, so the list can reload its data. */
+    var onLoadedDaysChanged: () -> Unit = {}
+
+    private fun loadMoreDaysIfNeeded(dataOffset: Int) {
+        val count = listView.checkmarkCount
+        if (loadedDays >= MAX_CHECKMARK_COUNT) return
+        if (dataOffset + count < loadedDays - LOAD_AHEAD_DAYS) return
+        loadedDays = min(MAX_CHECKMARK_COUNT, loadedDays + CHECKMARK_LOAD_STEP)
+        header.setState(HeaderState(count, max(loadedDays - count, 0)))
+        post { onLoadedDaysChanged() }
     }
 
     override fun onAttachedToWindow() {
@@ -130,7 +160,11 @@ class ListHabitsRootView(
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         val count = getCheckmarkCount()
-        header.setState(HeaderState(count, max(MAX_CHECKMARK_COUNT - count, 0)))
+        if (count > loadedDays) {
+            loadedDays = count
+            post { onLoadedDaysChanged() }
+        }
+        header.setState(HeaderState(count, max(loadedDays - count, 0)))
         listView.checkmarkCount = count
         super.onSizeChanged(w, h, oldw, oldh)
     }

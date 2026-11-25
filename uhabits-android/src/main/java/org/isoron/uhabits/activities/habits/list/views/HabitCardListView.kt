@@ -26,6 +26,7 @@ import android.os.Parcelable
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewConfiguration
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -37,7 +38,9 @@ import me.tatarka.inject.annotations.Inject
 import org.isoron.platform.time.LocalDate
 import org.isoron.uhabits.R
 import org.isoron.uhabits.activities.common.views.BundleSavedState
+import org.isoron.uhabits.activities.common.views.ScrollableChart
 import org.isoron.uhabits.inject.ActivityContext
+import kotlin.math.abs
 
 @Inject
 class HabitCardListViewFactory(
@@ -60,6 +63,80 @@ class HabitCardListView(
     private var insetDecorationsAdded: Boolean = false
 
     private var dataOffset: Int = 0
+
+    /**
+     * Chart that owns the scroll position of the day columns (the header). Horizontal drags
+     * anywhere on the list, including on top of the checkmark buttons, are forwarded to it.
+     */
+    var horizontalScrollTarget: ScrollableChart? = null
+
+    private var downX = 0f
+    private var downY = 0f
+    private var isHorizontalScroll = false
+
+    private val touchSlop = ViewConfiguration.get(context).scaledTouchSlop
+
+    private val horizontalDetector = GestureDetector(
+        context,
+        object : GestureDetector.SimpleOnGestureListener() {
+            override fun onDown(e: MotionEvent): Boolean = true
+
+            override fun onScroll(
+                e1: MotionEvent?,
+                e2: MotionEvent,
+                distanceX: Float,
+                distanceY: Float
+            ): Boolean {
+                if (!isHorizontalScroll) return false
+                return horizontalScrollTarget?.onScroll(e1, e2, distanceX, 0f) ?: false
+            }
+
+            override fun onFling(
+                e1: MotionEvent?,
+                e2: MotionEvent,
+                velocityX: Float,
+                velocityY: Float
+            ): Boolean {
+                if (!isHorizontalScroll) return false
+                return horizontalScrollTarget?.onFling(e1, e2, velocityX, 0f) ?: false
+            }
+        }
+    )
+
+    override fun onInterceptTouchEvent(e: MotionEvent): Boolean {
+        if (horizontalScrollTarget == null) return super.onInterceptTouchEvent(e)
+        when (e.actionMasked) {
+            MotionEvent.ACTION_DOWN -> {
+                downX = e.x
+                downY = e.y
+                isHorizontalScroll = false
+                horizontalDetector.onTouchEvent(e)
+            }
+            MotionEvent.ACTION_MOVE -> {
+                if (!isHorizontalScroll) {
+                    val dx = abs(e.x - downX)
+                    val dy = abs(e.y - downY)
+                    if (dx > touchSlop && dx > dy) isHorizontalScroll = true
+                }
+                if (isHorizontalScroll) {
+                    horizontalDetector.onTouchEvent(e)
+                    return true
+                }
+                horizontalDetector.onTouchEvent(e)
+            }
+            else -> horizontalDetector.onTouchEvent(e)
+        }
+        return super.onInterceptTouchEvent(e)
+    }
+
+    override fun onTouchEvent(e: MotionEvent): Boolean {
+        if (!isHorizontalScroll) return super.onTouchEvent(e)
+        horizontalDetector.onTouchEvent(e)
+        if (e.actionMasked == MotionEvent.ACTION_UP || e.actionMasked == MotionEvent.ACTION_CANCEL) {
+            isHorizontalScroll = false
+        }
+        return true
+    }
 
     fun setDataOffset(offset: Int) {
         dataOffset = offset
