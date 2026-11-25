@@ -29,6 +29,7 @@ import org.isoron.uhabits.core.models.HabitList
 import org.isoron.uhabits.core.models.HabitMatcher
 import org.isoron.uhabits.core.models.ModelObservable
 import org.isoron.uhabits.core.models.Reminder
+import org.isoron.uhabits.core.models.StreakUnit
 import org.isoron.uhabits.core.models.WeekdayList
 import org.isoron.uhabits.core.test.HabitFixtures
 import kotlin.test.Test
@@ -101,6 +102,18 @@ class SQLiteHabitListTest : BaseUnitTest() {
         val all = repository.findAll()
         val record = all.find { it.id == 12300L }
         assertEquals(habit.name, record!!.name)
+    }
+
+    @Test
+    fun testStreakUnitIsStored() = dbTest {
+        val habit = modelFactory.buildHabit()
+        habit.name = "Unit"
+        habit.streakUnit = StreakUnit.WEEKS
+        habitList.add(habit)
+        assertEquals(StreakUnit.WEEKS.id, repository.findAll().single { it.id == habit.id }.streakUnit)
+        habit.streakUnit = null
+        habitList.update(listOf(habit))
+        assertEquals(StreakUnit.AUTO_ID, repository.findAll().single { it.id == habit.id }.streakUnit)
     }
 
     @Test

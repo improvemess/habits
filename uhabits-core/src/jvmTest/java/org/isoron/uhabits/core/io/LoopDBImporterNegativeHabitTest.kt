@@ -26,6 +26,7 @@ import org.isoron.platform.io.run
 import org.isoron.platform.time.getToday
 import org.isoron.uhabits.core.BaseUnitTest
 import org.isoron.uhabits.core.DATABASE_VERSION
+import org.isoron.uhabits.core.models.StreakUnit
 import org.isoron.uhabits.core.sharing.OwnerIdentityStore
 import org.isoron.uhabits.core.sharing.ShareStore
 import kotlin.test.Test
@@ -56,6 +57,21 @@ class LoopDBImporterNegativeHabitTest : BaseUnitTest() {
         // Older backups are migrated: yes/no habits stay rolling
         habitList.filter { !it.isNumerical }.forEach { assertFalse(it.calendarPeriod) }
         assertNotNull(habitList.getByPosition(0))
+    }
+
+    @Test
+    fun testBackupKeepsStreakUnit() = runTest {
+        importBackup("update Habits set streak_unit = 2 where id = (select min(id) from Habits)")
+        val units = habitList.map { it.streakUnit }
+        assertEquals(1, units.count { it == StreakUnit.MONTHS })
+        // Habits without a chosen unit stay on automatic
+        assertTrue(units.count { it == null } == units.size - 1)
+    }
+
+    @Test
+    fun testOlderBackupHasAutomaticStreakUnit() = runTest {
+        importBackup(null)
+        habitList.forEach { assertNull(it.streakUnit) }
     }
 
     private suspend fun importBackup(sql: String?) {

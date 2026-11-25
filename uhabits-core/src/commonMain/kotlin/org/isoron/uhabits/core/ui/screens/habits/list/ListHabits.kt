@@ -19,13 +19,16 @@
 package org.isoron.uhabits.core.ui.screens.habits.list
 
 import org.isoron.platform.time.LocalDate
+import org.isoron.platform.time.getFirstWeekday
 import org.isoron.platform.time.getToday
 import org.isoron.uhabits.core.models.Entry
+import org.isoron.uhabits.core.models.EntryList
 import org.isoron.uhabits.core.models.Habit
 import org.isoron.uhabits.core.models.HabitList
 import org.isoron.uhabits.core.models.HabitList.Order
 import org.isoron.uhabits.core.models.HabitMatcher
 import org.isoron.uhabits.core.models.PaletteColor
+import org.isoron.uhabits.core.models.StreakUnit
 import org.isoron.uhabits.core.ui.views.Theme
 
 data class ListHabitsState(
@@ -81,12 +84,16 @@ object ListHabitsPresenter {
         val dateFrom = today.minus(checkmarkCount - 1)
         val score = habit.scores[today].value
         val ongoing = habit.streaks.getOngoingStreak(today)
-        val streak = ongoing?.let { countPerformedDays(habit, it.start, it.end) } ?: 0
+        val streakUnit = habit.streakUnit ?: StreakUnit.defaultFor(habit.frequency)
+        val streak = ongoing?.let { countStreak(habit, it.start, it.end, streakUnit) } ?: 0
         // A manually skipped day keeps the streak alive, but it is not "done". During a pause
         // the flame stays colored (if there is a streak); on the first day after the pause it
         // is gray again until the streak is continued or lapses.
         val skippedToday = habit.computedEntries.get(today).value == Entry.SKIP
+        // In weeks or months the streak only counts completed periods; until the first one is
+        // complete there is no streak yet and the flame stays gray at 0.
         val streakDoneToday = ongoing != null && ongoing.end >= today &&
+            (streakUnit == StreakUnit.DAYS || streak > 0) &&
             (!skippedToday || (streak > 0 && habit.pauses.isPaused(today)))
         val entries = habit.computedEntries.getByInterval(dateFrom, today)
         return HabitCardState(
@@ -108,6 +115,7 @@ object ListHabitsPresenter {
             },
             category = habit.category,
             streak = streak,
+            streakUnit = streakUnit,
             streakDoneToday = streakDoneToday,
             isShared = isShared
         )
@@ -129,6 +137,7 @@ data class HabitCardState(
     val paused: List<Boolean> = emptyList(),
     val category: String,
     val streak: Int = 0,
+    val streakUnit: StreakUnit = StreakUnit.DAYS,
     val streakDoneToday: Boolean = false,
     val isShared: Boolean = false
 )
@@ -145,4 +154,33 @@ internal fun countPerformedDays(habit: Habit, from: LocalDate, to: LocalDate): I
             else -> it.value == Entry.YES_MANUAL
         }
     }
+}
+
+/**
+ * Number shown on the streak flame: performed days for [StreakUnit.DAYS], otherwise the streak
+ * converted to weeks or months. Only the display changes; which days belong to the streak is always
+ * decided by the frequency, so switching the unit never revives a broken streak.
+ */
+internal fun countStreak(habit: Habit, from: LocalDate, to: LocalDate, unit: StreakUnit): Int {
+    if (unit == StreakUnit.DAYS) return countPerformedDays(habit, from, to)
+    val calendar = EntryList.isCalendarPeriod(habit.frequency, habit.calendarPeriod)
+    val den = habit.frequency.denominator
+    val matchesGoal = (unit == StreakUnit.WEEKS && den == 7) || (unit == StreakUnit.MONTHS && (den == 30 || den == 31))
+    if (matchesGoal && !calendar) {
+        // Only full weeks or months count, also with the days the goal filled in: 6 check marks in a
+        // row of a "3 times per week" goal span about 10 days, which is one week, not two. The one
+        // exception is a goal that was just reached while the streak is shorter than a period (the
+        // rest of its period still lies in the future): that is already 1.
+        val periodLength = if (unit == StreakUnit.WEEKS) 7 else 30
+        val fullPeriods = (from.daysUntil(to) + 1) / periodLength
+        val goalReached = countPerformedDays(habit, from, to) >= maxOf(1, habit.frequency.numerator)
+        return maxOf(fullPeriods, if (goalReached) 1 else 0)
+    }
+    return StreakUnit.convert(
+        from = from,
+        to = to,
+        unit = unit,
+        calendar = calendar,
+        firstWeekday = getFirstWeekday()
+    )
 }

@@ -294,6 +294,14 @@
     <string name="pref_sharing_server">Server zum Teilen</string>
     <string name="pref_sharing_server_summary">%1$s\nGilt für neue Freigaben, bestehende behalten ihren Server.</string>
     <string name="pref_sharing_server_invalid">Das ist keine gültige Server-Adresse. Verwende https://, z. B. https://habits.example.com</string>
+    <string name="streak_unit">Streak-Einheit</string>
+    <string name="streak_unit_auto">Automatisch (%s)</string>
+    <string name="streak_unit_days">Tage</string>
+    <string name="streak_unit_weeks">Wochen</string>
+    <string name="streak_unit_months">Monate</string>
+    <string name="streak_unit_days_short">T</string>
+    <string name="streak_unit_weeks_short">W</string>
+    <string name="streak_unit_months_short">M</string>
     <string name="friends">Freunde</string>
     <string name="friends_empty">Noch teilt kein Freund eine Gewohnheit mit dir. Wenn dir jemand einen Einladungslink schickt, öffne ihn, oder kopiere ihn und wähle hier „Einladung annehmen“.</string>
     <string name="friends_loading">Gewohnheit von %1$s wird geladen …</string>

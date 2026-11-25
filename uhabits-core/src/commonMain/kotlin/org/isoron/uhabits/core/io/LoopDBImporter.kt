@@ -39,6 +39,7 @@ import org.isoron.uhabits.core.models.Habit
 import org.isoron.uhabits.core.models.HabitList
 import org.isoron.uhabits.core.models.ModelFactory
 import org.isoron.uhabits.core.models.Pause
+import org.isoron.uhabits.core.models.StreakUnit
 import org.isoron.uhabits.core.models.sqlite.SQLiteHabitList
 import org.isoron.uhabits.core.sharing.OwnerIdentityStore
 import org.isoron.uhabits.core.sharing.ShareStore
@@ -175,7 +176,7 @@ class LoopDBImporter(
         db.query(
             "SELECT id, name, description, freq_num, freq_den, color, " +
                 "position, reminder_hour, reminder_min, reminder_days, highlight, " +
-                "archived, type, target_value, target_type, unit, uuid, category, step_size, negative_since, calendar_period " +
+                "archived, type, target_value, target_type, unit, uuid, category, step_size, negative_since, calendar_period, streak_unit " +
                 "FROM Habits ORDER BY position"
         ) { stmt ->
             result.add(
@@ -200,7 +201,8 @@ class LoopDBImporter(
                     category = stmt.getText(17),
                     stepSize = stmt.getRealOrNull(18) ?: 1.0,
                     negativeSince = stmt.getLongOrNull(19),
-                    calendarPeriod = stmt.getIntOrNull(20) ?: 0
+                    calendarPeriod = stmt.getIntOrNull(20) ?: 0,
+                    streakUnit = stmt.getIntOrNull(21) ?: StreakUnit.AUTO_ID
                 )
             )
         }
