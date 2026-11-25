@@ -22,6 +22,7 @@ package org.isoron.uhabits.activities.common.dialogs
 import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.RadioButton
@@ -33,12 +34,13 @@ import org.isoron.uhabits.databinding.FrequencyPickerDialogBinding
 
 class FrequencyPickerDialog(
     var freqNumerator: Int,
-    var freqDenominator: Int
+    var freqDenominator: Int,
+    var calendarWeek: Boolean = false
 ) : AppCompatDialogFragment() {
     private var _binding: FrequencyPickerDialogBinding? = null
     private val binding get() = _binding!!
 
-    var onFrequencyPicked: (num: Int, den: Int) -> Unit = { _, _ -> }
+    var onFrequencyPicked: (num: Int, den: Int, calendarWeek: Boolean) -> Unit = { _, _, _ -> }
 
     constructor() : this(1, 1)
 
@@ -59,6 +61,20 @@ class FrequencyPickerDialog(
             this.getString(R.string.x_times_per_week),
             binding.xTimesPerWeekContainer
         )
+
+        binding.weekModeSpinner.adapter = ArrayAdapter(
+            requireActivity(),
+            R.layout.week_mode_spinner_item,
+            listOf(
+                getString(R.string.week_mode_rolling_short),
+                getString(R.string.week_mode_calendar_short)
+            )
+        )
+        binding.weekModeSpinner.setSelection(if (calendarWeek) 1 else 0)
+        binding.weekModeSpinner.setOnTouchListener { _, _ ->
+            check(binding.xTimesPerWeekRadioButton)
+            false
+        }
 
         addBeforeAfterText(
             this.getString(R.string.x_times_per_month),
@@ -175,7 +191,11 @@ class FrequencyPickerDialog(
             numerator = 1
             denominator = 1
         }
-        onFrequencyPicked(numerator, denominator)
+        onFrequencyPicked(
+            numerator,
+            denominator,
+            denominator == 7 && binding.weekModeSpinner.selectedItemPosition == 1
+        )
         dismiss()
     }
 

@@ -187,10 +187,11 @@ class EditHabitActivity : AppCompatActivity() {
 
         populateFrequency()
         binding.booleanFrequencyPicker.setOnClickListener {
-            val picker = FrequencyPickerDialog(freqNum, freqDen)
-            picker.onFrequencyPicked = { num, den ->
+            val picker = FrequencyPickerDialog(freqNum, freqDen, calendarWeek)
+            picker.onFrequencyPicked = { num, den, week ->
                 freqNum = num
                 freqDen = den
+                calendarWeek = week
                 populateFrequency()
             }
             picker.dismissCurrentAndShow(supportFragmentManager, "frequencyPicker")
@@ -366,9 +367,9 @@ class EditHabitActivity : AppCompatActivity() {
         }
     }
 
-    /** The week mode only matters for weekly goals; it is hidden for all other periods. */
+    /** Measurable habits pick the week mode here; yes/no habits pick it in the frequency dialog. */
     private fun updateWeekModeVisibility() {
-        val isWeekly = freqDen == 7 && !(habitType == HabitType.YES_NO && isNegative)
+        val isWeekly = freqDen == 7 && habitType == HabitType.NUMERICAL
         binding.weekModeOuterBox.visibility = if (isWeekly) View.VISIBLE else View.GONE
         binding.weekModePicker.text = getString(
             if (calendarWeek) R.string.week_mode_calendar else R.string.week_mode_rolling
