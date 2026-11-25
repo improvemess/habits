@@ -103,6 +103,8 @@ data class Habit(
             targetValue = targetValue
         )
 
+        clearCompletionBeforeCreation()
+
         val today = getToday()
         val to = today.plus(30)
         val entries = computedEntries.getKnown()
@@ -156,6 +158,19 @@ data class Habit(
     /** Avoided habits are always evaluated daily: every day is either kept or relapsed. */
     private val effectiveFrequency: Frequency
         get() = if (isNegative && !isNumerical) Frequency.DAILY else frequency
+
+    /**
+     * Days before [negativeSince] of an avoided habit are not part of it. A question mark set there
+     * stays unknown and is never counted as done, so it neither looks achieved nor extends a streak.
+     */
+    private fun clearCompletionBeforeCreation() {
+        val since = negativeSince ?: return
+        for (entry in computedEntries.getKnown()) {
+            if (entry.date < since && entry.value == Entry.UNKNOWN && entry.completed) {
+                computedEntries.add(entry.copy(completed = false))
+            }
+        }
+    }
 
     /**
      * For avoided ("negative") habits, every day from [negativeSince] until today without an
