@@ -27,11 +27,13 @@ If there are failing view tests (that is, if some custom views do not render exa
 
 ## Instrumented tests in CI
 
-Pull requests run the medium and large instrumented tests on an emulator (job "Android (instrumented tests)" in `.github/workflows/quality-gates.yml`; API 34, `google_apis`, x86_64, Nexus 4). The job reuses the APKs built by the Android job and runs `tools/ci/run-instrumented-tests.sh`, which also works locally against any running emulator:
+Pull requests run the medium and large instrumented tests on emulators (jobs "Android (instrumented tests, shard N)" in `.github/workflows/quality-gates.yml`; API 34, `google_apis`, x86_64, Nexus 4). The tests are split into three shards, each on its own emulator, which boots from a cached AVD snapshot. Each job reuses the APKs built by the assemble job and runs `tools/ci/run-instrumented-tests.sh`, which also works locally against any running emulator:
 
     ADB="adb -s emulator-5554" tools/ci/run-instrumented-tests.sh \
         uhabits-android/build/outputs/apk/debug/uhabits-android-debug.apk \
         uhabits-android/build/outputs/apk/androidTest/debug/uhabits-android-debug-androidTest.apk \
         build/instrumented
 
-Failed tests are retried once. Tests that only pass on the retry show up as warnings, and should be fixed. If tests still fail, the job uploads the `am instrument` output, `logcat` and the test screenshots as the artifact `instrumented-results`.
+Failed tests are retried once. Tests that only pass on the retry show up as warnings, and should be fixed. If tests still fail, the job uploads the `am instrument` output, `logcat` and the test screenshots as the artifact `instrumented-results-N` of its shard.
+
+To run a single shard locally, set `NUM_SHARDS` and `SHARD_INDEX` (counted from 0), for example `NUM_SHARDS=3 SHARD_INDEX=1`.
