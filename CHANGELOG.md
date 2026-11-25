@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.23.0](https://github.com/oliverlorenz/uhabits/compare/v2.22.0...v2.23.0) (2026-11-25)
+
+### Features
+
+* follow friends' habits in the app ([#92](https://github.com/oliverlorenz/uhabits/issues/92)) ([c038e38](https://github.com/oliverlorenz/uhabits/commit/c038e38f5cc5909d899f1c5642445f04c87dad3d)), closes [#35](https://github.com/oliverlorenz/uhabits/issues/35) [#85](https://github.com/oliverlorenz/uhabits/issues/85), references [#85](https://github.com/oliverlorenz/uhabits/issues/85) [#36](https://github.com/oliverlorenz/uhabits/issues/36) [oliverlorenz/uhabits-server#10](https://github.com/oliverlorenz/uhabits-server/issues/10)
+
 ## [2.22.0](https://github.com/oliverlorenz/uhabits/compare/v2.21.0...v2.22.0) (2026-11-25)
 
 * run instrumented tests on an emulator ([#59](https://github.com/oliverlorenz/uhabits/issues/59)) ([7111ae3](https://github.com/oliverlorenz/uhabits/commit/7111ae38cd55a82c2ea610c659658d1c878be5e0)), closes [#58](https://github.com/oliverlorenz/uhabits/issues/58), references [#57](https://github.com/oliverlorenz/uhabits/issues/57) [#57](https://github.com/oliverlorenz/uhabits/issues/57)
