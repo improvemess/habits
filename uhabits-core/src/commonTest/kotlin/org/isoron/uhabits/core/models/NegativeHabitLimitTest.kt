@@ -63,6 +63,38 @@ class NegativeHabitLimitTest : BaseUnitTest() {
     }
 
     @Test
+    fun testDaysWithoutEntryCountAsZeroSinceCreation() {
+        val h = limitHabit(3.0, 1)
+        h.negativeSince = getToday().minus(5)
+        h.originalEntries.add(Entry(getToday().minus(2), 4000))
+        h.recompute()
+        // Before the creation day nothing is known
+        assertEquals(Entry.UNKNOWN, h.computedEntries.get(getToday().minus(6)).value)
+        // From the creation day on, missing days are 0 and count as done
+        assertEquals(0, h.computedEntries.get(getToday().minus(5)).value)
+        assertEquals(0, h.computedEntries.get(getToday()).value)
+        assertTrue(h.isCompletedOn(getToday()))
+        // Real entries are untouched
+        assertEquals(4000, h.computedEntries.get(getToday().minus(2)).value)
+        assertFalse(h.isCompletedOn(getToday().minus(2)))
+    }
+
+    @Test
+    fun testQuestionMarkOnlyBeforeTheCreationDay() {
+        val since = getToday().minus(5)
+        val normal = modelFactory.buildHabit()
+        assertTrue(normal.isUnknownAllowedOn(getToday()))
+        for (numerical in listOf(false, true)) {
+            val h = modelFactory.buildHabit()
+            if (numerical) h.type = HabitType.NUMERICAL
+            h.negativeSince = since
+            assertTrue(h.isUnknownAllowedOn(since.minus(1)))
+            assertFalse(h.isUnknownAllowedOn(since))
+            assertFalse(h.isUnknownAllowedOn(getToday()))
+        }
+    }
+
+    @Test
     fun testDailyLimit() {
         val h = limitHabit(3.0, 1)
         h.originalEntries.add(Entry(getToday(), 4000))

@@ -60,7 +60,7 @@ open class ListHabitsBehavior(
         val entry = habit.computedEntries.get(date)
         if (habit.type == HabitType.NUMERICAL) {
             val oldValue = entry.value.toDouble() / 1000
-            screen.showNumberPopup(oldValue, entry.notes) { newValue: Double, newNotes: String ->
+            screen.showNumberPopup(oldValue, entry.notes, habit.isUnknownAllowedOn(date)) { newValue: Double, newNotes: String ->
                 val value = (newValue * 1000).roundToInt()
                 if (newValue != oldValue && habit.targetType == AT_LEAST) {
                     screen.showConfetti(habit.color, x, y)
@@ -72,7 +72,8 @@ open class ListHabitsBehavior(
                 entry.value,
                 entry.notes,
                 habit.color,
-                habit.isNegative
+                habit.isNegative,
+                habit.isUnknownAllowedOn(date)
             ) { newValue: Int, newNotes: String ->
                 if (newValue != entry.value && newValue == YES_MANUAL) screen.showConfetti(habit.color, x, y)
                 commandRunner.run(CreateRepetitionCommand(habitList, habit, date, newValue, newNotes))
@@ -202,6 +203,7 @@ open class ListHabitsBehavior(
         fun showNumberPopup(
             value: Double,
             notes: String,
+            allowUnknown: Boolean = true,
             callback: NumberPickerCallback
         )
         fun showCheckmarkPopup(
@@ -209,6 +211,7 @@ open class ListHabitsBehavior(
             notes: String,
             color: PaletteColor,
             isNegative: Boolean = false,
+            allowUnknown: Boolean = true,
             callback: CheckMarkDialogCallback
         )
         fun showSendBugReportToDeveloperScreen(log: String)

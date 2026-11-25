@@ -95,7 +95,8 @@ class HistoryCardPresenter(
             entry.value,
             entry.notes,
             habit.color,
-            habit.isNegative
+            habit.isNegative,
+            habit.isUnknownAllowedOn(date)
         ) { newValue, newNotes ->
             commandRunner.run(
                 CreateRepetitionCommand(
@@ -132,7 +133,8 @@ class HistoryCardPresenter(
         val oldValue = entry.value
         screen.showNumberPopup(
             value = oldValue / 1000.0,
-            notes = entry.notes
+            notes = entry.notes,
+            allowUnknown = habit.isUnknownAllowedOn(date)
         ) { newValue: Double, newNotes: String ->
             val thousands = (newValue * 1000).roundToInt()
             commandRunner.run(
@@ -207,6 +209,7 @@ class HistoryCardPresenter(
         fun showNumberPopup(
             value: Double,
             notes: String,
+            allowUnknown: Boolean = true,
             callback: NumberPickerCallback
         )
 
@@ -215,6 +218,7 @@ class HistoryCardPresenter(
             notes: String,
             color: PaletteColor,
             isNegative: Boolean = false,
+            allowUnknown: Boolean = true,
             callback: CheckMarkDialogCallback
         )
     }

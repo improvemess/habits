@@ -228,12 +228,14 @@ class ShowHabitActivity : AppCompatActivity(), CommandRunner.Listener {
         override fun showNumberPopup(
             value: Double,
             notes: String,
+            allowUnknown: Boolean,
             callback: NumberPickerCallback
         ) {
             val dialog = NumberDialog()
             dialog.arguments = Bundle().apply {
                 putDouble("value", value)
                 putString("notes", notes)
+                putBoolean("allowUnknown", allowUnknown)
             }
             dialog.onToggle = { v, n -> callback.onNumberPicked(v, n) }
             dialog.dismissCurrentAndShow(supportFragmentManager, "numberDialog")
@@ -244,6 +246,7 @@ class ShowHabitActivity : AppCompatActivity(), CommandRunner.Listener {
             notes: String,
             color: PaletteColor,
             isNegative: Boolean,
+            allowUnknown: Boolean,
             callback: CheckMarkDialogCallback
         ) {
             val theme = view.currentTheme()
@@ -253,6 +256,7 @@ class ShowHabitActivity : AppCompatActivity(), CommandRunner.Listener {
                 putInt("value", selectedValue)
                 putString("notes", notes)
                 putBoolean("negative", isNegative)
+                putBoolean("allowUnknown", allowUnknown)
             }
             dialog.onToggle = { v, n -> callback.onNotesSaved(v, n) }
             dialog.dismissCurrentAndShow(supportFragmentManager, "checkmarkDialog")

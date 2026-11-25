@@ -66,7 +66,9 @@ class CheckmarkDialog : AppCompatDialogFragment() {
         originalValue = requireArguments().getInt("value")
         view.notes.setText(originalNotes)
         if (!prefs.isSkipEnabled) view.skipBtn.visibility = GONE
-        if (!prefs.areQuestionMarksEnabled) view.unknownBtn.visibility = GONE
+        if (!prefs.areQuestionMarksEnabled || !requireArguments().getBoolean("allowUnknown", true)) {
+            view.unknownBtn.visibility = GONE
+        }
         view.booleanButtons.visibility = VISIBLE
         val dialog = Dialog(requireContext())
         dialog.setContentView(view.root)
