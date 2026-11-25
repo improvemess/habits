@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.15.0](https://github.com/oliverlorenz/uhabits/compare/v2.14.0...v2.15.0) (2026-11-25)
+
+* fix instrumented tests broken by recent features ([#57](https://github.com/oliverlorenz/uhabits/issues/57)) ([4a90b13](https://github.com/oliverlorenz/uhabits/commit/4a90b137a5244a44642f6f82b2d2aa86544b4af5)), closes [#54](https://github.com/oliverlorenz/uhabits/issues/54) [#55](https://github.com/oliverlorenz/uhabits/issues/55) [#56](https://github.com/oliverlorenz/uhabits/issues/56), references [#54](https://github.com/oliverlorenz/uhabits/issues/54) [#16](https://github.com/oliverlorenz/uhabits/issues/16) [#55](https://github.com/oliverlorenz/uhabits/issues/55) [#13](https://github.com/oliverlorenz/uhabits/issues/13) [#56](https://github.com/oliverlorenz/uhabits/issues/56)
+
+### Features
+
+* messbare Negativ-Gewohnheiten zeigen 0 statt Fragezeichen ([#64](https://github.com/oliverlorenz/uhabits/issues/64)) ([#65](https://github.com/oliverlorenz/uhabits/issues/65)) ([a0f6717](https://github.com/oliverlorenz/uhabits/commit/a0f6717629da57d9826918d6918778f12b8f8f9a))
+
 ## [2.14.0](https://github.com/oliverlorenz/uhabits/compare/v2.13.0...v2.14.0) (2026-11-24)
 
 ### Features
