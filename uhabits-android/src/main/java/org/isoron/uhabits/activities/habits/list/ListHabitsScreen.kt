@@ -120,6 +120,7 @@ class ListHabitsScreen(
     fun onAttached() {
         commandRunner.addListener(this)
         midnightTimer.addListener(this)
+        rootView.value.onLoadedDaysChanged = { refresh() }
     }
 
     fun onDetached() {
@@ -134,7 +135,11 @@ class ListHabitsScreen(
                 filter = adapter.filter,
                 primaryOrder = adapter.primaryOrder,
                 secondaryOrder = adapter.secondaryOrder,
-                checkmarkCount = MAX_CHECKMARK_COUNT,
+                checkmarkCount = if (rootView.isInitialized()) {
+                    rootView.value.loadedDays
+                } else {
+                    INITIAL_CHECKMARK_COUNT
+                },
                 theme = themeSwitcher.currentTheme!!,
                 showStreak = preferences.isStreakFlameEnabled,
                 sharedHabits = shareStore.sharedHabitUuids()
