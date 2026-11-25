@@ -43,6 +43,7 @@ import org.isoron.platform.time.getToday
 import org.isoron.uhabits.R
 import org.isoron.uhabits.activities.common.views.RingView
 import org.isoron.uhabits.activities.common.views.StreakFlameView
+import org.isoron.uhabits.activities.common.views.shortRes
 import org.isoron.uhabits.core.ui.screens.habits.list.HabitCardState
 import org.isoron.uhabits.inject.ActivityContext
 import org.isoron.uhabits.utils.InterfaceUtils
@@ -99,6 +100,7 @@ class HabitCardView(
             color = c
             isArchived = r.archived
             streak = r.streak
+            unitLabel = context.getString(r.streakUnit.shortRes)
             isActive = r.streakDoneToday
             visibility = if (newState.showStreak) View.VISIBLE else View.GONE
         }

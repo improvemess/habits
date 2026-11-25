@@ -27,6 +27,7 @@ import org.isoron.uhabits.core.models.HabitList.Order
 import org.isoron.uhabits.core.models.HabitMatcher
 import org.isoron.uhabits.core.models.PaletteColor
 import org.isoron.uhabits.core.models.Pause
+import org.isoron.uhabits.core.models.StreakUnit
 import org.isoron.uhabits.core.ui.views.LightTheme
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -236,7 +237,7 @@ class ListHabitsPresenterTest : BaseUnitTest() {
     }
 
     private fun streakCard(habit: Habit): HabitCardState {
-        habitList.add(habit)
+        if (habit.id == null) habitList.add(habit)
         return ListHabitsPresenter.buildState(
             allHabits = habitList,
             filter = null,
@@ -278,5 +279,40 @@ class ListHabitsPresenterTest : BaseUnitTest() {
         habit.pauses.add(Pause(getToday(), getToday().plus(3)))
         habit.recompute()
         assertEquals(false, streakCard(habit).streakDoneToday)
+    }
+
+    @Test
+    fun testStreakUnitDefaultsToFrequencyAndConvertsStreak() {
+        val habit = fixtures.createEmptyHabit()
+        val today = getToday()
+        for (i in 0 until 30) habit.originalEntries.add(Entry(today.minus(i), Entry.YES_MANUAL))
+        habit.recompute()
+        val days = streakCard(habit)
+        assertEquals(StreakUnit.DAYS, days.streakUnit)
+        assertEquals(30, days.streak)
+
+        // Switching the unit only converts the number, the streak itself stays the same
+        habit.streakUnit = StreakUnit.WEEKS
+        val weeks = streakCard(habit)
+        assertEquals(StreakUnit.WEEKS, weeks.streakUnit)
+        assertEquals(4, weeks.streak)
+    }
+
+    @Test
+    fun testBrokenStreakStaysBrokenAfterUnitChange() {
+        val habit = fixtures.createEmptyHabit()
+        val today = getToday()
+        for (i in 10 until 40) habit.originalEntries.add(Entry(today.minus(i), Entry.YES_MANUAL))
+        habit.streakUnit = StreakUnit.WEEKS
+        habit.recompute()
+        assertEquals(0, streakCard(habit).streak)
+    }
+
+    @Test
+    fun testWeeklyHabitDefaultsToWeeks() {
+        val habit = fixtures.createEmptyHabit()
+        habit.frequency = Frequency.THREE_TIMES_PER_WEEK
+        habit.recompute()
+        assertEquals(StreakUnit.WEEKS, streakCard(habit).streakUnit)
     }
 }

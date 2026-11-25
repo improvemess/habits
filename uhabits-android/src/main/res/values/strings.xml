@@ -254,6 +254,14 @@
     <string name="first_day_of_the_week">First day of the week</string>
     <string name="notes">Notes</string>
     <string name="category">Category</string>
+    <string name="streak_unit">Streak unit</string>
+    <string name="streak_unit_auto">Automatic (%s)</string>
+    <string name="streak_unit_days">Days</string>
+    <string name="streak_unit_weeks">Weeks</string>
+    <string name="streak_unit_months">Months</string>
+    <string name="streak_unit_days_short">d</string>
+    <string name="streak_unit_weeks_short">w</string>
+    <string name="streak_unit_months_short">mo</string>
     <string name="example_notes">(Optional)</string>
     <string name="yes_or_no_example">e.g. Did you wake up early today? Did you exercise? Did you play chess?</string>
     <string name="measurable">Measurable</string>

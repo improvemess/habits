@@ -44,6 +44,8 @@ data class Habit(
     var negativeSince: LocalDate? = null,
     /** Whether a weekly goal counts per calendar week instead of per rolling 7 days (see #23). */
     var calendarPeriod: Boolean = false,
+    /** Unit of the streak flame; null means automatic, derived from the frequency (see #15). */
+    var streakUnit: StreakUnit? = null,
     val computedEntries: EntryList,
     val originalEntries: EntryList,
     val scores: ScoreList,
@@ -218,6 +220,7 @@ data class Habit(
         this.uuid = other.uuid
         this.negativeSince = other.negativeSince
         this.calendarPeriod = other.calendarPeriod
+        this.streakUnit = other.streakUnit
     }
 
     override fun equals(other: Any?): Boolean {
@@ -241,6 +244,7 @@ data class Habit(
         if (uuid != other.uuid) return false
         if (negativeSince != other.negativeSince) return false
         if (calendarPeriod != other.calendarPeriod) return false
+        if (streakUnit != other.streakUnit) return false
 
         return true
     }
@@ -263,6 +267,7 @@ data class Habit(
         result = 31 * result + (uuid?.hashCode() ?: 0)
         result = 31 * result + (negativeSince?.hashCode() ?: 0)
         result = 31 * result + calendarPeriod.hashCode()
+        result = 31 * result + (streakUnit?.hashCode() ?: 0)
         return result
     }
 }

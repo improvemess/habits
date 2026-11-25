@@ -45,6 +45,16 @@ class StreakFlameView : View {
             }
         }
 
+    /** Short unit shown after the number, e.g. "W" for weeks; empty shows only the number. */
+    var unitLabel: String = ""
+        set(value) {
+            if (field != value) {
+                field = value
+                requestLayout()
+                invalidate()
+            }
+        }
+
     var color: Int = Color.BLACK
         set(value) {
             if (field != value) {
@@ -89,6 +99,8 @@ class StreakFlameView : View {
         init()
     }
 
+    private fun streakText() = if (unitLabel.isEmpty()) streak.toString() else "$streak $unitLabel"
+
     private fun init() {
         pFlame = TextPaint().apply {
             isAntiAlias = true
@@ -106,9 +118,9 @@ class StreakFlameView : View {
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val streakStr = streak.toString()
+        val streakStr = streakText()
         val flameWidth = pFlame.measureText(FontAwesome.FIRE)
-        val textWidth = pText.measureText(streakStr)
+        val textWidth = max(pText.measureText(streakStr), pText.measureText("99 mo"))
         val spacing = dp(3f)
         val horizontalPadding = dp(4f)
 
@@ -137,7 +149,7 @@ class StreakFlameView : View {
         pFlame.color = displayColor
         pText.color = displayColor
 
-        val streakStr = streak.toString()
+        val streakStr = streakText()
         val flameWidth = pFlame.measureText(FontAwesome.FIRE)
         val textWidth = pText.measureText(streakStr)
         val spacing = dp(3f)
