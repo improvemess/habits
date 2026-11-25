@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.16.0](https://github.com/oliverlorenz/uhabits/compare/v2.15.1...v2.16.0) (2026-11-25)
+
+### Features
+
+* Konfetti-Animation entfernt ([#61](https://github.com/oliverlorenz/uhabits/issues/61)) ([#71](https://github.com/oliverlorenz/uhabits/issues/71)) ([07d954c](https://github.com/oliverlorenz/uhabits/commit/07d954c96d46f94bd15bd025a8aad9b638d234a5))
+
 ## [2.15.1](https://github.com/oliverlorenz/uhabits/compare/v2.15.0...v2.15.1) (2026-11-25)
 
 ### Bug Fixes
