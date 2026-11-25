@@ -151,11 +151,13 @@ data class Habit(
     /**
      * For avoided ("negative") habits, every day from [negativeSince] until today without an
      * entry counts as done. Nothing is persisted: a tap on a day stores NO (relapse), and
-     * returning to the check removes it again. Days before [negativeSince] stay unknown.
+     * returning to the check removes it again. For measurable habits, such days count as 0.
+     * Days before [negativeSince] stay unknown.
      */
     private fun entriesWithAutoChecks(source: EntryList): EntryList {
         val since = negativeSince
-        if (since == null || isNumerical) return source
+        if (since == null) return source
+        val autoValue = if (isNumerical) 0 else Entry.YES_MANUAL
         val result = EntryList()
         source.getKnown().forEach { result.add(it) }
         val today = getToday()
@@ -163,7 +165,7 @@ data class Habit(
         while (!day.isNewerThan(today)) {
             val existing = source.get(day)
             if (existing.value == Entry.UNKNOWN) {
-                result.add(Entry(day, Entry.YES_MANUAL, existing.notes))
+                result.add(Entry(day, autoValue, existing.notes))
             }
             day = day.plus(1)
         }
