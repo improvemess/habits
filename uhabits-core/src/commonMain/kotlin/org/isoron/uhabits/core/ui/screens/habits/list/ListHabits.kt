@@ -157,11 +157,22 @@ internal fun countPerformedDays(habit: Habit, from: LocalDate, to: LocalDate): I
  */
 internal fun countStreak(habit: Habit, from: LocalDate, to: LocalDate, unit: StreakUnit): Int {
     if (unit == StreakUnit.DAYS) return countPerformedDays(habit, from, to)
+    val calendar = EntryList.isCalendarPeriod(habit.frequency, habit.calendarPeriod)
+    val den = habit.frequency.denominator
+    val matchesGoal = (unit == StreakUnit.WEEKS && den == 7) || (unit == StreakUnit.MONTHS && (den == 30 || den == 31))
+    if (matchesGoal && !calendar) {
+        // A rolling "x times per week/month" goal counts every x performed days as one reached goal,
+        // so a first week with enough check marks is already 1 even if the streak is shorter.
+        val periodLength = if (unit == StreakUnit.WEEKS) 7 else 30
+        val spanPeriods = (from.daysUntil(to) + 1 + periodLength - 1) / periodLength
+        val goals = countPerformedDays(habit, from, to) / maxOf(1, habit.frequency.numerator)
+        return minOf(goals, spanPeriods)
+    }
     return StreakUnit.convert(
         from = from,
         to = to,
         unit = unit,
-        calendar = EntryList.isCalendarPeriod(habit.frequency, habit.calendarPeriod),
+        calendar = calendar,
         firstWeekday = getFirstWeekday()
     )
 }

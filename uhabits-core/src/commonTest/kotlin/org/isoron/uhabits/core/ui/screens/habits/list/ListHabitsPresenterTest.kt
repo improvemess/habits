@@ -329,4 +329,27 @@ class ListHabitsPresenterTest : BaseUnitTest() {
         assertEquals(0, card.streak)
         assertEquals(false, card.streakDoneToday)
     }
+
+    @Test
+    fun testWeeklyGoalReachedCountsAsOneWeek() {
+        val habit = fixtures.createEmptyHabit()
+        habit.frequency = Frequency.THREE_TIMES_PER_WEEK
+        val today = getToday()
+        for (i in intArrayOf(0, 1, 4)) habit.originalEntries.add(Entry(today.minus(i), Entry.YES_MANUAL))
+        habit.recompute()
+        val card = streakCard(habit)
+        assertEquals(StreakUnit.WEEKS, card.streakUnit)
+        assertEquals(1, card.streak)
+        assertEquals(true, card.streakDoneToday)
+    }
+
+    @Test
+    fun testWeeklyGoalNotReachedYetIsZero() {
+        val habit = fixtures.createEmptyHabit()
+        habit.frequency = Frequency.THREE_TIMES_PER_WEEK
+        val today = getToday()
+        habit.originalEntries.add(Entry(today, Entry.YES_MANUAL))
+        habit.recompute()
+        assertEquals(0, streakCard(habit).streak)
+    }
 }
