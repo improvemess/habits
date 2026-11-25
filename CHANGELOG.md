@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.24.0](https://github.com/oliverlorenz/uhabits/compare/v2.23.0...v2.24.0) (2026-11-25)
+
+### Features
+
+* Streak-Einheit wählbar (Tage, Wochen, Monate) ([#15](https://github.com/oliverlorenz/uhabits/issues/15)) ([#83](https://github.com/oliverlorenz/uhabits/issues/83)) ([fa46dca](https://github.com/oliverlorenz/uhabits/commit/fa46dca2fbe9ccf0869f123c83ed4cf0d0befbd0)), references [#20](https://github.com/oliverlorenz/uhabits/issues/20)
+
 ## [2.23.0](https://github.com/oliverlorenz/uhabits/compare/v2.22.0...v2.23.0) (2026-11-25)
 
 ### Features
