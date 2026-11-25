@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.19.0](https://github.com/oliverlorenz/uhabits/compare/v2.18.1...v2.19.0) (2026-11-25)
+
+### Features
+
+* Streak-Flamme standardmäßig an ([#48](https://github.com/oliverlorenz/uhabits/issues/48)) ([#75](https://github.com/oliverlorenz/uhabits/issues/75)) ([fbc4def](https://github.com/oliverlorenz/uhabits/commit/fbc4def588fa70c3691f380b6f046fe9a8fd7247)), references [#70](https://github.com/oliverlorenz/uhabits/issues/70)
+
 ## [2.18.1](https://github.com/oliverlorenz/uhabits/compare/v2.18.0...v2.18.1) (2026-11-25)
 
 ### Bug Fixes
