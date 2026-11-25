@@ -35,7 +35,10 @@ enum class SharedHistory {
 
 /** Base URLs of sharing servers. */
 object SharingServers {
-    const val DEFAULT = "https://habits.improvemess.com"
+    const val DEFAULT = "https://uhabits.oliverlorenz.com"
+
+    /** The first default; it was never reachable (see [org.isoron.uhabits.core.preferences.Preferences.sharingServerUrl]). */
+    const val FORMER_DEFAULT = "https://habits.improvemess.com"
 
     private val URL = Regex("^(https?)://[^/?#\\s]+(/[^?#\\s]*)?$")
 
