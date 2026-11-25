@@ -344,6 +344,21 @@ class ListHabitsPresenterTest : BaseUnitTest() {
     }
 
     @Test
+    fun testPausedDaysInTheMiddleKeepTheStreakAliveWithoutCounting() {
+        // Rest days reach the habit the same way: as SKIP days that are not done, but not missed
+        val habit = fixtures.createEmptyHabit()
+        val today = getToday()
+        habit.originalEntries.add(Entry(today.minus(4), Entry.YES_MANUAL))
+        habit.originalEntries.add(Entry(today.minus(1), Entry.YES_MANUAL))
+        habit.originalEntries.add(Entry(today, Entry.YES_MANUAL))
+        habit.pauses.add(Pause(today.minus(3), today.minus(2)))
+        habit.recompute()
+        val card = streakCard(habit)
+        assertEquals(3, card.streak)
+        assertEquals(true, card.streakDoneToday)
+    }
+
+    @Test
     fun testSixChecksInARowAreOnlyOneFullWeek() {
         val habit = fixtures.createEmptyHabit()
         habit.frequency = Frequency.THREE_TIMES_PER_WEEK
@@ -376,5 +391,16 @@ class ListHabitsPresenterTest : BaseUnitTest() {
         habit.originalEntries.add(Entry(today, Entry.YES_MANUAL))
         habit.recompute()
         assertEquals(0, streakCard(habit).streak)
+    }
+
+    @Test
+    fun testUnpausedGapBreaksTheStreak() {
+        val habit = fixtures.createEmptyHabit()
+        val today = getToday()
+        habit.originalEntries.add(Entry(today.minus(4), Entry.YES_MANUAL))
+        habit.originalEntries.add(Entry(today.minus(1), Entry.YES_MANUAL))
+        habit.originalEntries.add(Entry(today, Entry.YES_MANUAL))
+        habit.recompute()
+        assertEquals(2, streakCard(habit).streak)
     }
 }
