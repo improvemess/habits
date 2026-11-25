@@ -161,12 +161,14 @@ internal fun countStreak(habit: Habit, from: LocalDate, to: LocalDate, unit: Str
     val den = habit.frequency.denominator
     val matchesGoal = (unit == StreakUnit.WEEKS && den == 7) || (unit == StreakUnit.MONTHS && (den == 30 || den == 31))
     if (matchesGoal && !calendar) {
-        // A rolling "x times per week/month" goal counts every x performed days as one reached goal,
-        // so a first week with enough check marks is already 1 even if the streak is shorter.
+        // Only full weeks or months count, also with the days the goal filled in: 6 check marks in a
+        // row of a "3 times per week" goal span about 10 days, which is one week, not two. The one
+        // exception is a goal that was just reached while the streak is shorter than a period (the
+        // rest of its period still lies in the future): that is already 1.
         val periodLength = if (unit == StreakUnit.WEEKS) 7 else 30
-        val spanPeriods = (from.daysUntil(to) + 1 + periodLength - 1) / periodLength
-        val goals = countPerformedDays(habit, from, to) / maxOf(1, habit.frequency.numerator)
-        return minOf(goals, spanPeriods)
+        val fullPeriods = (from.daysUntil(to) + 1) / periodLength
+        val goalReached = countPerformedDays(habit, from, to) >= maxOf(1, habit.frequency.numerator)
+        return maxOf(fullPeriods, if (goalReached) 1 else 0)
     }
     return StreakUnit.convert(
         from = from,

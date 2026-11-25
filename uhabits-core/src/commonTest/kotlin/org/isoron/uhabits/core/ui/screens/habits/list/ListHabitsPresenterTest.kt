@@ -344,6 +344,31 @@ class ListHabitsPresenterTest : BaseUnitTest() {
     }
 
     @Test
+    fun testSixChecksInARowAreOnlyOneFullWeek() {
+        val habit = fixtures.createEmptyHabit()
+        habit.frequency = Frequency.THREE_TIMES_PER_WEEK
+        val today = getToday()
+        for (i in 0 until 6) habit.originalEntries.add(Entry(today.minus(i), Entry.YES_MANUAL))
+        habit.recompute()
+        // The streak lasts 10 days with the days the goal filled in: one full week, not two
+        val streak = habit.streaks.getOngoingStreak()!!
+        assertEquals(10, streak.start.daysUntil(streak.end) + 1)
+        assertEquals(1, streakCard(habit).streak)
+    }
+
+    @Test
+    fun testWeeksOnlyCountFullSevenDays() {
+        val habit = fixtures.createEmptyHabit()
+        habit.frequency = Frequency.WEEKLY
+        val today = getToday()
+        for (i in 0 until 7) habit.originalEntries.add(Entry(today.minus(i), Entry.YES_MANUAL))
+        habit.recompute()
+        val streak = habit.streaks.getOngoingStreak()!!
+        assertEquals(13, streak.start.daysUntil(streak.end) + 1)
+        assertEquals(1, streakCard(habit).streak)
+    }
+
+    @Test
     fun testWeeklyGoalNotReachedYetIsZero() {
         val habit = fixtures.createEmptyHabit()
         habit.frequency = Frequency.THREE_TIMES_PER_WEEK
