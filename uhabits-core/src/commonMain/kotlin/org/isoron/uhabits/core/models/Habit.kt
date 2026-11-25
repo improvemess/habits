@@ -66,6 +66,15 @@ data class Habit(
 
     fun hasReminder(): Boolean = reminder != null
 
+    /**
+     * Whether "unknown" (a question mark) can be chosen for the given day. Avoided habits count
+     * every day since [negativeSince] as done, so there it would just show the default again.
+     */
+    fun isUnknownAllowedOn(date: LocalDate): Boolean {
+        val since = negativeSince ?: return true
+        return since.isNewerThan(date)
+    }
+
     fun isCompletedOn(date: LocalDate): Boolean {
         return computedEntries.get(date).completed
     }

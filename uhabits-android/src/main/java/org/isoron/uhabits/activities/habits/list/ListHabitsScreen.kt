@@ -328,6 +328,7 @@ class ListHabitsScreen(
     override fun showNumberPopup(
         value: Double,
         notes: String,
+        allowUnknown: Boolean,
         callback: NumberPickerCallback
     ) {
         val fm = (context as AppCompatActivity).supportFragmentManager
@@ -335,6 +336,7 @@ class ListHabitsScreen(
         dialog.arguments = Bundle().apply {
             putDouble("value", value)
             putString("notes", notes)
+            putBoolean("allowUnknown", allowUnknown)
         }
         dialog.onToggle = { v, n -> callback.onNumberPicked(v, n) }
         dialog.dismissCurrentAndShow(fm, "numberDialog")
@@ -345,6 +347,7 @@ class ListHabitsScreen(
         notes: String,
         color: PaletteColor,
         isNegative: Boolean,
+        allowUnknown: Boolean,
         callback: CheckMarkDialogCallback
     ) {
         val theme = rootView.value.currentTheme()
@@ -355,6 +358,7 @@ class ListHabitsScreen(
             putInt("value", selectedValue)
             putString("notes", notes)
             putBoolean("negative", isNegative)
+            putBoolean("allowUnknown", allowUnknown)
         }
         dialog.onToggle = { v, n -> callback.onNotesSaved(v, n) }
         dialog.dismissCurrentAndShow(fm, "checkmarkDialog")

@@ -48,7 +48,9 @@ class NumberDialog : AppCompatDialogFragment() {
             it.typeface = InterfaceUtils.getFontAwesome(requireContext())
         }
         if (!prefs.isSkipEnabled) view.skipBtnNumber.visibility = View.GONE
-        if (!prefs.areQuestionMarksEnabled) view.unknownBtnNumber.visibility = View.GONE
+        if (!prefs.areQuestionMarksEnabled || !requireArguments().getBoolean("allowUnknown", true)) {
+            view.unknownBtnNumber.visibility = View.GONE
+        }
         view.numberButtons.visibility = View.VISIBLE
         fixDecimalSeparator(view)
         originalNotes = requireArguments().getString("notes")!!
