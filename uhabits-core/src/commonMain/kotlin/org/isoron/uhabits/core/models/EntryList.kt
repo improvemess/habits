@@ -95,13 +95,18 @@ open class EntryList {
     open fun recomputeFrom(
         originalEntries: EntryList,
         frequency: Frequency,
-        isNumerical: Boolean
+        isNumerical: Boolean,
+        calendarWeek: Boolean = false
     ) {
         clear()
         val original = originalEntries.getKnown()
         if (isNumerical) {
             original.forEach { add(it) }
             densifyWithUnknownPlaceholders(original)
+        } else if (isCalendarWeek(frequency, calendarWeek)) {
+            val intervals = buildCalendarWeekIntervals(frequency, original, getFirstWeekday())
+            val computed = buildEntriesFromInterval(original, intervals)
+            computed.filter { it.value != UNKNOWN || it.notes.isNotEmpty() }.forEach { add(it) }
         } else {
             val intervals = buildIntervals(frequency, original)
             snapIntervalsTogether(intervals)
@@ -137,9 +142,12 @@ open class EntryList {
         frequency: Frequency,
         isNumerical: Boolean,
         targetType: NumericalHabitType,
-        targetValue: Double
+        targetValue: Double,
+        calendarWeek: Boolean = false
     ) {
-        if (isNumerical) {
+        if (isNumerical && isWeekly(frequency) && !calendarWeek) {
+            recomputeRollingWeekCompletion(frequency, targetType, targetValue)
+        } else if (isNumerical) {
             val firstWeekday = getFirstWeekday()
             val denominator = frequency.denominator
             val periodLength = when {
@@ -183,6 +191,45 @@ open class EntryList {
                     add(entry.copy(completed = completed))
                 }
             }
+        }
+    }
+
+    /**
+     * Rolling week of a measurable habit: an entry is completed when the sum of the 7 days ending
+     * on that day (the day itself and the 6 before) reaches the weekly target, which is reduced by
+     * the number of skipped days in that window.
+     */
+    private fun recomputeRollingWeekCompletion(
+        frequency: Frequency,
+        targetType: NumericalHabitType,
+        targetValue: Double
+    ) {
+        val denominator = frequency.denominator
+        val dailyTarget = targetValue / denominator
+        val snapshot = getKnown()
+        val today = getToday()
+
+        fun isMet(date: LocalDate): Boolean {
+            var sum = 0
+            var skipped = 0
+            for (offset in 0 until denominator) {
+                val entry = get(date.minus(offset))
+                sum += clampedValue(entry)
+                if (entry.value == Entry.SKIP) skipped++
+            }
+            val target = max(0.0, targetValue - dailyTarget * skipped)
+            return when (targetType) {
+                NumericalHabitType.AT_LEAST -> sum / 1000.0 >= target
+                NumericalHabitType.AT_MOST -> sum / 1000.0 <= target
+            }
+        }
+
+        for (entry in snapshot) {
+            val met = isMet(entry.date)
+            if (entry.completed != met) add(entry.copy(completed = met))
+        }
+        if (snapshot.none { it.date == today } && isMet(today)) {
+            add(Entry(today, Entry.UNKNOWN, completed = true))
         }
     }
 
@@ -335,6 +382,36 @@ open class EntryList {
                     )
                 }
             }
+        }
+
+        private fun isWeekly(frequency: Frequency) = frequency.denominator == 7
+
+        /** Calendar weeks only make a difference for "x times per week" goals of yes/no habits. */
+        fun isCalendarWeek(frequency: Frequency, calendarWeek: Boolean) =
+            calendarWeek && isWeekly(frequency)
+
+        /**
+         * Builds one interval per calendar week (starting on [firstWeekday]) in which the goal
+         * was reached by manual checkmarks. The interval covers the whole week, so that the days of
+         * the week without a checkmark count as done. [entries] must be sorted newest-first.
+         */
+        fun buildCalendarWeekIntervals(
+            freq: Frequency,
+            entries: List<Entry>,
+            firstWeekday: DayOfWeek
+        ): ArrayList<Interval> {
+            val intervals = arrayListOf<Interval>()
+            entries.filter { it.value == YES_MANUAL }
+                .groupBy { it.date.startOfWeek(firstWeekday) }
+                .toList()
+                .sortedByDescending { it.first }
+                .forEach { (weekStart, checks) ->
+                    if (checks.size >= freq.numerator) {
+                        val newest = checks.maxOf { it.date }
+                        intervals.add(Interval(weekStart, newest, weekStart.plus(6)))
+                    }
+                }
+            return intervals
         }
 
         fun buildIntervals(

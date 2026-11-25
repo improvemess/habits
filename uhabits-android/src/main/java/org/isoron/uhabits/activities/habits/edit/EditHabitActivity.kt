@@ -84,6 +84,7 @@ class EditHabitActivity : AppCompatActivity() {
     var androidColor = 0
     var freqNum = 1
     var freqDen = 1
+    var calendarWeek = false
     var reminderHour = -1
     var reminderMin = -1
     var reminderDays: WeekdayList = WeekdayList.EVERY_DAY
@@ -112,6 +113,7 @@ class EditHabitActivity : AppCompatActivity() {
             color = habit.color
             freqNum = habit.frequency.numerator
             freqDen = habit.frequency.denominator
+            calendarWeek = habit.calendarWeek
             targetType = habit.targetType
             negativeSince = habit.negativeSince
             isNegative = habit.isNegative
@@ -138,6 +140,7 @@ class EditHabitActivity : AppCompatActivity() {
             color = PaletteColor(state.getInt("paletteColor"))
             freqNum = state.getInt("freqNum")
             freqDen = state.getInt("freqDen")
+            calendarWeek = state.getBoolean("calendarWeek")
             reminderHour = state.getInt("reminderHour")
             reminderMin = state.getInt("reminderMin")
             reminderDays = WeekdayList(state.getInt("reminderDays"))
@@ -191,6 +194,19 @@ class EditHabitActivity : AppCompatActivity() {
                 populateFrequency()
             }
             picker.dismissCurrentAndShow(supportFragmentManager, "frequencyPicker")
+        }
+
+        binding.weekModePicker.setOnClickListener {
+            val builder = AlertDialog.Builder(this)
+            val arrayAdapter = ArrayAdapter<String>(this, android.R.layout.select_dialog_item)
+            arrayAdapter.add(getString(R.string.week_mode_rolling))
+            arrayAdapter.add(getString(R.string.week_mode_calendar))
+            builder.setAdapter(arrayAdapter) { dialog, which ->
+                calendarWeek = which == 1
+                populateFrequency()
+                dialog.dismiss()
+            }
+            builder.show()
         }
 
         populateTargetType()
@@ -299,6 +315,7 @@ class EditHabitActivity : AppCompatActivity() {
         }
 
         habit.frequency = Frequency(freqNum, freqDen)
+        habit.calendarWeek = calendarWeek && freqDen == 7
         if (habitType == HabitType.NUMERICAL) {
             habit.targetValue = binding.targetInput.text.toString().toDouble()
             habit.targetType = targetType
@@ -349,6 +366,15 @@ class EditHabitActivity : AppCompatActivity() {
         }
     }
 
+    /** The week mode only matters for weekly goals; it is hidden for all other periods. */
+    private fun updateWeekModeVisibility() {
+        val isWeekly = freqDen == 7 && !(habitType == HabitType.YES_NO && isNegative)
+        binding.weekModeOuterBox.visibility = if (isWeekly) View.VISIBLE else View.GONE
+        binding.weekModePicker.text = getString(
+            if (calendarWeek) R.string.week_mode_calendar else R.string.week_mode_rolling
+        )
+    }
+
     private fun updateFrequencyVisibility() {
         val hidden = habitType == HabitType.NUMERICAL || isNegative
         binding.frequencyOuterBox.visibility = if (hidden) View.GONE else View.VISIBLE
@@ -387,6 +413,7 @@ class EditHabitActivity : AppCompatActivity() {
     private fun populateFrequency() {
         binding.booleanFrequencyPicker.text = formatFrequency(freqNum, freqDen, resources)
         binding.numericalFrequencyPicker.text = periodText(freqDen) ?: "$freqNum/$freqDen"
+        updateWeekModeVisibility()
     }
 
     /** Day, week or month period of a measurable habit; "per ..." wording for limits. */
@@ -427,6 +454,7 @@ class EditHabitActivity : AppCompatActivity() {
             putInt("androidColor", androidColor)
             putInt("freqNum", freqNum)
             putInt("freqDen", freqDen)
+            putBoolean("calendarWeek", calendarWeek)
             putInt("reminderHour", reminderHour)
             putInt("reminderMin", reminderMin)
             putInt("reminderDays", reminderDays.toInteger())

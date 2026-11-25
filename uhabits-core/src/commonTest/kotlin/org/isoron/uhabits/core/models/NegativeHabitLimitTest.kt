@@ -58,6 +58,7 @@ class NegativeHabitLimitTest : BaseUnitTest() {
         h.targetType = NumericalHabitType.AT_MOST
         h.targetValue = limit
         h.frequency = Frequency(1, days)
+        h.calendarWeek = days == 7
         h.negativeSince = getToday().minus(40)
         return h
     }

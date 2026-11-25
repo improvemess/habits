@@ -30,6 +30,7 @@ import org.isoron.uhabits.core.sharing.OwnerIdentityStore
 import org.isoron.uhabits.core.sharing.ShareStore
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -52,6 +53,8 @@ class LoopDBImporterNegativeHabitTest : BaseUnitTest() {
         importBackup(null)
         assertTrue(habitList.size() > 0)
         habitList.forEach { assertNull(it.negativeSince) }
+        // Older backups are migrated: yes/no habits stay rolling
+        habitList.filter { !it.isNumerical }.forEach { assertFalse(it.calendarWeek) }
         assertNotNull(habitList.getByPosition(0))
     }
 

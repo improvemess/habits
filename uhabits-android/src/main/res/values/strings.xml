@@ -159,6 +159,9 @@
     <string name="best_streaks">Best streaks</string>
     <string name="every_day">Every day</string>
     <string name="every_week">Every week</string>
+    <string name="week_mode">Week</string>
+    <string name="week_mode_rolling">Rolling week (last 7 days)</string>
+    <string name="week_mode_calendar">Calendar week</string>
     <string name="help">Help &amp; FAQ</string>
     <string name="could_not_export">Failed to export data.</string>
     <string name="could_not_import">Failed to import data.</string>

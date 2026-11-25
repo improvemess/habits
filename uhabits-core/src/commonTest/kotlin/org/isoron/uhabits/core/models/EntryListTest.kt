@@ -156,8 +156,8 @@ class EntryListTest : BaseUnitTest() {
         original.add(Entry(LocalDate(2015, 1, 25), 70000))
 
         val computed = EntryList()
-        computed.recomputeFrom(original, Frequency.WEEKLY, isNumerical = true)
-        computed.recomputeCompletion(Frequency.WEEKLY, true, NumericalHabitType.AT_LEAST, 70.0)
+        computed.recomputeFrom(original, Frequency.WEEKLY, isNumerical = true, calendarWeek = true)
+        computed.recomputeCompletion(Frequency.WEEKLY, true, NumericalHabitType.AT_LEAST, 70.0, calendarWeek = true)
 
         val expected = listOf(
             Entry(LocalDate(2015, 1, 25), 70000, "", true),
