@@ -5,8 +5,8 @@ name: Quality Gates
 #
 # Der Lauf auf dev füllt die Caches für die PRs: GitHub-Caches gelten pro
 # Branch, PRs dürfen nur die von dev lesen. setup-gradle speichert den
-# Gradle-Build-Cache nur auf dev (in PRs nur lesend), und der AVD-Snapshot wird
-# unten ebenfalls nur auf dev gespeichert.
+# Gradle-Build-Cache nur auf dev (in PRs nur lesend); ohne diesen Lauf fänden
+# PRs keine Debug-Kompilate im Cache.
 on:
   pull_request:
   push:
@@ -225,10 +225,6 @@ jobs:
     env:
       NUM_SHARDS: 3
       SHARD_INDEX: ${{ matrix.shard }}
-      # Gleiche Werte für Snapshot und Testlauf, sonst passt der Snapshot nicht.
-      EMULATOR_API_LEVEL: 34
-      EMULATOR_TARGET: google_apis
-      EMULATOR_PROFILE: Nexus 4
     steps:
       - uses: actions/checkout@v4
 
@@ -245,59 +241,18 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      # tools/parseInstrument.py erwartet Zeitstempel von `ts`.
-      - name: Install moreutils
-        run: sudo apt-get install -y --no-install-recommends moreutils
-
-      # Frisch gebooteter AVD als Snapshot; spätere Läufe starten daraus statt
-      # kalt zu booten. Bei Änderungen an der Emulator-Konfiguration (Profil,
-      # Optionen) das Suffix des Schlüssels erhöhen, damit ein neuer entsteht.
-      # Gespeichert wird nur auf dev (siehe "Save AVD snapshot"), damit alle PRs
-      # denselben Snapshot nutzen und der 2-GB-Eintrag nicht pro PR entsteht.
-      - name: Restore AVD snapshot
-        id: avd-cache
-        uses: actions/cache/restore@v4
-        with:
-          path: |
-            ~/.android/avd/*
-            ~/.android/adb*
-          key: avd-${{ env.EMULATOR_API_LEVEL }}-${{ env.EMULATOR_TARGET }}-x86_64-nexus4-v1
-
-      - name: Create AVD snapshot
-        if: steps.avd-cache.outputs.cache-hit != 'true'
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: ${{ env.EMULATOR_API_LEVEL }}
-          target: ${{ env.EMULATOR_TARGET }}
-          arch: x86_64
-          profile: ${{ env.EMULATOR_PROFILE }}
-          force-avd-creation: false
-          disable-animations: false
-          emulator-options: -no-window -no-audio -gpu swiftshader_indirect -no-boot-anim -camera-back none
-          script: echo "AVD snapshot created."
-
-      - name: Save AVD snapshot
-        if: >-
-          steps.avd-cache.outputs.cache-hit != 'true'
-          && github.ref == 'refs/heads/dev'
-          && matrix.shard == 0
-        uses: actions/cache/save@v4
-        with:
-          path: |
-            ~/.android/avd/*
-            ~/.android/adb*
-          key: ${{ steps.avd-cache.outputs.cache-primary-key }}
-
+      # Kalter Start ohne Snapshot-Cache: Der Snapshot (2,2 GB) zu laden dauerte
+      # länger, als er beim Booten sparte.
       - name: Run instrumented tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: ${{ env.EMULATOR_API_LEVEL }}
-          target: ${{ env.EMULATOR_TARGET }}
+          api-level: 34
+          target: google_apis
           arch: x86_64
-          profile: ${{ env.EMULATOR_PROFILE }}
-          force-avd-creation: false
+          profile: Nexus 4
+          force-avd-creation: true
           disable-animations: true
-          emulator-options: -no-window -no-audio -gpu swiftshader_indirect -no-boot-anim -camera-back none -no-snapshot-save
+          emulator-options: -no-window -no-audio -gpu swiftshader_indirect -no-boot-anim -no-snapshot
           script: >-
             tools/ci/run-instrumented-tests.sh
             apks/debug/uhabits-android-debug.apk

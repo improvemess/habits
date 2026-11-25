@@ -27,7 +27,7 @@ If there are failing view tests (that is, if some custom views do not render exa
 
 ## Instrumented tests in CI
 
-Pull requests run the medium and large instrumented tests on emulators (jobs "Android (instrumented tests, shard N)" in `.github/workflows/quality-gates.yml`; API 34, `google_apis`, x86_64, Nexus 4). The tests are split into three shards, each on its own emulator, which boots from a cached AVD snapshot. The snapshot and the Gradle build cache are only stored by the run after each merge to `dev`; pull requests read them but do not write their own. Each job reuses the APKs built by the assemble job and runs `tools/ci/run-instrumented-tests.sh`, which also works locally against any running emulator:
+Pull requests run the medium and large instrumented tests on emulators (jobs "Android (instrumented tests, shard N)" in `.github/workflows/quality-gates.yml`; API 34, `google_apis`, x86_64, Nexus 4). The tests are split into three shards, each on its own emulator. The Gradle build cache is only stored by the run after each merge to `dev`; pull requests read it but do not write their own. Each job reuses the APKs built by the assemble job and runs `tools/ci/run-instrumented-tests.sh`, which also works locally against any running emulator:
 
     ADB="adb -s emulator-5554" tools/ci/run-instrumented-tests.sh \
         uhabits-android/build/outputs/apk/debug/uhabits-android-debug.apk \

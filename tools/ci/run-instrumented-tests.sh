@@ -35,6 +35,12 @@ if [ "$NUM_SHARDS" -gt 1 ]; then
     echo "Running shard $SHARD_INDEX of $NUM_SHARDS"
 fi
 
+# Prefixes each line with the Unix time, as tools/parseInstrument.py expects
+# (same output as `ts "%.s"` from moreutils, without the extra package).
+timestamp() {
+    perl -MTime::HiRes=time -ne '$| = 1; printf "%.6f %s", time, $_'
+}
+
 mkdir -p "$OUT"
 
 # Same device preparation as build.sh (animations are disabled by the caller).
@@ -56,7 +62,7 @@ for size in medium large; do
         log="$OUT/instrument-$size-$attempt.txt"
         echo "::group::$size tests, attempt $attempt ${failed:+(retrying failed tests only)}"
         # shellcheck disable=SC2086 # $filter is "-e key value ..." or empty
-        $ADB shell am instrument -r -e size "$size" $filter -w "$RUNNER" | ts "%.s" > "$log"
+        $ADB shell am instrument -r -e size "$size" $filter -w "$RUNNER" | timestamp > "$log"
         failed=$(python3 tools/parseInstrument.py "$log")
         passed=$?
         echo "::endgroup::"
