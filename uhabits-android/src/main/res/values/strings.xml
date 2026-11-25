@@ -159,10 +159,8 @@
     <string name="best_streaks">Best streaks</string>
     <string name="every_day">Every day</string>
     <string name="every_week">Every week</string>
-    <string name="week_mode">Week</string>
     <string name="week_mode_rolling">Rolling week</string>
     <string name="week_mode_calendar">Calendar week</string>
-    <string name="month_mode">Month</string>
     <string name="month_mode_rolling">Rolling month</string>
     <string name="month_mode_calendar">Calendar month</string>
     <string name="help">Help &amp; FAQ</string>

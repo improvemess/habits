@@ -144,10 +144,8 @@
     <string name="best_streaks">Beste Serien</string>
     <string name="every_day">Jeden Tag</string>
     <string name="every_week">Jede Woche</string>
-    <string name="week_mode">Woche</string>
     <string name="week_mode_rolling">Rollierende Woche</string>
     <string name="week_mode_calendar">Kalenderwoche</string>
-    <string name="month_mode">Monat</string>
     <string name="month_mode_rolling">Rollierender Monat</string>
     <string name="month_mode_calendar">Kalendermonat</string>
     <string name="help">Hilfe &amp; FAQ</string>

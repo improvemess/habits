@@ -216,22 +216,6 @@
                 </FrameLayout>
             </LinearLayout>
 
-            <!-- Rolling or calendar week or month; only shown for weekly and monthly goals of measurable habits -->
-            <FrameLayout
-                android:id="@+id/periodModeOuterBox"
-                style="@style/FormOuterBox">
-                <LinearLayout style="@style/FormInnerBox">
-                    <TextView
-                        style="@style/FormLabel"
-                        android:id="@+id/periodModeLabel"
-                        android:text="@string/week_mode" />
-                    <TextView
-                        style="@style/FormDropdown"
-                        android:id="@+id/periodModePicker"
-                        android:text="@string/week_mode_rolling" />
-                </LinearLayout>
-            </FrameLayout>
-
             <FrameLayout
                 android:id="@+id/targetTypeOuterBox"
                 style="@style/FormOuterBox">

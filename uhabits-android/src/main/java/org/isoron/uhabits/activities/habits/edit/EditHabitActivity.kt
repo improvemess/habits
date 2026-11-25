@@ -197,20 +197,6 @@ class EditHabitActivity : AppCompatActivity() {
             picker.dismissCurrentAndShow(supportFragmentManager, "frequencyPicker")
         }
 
-        binding.periodModePicker.setOnClickListener {
-            val builder = AlertDialog.Builder(this)
-            val arrayAdapter = ArrayAdapter<String>(this, android.R.layout.select_dialog_item)
-            val monthly = freqDen >= 30
-            arrayAdapter.add(getString(if (monthly) R.string.month_mode_rolling else R.string.week_mode_rolling))
-            arrayAdapter.add(getString(if (monthly) R.string.month_mode_calendar else R.string.week_mode_calendar))
-            builder.setAdapter(arrayAdapter) { dialog, which ->
-                calendarPeriod = which == 1
-                populateFrequency()
-                dialog.dismiss()
-            }
-            builder.show()
-        }
-
         populateTargetType()
         binding.targetTypePicker.setOnClickListener {
             val builder = AlertDialog.Builder(this)
@@ -230,21 +216,20 @@ class EditHabitActivity : AppCompatActivity() {
         }
 
         binding.numericalFrequencyPicker.setOnClickListener {
-            val builder = AlertDialog.Builder(this)
-            val arrayAdapter = ArrayAdapter<String>(this, android.R.layout.select_dialog_item)
-            arrayAdapter.add(periodText(1)!!)
-            arrayAdapter.add(periodText(7)!!)
-            arrayAdapter.add(periodText(30)!!)
-            builder.setAdapter(arrayAdapter) { dialog, which ->
-                freqDen = when (which) {
-                    1 -> 7
-                    2 -> 30
-                    else -> 1
-                }
+            val picker = FrequencyPickerDialog(
+                freqNum,
+                freqDen,
+                calendarPeriod,
+                measurable = true,
+                quit = isNegative
+            )
+            picker.onFrequencyPicked = { num, den, period ->
+                freqNum = num
+                freqDen = den
+                calendarPeriod = period
                 populateFrequency()
-                dialog.dismiss()
             }
-            builder.show()
+            picker.dismissCurrentAndShow(supportFragmentManager, "frequencyPicker")
         }
 
         populateReminder()
@@ -368,20 +353,6 @@ class EditHabitActivity : AppCompatActivity() {
         }
     }
 
-    /** Measurable habits pick the week or month mode here; yes/no habits pick it in the frequency dialog. */
-    private fun updateWeekModeVisibility() {
-        val monthly = freqDen >= 30
-        val hasChoice = (freqDen == 7 || monthly) && habitType == HabitType.NUMERICAL
-        binding.periodModeOuterBox.visibility = if (hasChoice) View.VISIBLE else View.GONE
-        binding.periodModeLabel.setText(if (monthly) R.string.month_mode else R.string.week_mode)
-        binding.periodModePicker.text = getString(
-            when {
-                monthly -> if (calendarPeriod) R.string.month_mode_calendar else R.string.month_mode_rolling
-                else -> if (calendarPeriod) R.string.week_mode_calendar else R.string.week_mode_rolling
-            }
-        )
-    }
-
     private fun updateFrequencyVisibility() {
         val hidden = habitType == HabitType.NUMERICAL || isNegative
         binding.frequencyOuterBox.visibility = if (hidden) View.GONE else View.VISIBLE
@@ -420,7 +391,6 @@ class EditHabitActivity : AppCompatActivity() {
     private fun populateFrequency() {
         binding.booleanFrequencyPicker.text = formatFrequency(freqNum, freqDen, resources)
         binding.numericalFrequencyPicker.text = periodText(freqDen) ?: "$freqNum/$freqDen"
-        updateWeekModeVisibility()
     }
 
     /** Day, week or month period of a measurable habit; "per ..." wording for limits. */
