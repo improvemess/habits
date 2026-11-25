@@ -2,6 +2,14 @@
 
 ## [2.21.0](https://github.com/oliverlorenz/uhabits/compare/v2.20.0...v2.21.0) (2026-11-25)
 
+* **release:** 2.21.0 [skip ci] ([e428e80](https://github.com/oliverlorenz/uhabits/commit/e428e8026a380085b2a22e7df0425b8a9998f4cc))
+
+### Features
+
+* Wochen- und Monatsziel rollierend oder pro Kalenderzeitraum ([#23](https://github.com/oliverlorenz/uhabits/issues/23)) ([#82](https://github.com/oliverlorenz/uhabits/issues/82)) ([249f292](https://github.com/oliverlorenz/uhabits/commit/249f292b1409c8c87e6533f4e8c37cd531d61c9a)), references [#81](https://github.com/oliverlorenz/uhabits/issues/81)
+
+## [2.21.0](https://github.com/oliverlorenz/uhabits/compare/v2.20.0...v2.21.0) (2026-11-25)
+
 ### Features
 
 * Wochen- und Monatsziel rollierend oder pro Kalenderzeitraum ([#23](https://github.com/oliverlorenz/uhabits/issues/23)) ([#82](https://github.com/oliverlorenz/uhabits/issues/82)) ([249f292](https://github.com/oliverlorenz/uhabits/commit/249f292b1409c8c87e6533f4e8c37cd531d61c9a)), references [#81](https://github.com/oliverlorenz/uhabits/issues/81)
