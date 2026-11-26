@@ -55,7 +55,6 @@ import org.isoron.uhabits.utils.applyBottomInset
 import org.isoron.uhabits.utils.applyRootViewInsets
 import org.isoron.uhabits.utils.currentTheme
 import org.isoron.uhabits.utils.setupToolbar
-import java.net.URI
 import java.text.DateFormat
 import java.time.Instant
 import java.util.Date
@@ -98,7 +97,7 @@ class ShareHabitActivity : AppCompatActivity() {
         binding.root.applyRootViewInsets()
 
         val server = component.preferences.sharingServerUrl
-        binding.newShareServer.text = getString(R.string.share_server, host(server))
+        binding.newShareServer.text = getString(R.string.share_server, sharingHost(server))
         binding.shareButton.setOnClickListener { onShare(server) }
         binding.inviteButton.setOnClickListener { onInvite() }
         binding.stopButton.setOnClickListener { onStopSharing() }
@@ -118,29 +117,27 @@ class ShareHabitActivity : AppCompatActivity() {
         binding.sharedCard.visibility = if (current != null) View.VISIBLE else View.GONE
         binding.friendsCard.visibility = if (current != null) View.VISIBLE else View.GONE
         if (current != null) {
-            binding.shareServer.text = getString(R.string.share_server, host(current.serverUrl))
+            binding.shareServer.text = getString(R.string.share_server, sharingHost(current.serverUrl))
             loadFriends(current)
         }
     }
 
     private fun onShare(server: String) {
         val history = if (binding.historyAll.isChecked) SharedHistory.ALL else SharedHistory.FROM_TODAY
-        busy {
-            when (val check = service.checkServer(server, allowInsecure = BuildConfig.DEBUG)) {
-                is ServerCheck.Ok -> {
-                    share = service.share(habit, check.serverUrl, history)
-                    render()
-                }
-                ServerCheck.InvalidUrl -> showStatus(getString(R.string.share_error_invalid_server))
-                ServerCheck.Unreachable -> showStatus(getString(R.string.share_error_unreachable))
-                ServerCheck.Incompatible -> showStatus(getString(R.string.share_error_incompatible, host(server)))
+        busy(server) {
+            val check = service.checkServer(server, allowInsecure = BuildConfig.DEBUG)
+            if (check is ServerCheck.Ok) {
+                share = service.share(habit, check.serverUrl, history)
+                render()
+            } else {
+                serverCheckMessage(check, server)?.let { showStatus(it) }
             }
         }
     }
 
     private fun onInvite() {
         val current = share ?: return
-        busy { showInvite(service.createInvite(current)) }
+        busy(current.serverUrl) { showInvite(service.createInvite(current)) }
     }
 
     private fun showInvite(link: InviteLink) {
@@ -158,7 +155,7 @@ class ShareHabitActivity : AppCompatActivity() {
     }
 
     private fun loadFriends(current: Share) {
-        busy { showFriends(current, service.readers(current)) }
+        busy(current.serverUrl) { showFriends(current, service.readers(current)) }
     }
 
     private fun showFriends(current: Share, readers: List<Reader>) {
@@ -187,7 +184,7 @@ class ShareHabitActivity : AppCompatActivity() {
                         AlertDialog.Builder(this@ShareHabitActivity)
                             .setTitle(getString(R.string.share_remove_friend_title, name))
                             .setPositiveButton(R.string.share_remove_friend) { _, _ ->
-                                busy {
+                                busy(current.serverUrl) {
                                     service.removeReader(current, reader.readerId)
                                     showFriends(current, service.readers(current))
                                 }
@@ -216,8 +213,8 @@ class ShareHabitActivity : AppCompatActivity() {
             .show()
     }
 
-    /** Runs [block] with a progress indicator; shows server errors instead of crashing. */
-    private fun busy(block: suspend () -> Unit) {
+    /** Runs [block] with a progress indicator; shows errors of [server] instead of crashing. */
+    private fun busy(server: String, block: suspend () -> Unit) {
         binding.status.visibility = View.GONE
         binding.progress.visibility = View.VISIBLE
         scope.launch {
@@ -225,13 +222,7 @@ class ShareHabitActivity : AppCompatActivity() {
                 block()
             } catch (e: SharingApiException) {
                 Log.w("ShareHabitActivity", "Sharing request failed", e)
-                showStatus(
-                    if (e.status == null) {
-                        getString(R.string.share_error_unreachable)
-                    } else {
-                        getString(R.string.share_error_failed, e.message)
-                    }
-                )
+                showStatus(sharingErrorMessage(e, server))
             } finally {
                 binding.progress.visibility = View.GONE
             }
@@ -241,12 +232,6 @@ class ShareHabitActivity : AppCompatActivity() {
     private fun showStatus(message: String) {
         binding.status.text = message
         binding.status.visibility = View.VISIBLE
-    }
-
-    private fun host(url: String): String = try {
-        URI(url).host ?: url
-    } catch (e: Exception) {
-        url
     }
 
     private fun formatDate(iso: String): String = try {

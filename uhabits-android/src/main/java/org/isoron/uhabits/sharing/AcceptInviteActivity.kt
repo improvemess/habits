@@ -34,7 +34,6 @@ import org.isoron.uhabits.core.sharing.AcceptResult
 import org.isoron.uhabits.core.sharing.FriendsService
 import org.isoron.uhabits.core.sharing.InviteLinks
 import org.isoron.uhabits.databinding.AcceptInviteBinding
-import java.net.URI
 
 /**
  * Accepts an invite to follow a friend's habit (#35). Opened by an invite
@@ -64,7 +63,7 @@ class AcceptInviteActivity : AppCompatActivity() {
             binding.cancelButton.setOnClickListener { finish() }
             return
         }
-        binding.message.text = getString(R.string.accept_invite_message, host(invite.serverUrl))
+        binding.message.text = getString(R.string.accept_invite_message, sharingHost(invite.serverUrl))
         binding.cancelButton.setOnClickListener { finish() }
         binding.acceptButton.setOnClickListener { accept(link) }
     }
@@ -89,22 +88,15 @@ class AcceptInviteActivity : AppCompatActivity() {
             }
             binding.acceptButton.isEnabled = true
             binding.status.visibility = View.VISIBLE
-            binding.status.setText(
-                when (result) {
-                    AcceptResult.InvalidLink -> R.string.accept_invite_no_link
-                    AcceptResult.InsecureServer -> R.string.accept_invite_insecure
-                    AcceptResult.Unreachable -> R.string.share_error_unreachable
-                    AcceptResult.Incompatible -> R.string.accept_invite_incompatible
-                    AcceptResult.InviteGone -> R.string.accept_invite_gone
-                    is AcceptResult.Accepted -> R.string.accept_invite_no_link
-                }
-            )
+            binding.status.text = when (result) {
+                AcceptResult.InvalidLink -> getString(R.string.accept_invite_no_link)
+                AcceptResult.InsecureServer -> getString(R.string.accept_invite_insecure)
+                is AcceptResult.Unreachable ->
+                    sharingErrorMessage(result.error, InviteLinks.parse(link)?.serverUrl ?: link)
+                AcceptResult.Incompatible -> getString(R.string.accept_invite_incompatible)
+                AcceptResult.InviteGone -> getString(R.string.accept_invite_gone)
+                is AcceptResult.Accepted -> getString(R.string.accept_invite_no_link)
+            }
         }
-    }
-
-    private fun host(url: String): String = try {
-        URI(url).host ?: url
-    } catch (e: Exception) {
-        url
     }
 }

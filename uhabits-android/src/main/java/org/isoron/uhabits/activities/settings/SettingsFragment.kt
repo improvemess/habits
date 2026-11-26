@@ -38,6 +38,11 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceFragmentCompat
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import org.isoron.platform.time.DayOfWeek
 import org.isoron.platform.time.JavaLocalDateFormatter
 import org.isoron.uhabits.BuildConfig
@@ -49,10 +54,13 @@ import org.isoron.uhabits.activities.habits.list.RESULT_EXPORT_DB
 import org.isoron.uhabits.activities.habits.list.RESULT_IMPORT_DATA
 import org.isoron.uhabits.activities.habits.list.RESULT_REPAIR_DB
 import org.isoron.uhabits.core.preferences.Preferences
+import org.isoron.uhabits.core.sharing.ServerCheck
 import org.isoron.uhabits.core.sharing.SharingServers
+import org.isoron.uhabits.core.sharing.SharingService
 import org.isoron.uhabits.core.ui.NotificationTray
 import org.isoron.uhabits.notifications.AndroidNotificationTray.Companion.createAndroidNotificationChannel
 import org.isoron.uhabits.notifications.RingtoneManager
+import org.isoron.uhabits.sharing.serverCheckMessage
 import org.isoron.uhabits.utils.StyledResources
 import org.isoron.uhabits.utils.applyBottomInset
 import org.isoron.uhabits.utils.startActivitySafely
@@ -64,6 +72,8 @@ class SettingsFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeLis
     private var ringtoneManager: RingtoneManager? = null
     private lateinit var prefs: Preferences
     private var widgetUpdater: WidgetUpdater? = null
+    private var sharingService: SharingService? = null
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
     @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -93,6 +103,7 @@ class SettingsFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeLis
         if (appContext is HabitsApplication) {
             prefs = appContext.component.preferences
             widgetUpdater = appContext.component.widgetUpdater
+            sharingService = appContext.component.sharingService
         }
         setResultOnPreferenceClick("importData", RESULT_IMPORT_DATA)
         setupSharingServerPreference()
@@ -104,6 +115,11 @@ class SettingsFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeLis
 
     override fun onCreatePreferences(bundle: Bundle?, s: String?) {
         // NOP
+    }
+
+    override fun onDestroy() {
+        scope.cancel()
+        super.onDestroy()
     }
 
     override fun onPause() {
@@ -211,7 +227,23 @@ class SettingsFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeLis
             // Store the normalized form, e.g. without a trailing slash.
             pref.text = url
             pref.summary = summary(url)
+            checkSharingServer(url)
             false
+        }
+    }
+
+    /** Reads `/.well-known/uhabits-server` of [url] and shows the result; creates nothing there (#97). */
+    private fun checkSharingServer(url: String) {
+        val service = sharingService ?: return
+        val context = requireContext().applicationContext
+        scope.launch {
+            val check = service.checkServer(url, allowInsecure = BuildConfig.DEBUG)
+            val message = if (check is ServerCheck.Ok) {
+                context.getString(R.string.pref_sharing_server_ok, check.info.version)
+            } else {
+                context.serverCheckMessage(check, url)
+            }
+            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
         }
     }
 

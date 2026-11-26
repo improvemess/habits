@@ -155,12 +155,35 @@ class SharingServiceTest : BaseUnitTest() {
         assertEquals(ServerCheck.Ok(server, ServerInfo(listOf("v1"), "1.0.1")), service.checkServer("  $server/ "))
         assertIs<ServerCheck.InvalidUrl>(service.checkServer("habits.example.com"))
         assertIs<ServerCheck.InvalidUrl>(service.checkServer("http://habits.example.com"))
-        api.failNext("discover", null)
+        api.failNext("discover", null, SharingApiException.Kind.DNS)
+        val unreachable = assertIs<ServerCheck.Unreachable>(service.checkServer(server))
+        assertEquals(SharingApiException.Kind.DNS, unreachable.error.kind)
+        // Something answered, but not a uhabits-server, e.g. the login page of a Wi-Fi network.
+        api.failNext("discover", null, SharingApiException.Kind.INVALID_RESPONSE)
+        assertIs<ServerCheck.Incompatible>(service.checkServer(server))
+        api.failNext("discover", null, SharingApiException.Kind.INVALID_URL)
+        assertIs<ServerCheck.InvalidUrl>(service.checkServer(server))
+        api.failNext("discover", 503)
         assertIs<ServerCheck.Unreachable>(service.checkServer(server))
         api.failNext("discover", 404)
         assertIs<ServerCheck.Incompatible>(service.checkServer(server))
         api.apiVersions = listOf("v2")
         assertIs<ServerCheck.Incompatible>(service.checkServer(server))
+    }
+
+    @Test
+    fun testErrorDetailNamesTheCauseWithoutTokens() {
+        assertNull(SharingApiException(404, "GET /x: 404").detail)
+        val cause = IllegalStateException("handshake failed", IllegalArgumentException("token dt_abc123 rejected"))
+        assertEquals(
+            "IllegalStateException: handshake failed (caused by IllegalArgumentException: token dt_… rejected)",
+            SharingApiException(null, "failed", cause).detail
+        )
+        val decoding = IllegalArgumentException("Unexpected JSON token at offset 9\nJSON input: {\"readerToken\":\"rt_x\"")
+        assertEquals(
+            "IllegalArgumentException: Unexpected JSON token at offset 9",
+            SharingApiException(null, "bad", decoding, SharingApiException.Kind.INVALID_RESPONSE).detail
+        )
     }
 
     @Test

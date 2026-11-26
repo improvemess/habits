@@ -36,7 +36,9 @@ sealed class AcceptResult {
 
     /** `http` link in a release build. */
     object InsecureServer : AcceptResult()
-    object Unreachable : AcceptResult()
+
+    /** No usable answer; [error] says why (DNS, TLS, timeout, ...). */
+    data class Unreachable(val error: SharingApiException) : AcceptResult()
     object Incompatible : AcceptResult()
 
     /** Already redeemed, expired, or the share has ended. */
@@ -71,13 +73,13 @@ class FriendsService(
         try {
             if ("v1" !in api.discover(serverUrl).apiVersions) return AcceptResult.Incompatible
         } catch (e: SharingApiException) {
-            return if (e.isTemporary) AcceptResult.Unreachable else AcceptResult.Incompatible
+            return if (e.isTemporary) AcceptResult.Unreachable(e) else AcceptResult.Incompatible
         }
         val redemption = try {
             api.redeemInvite(serverUrl, invite.code, displayName?.trim()?.takeIf { it.isNotEmpty() })
         } catch (e: SharingApiException) {
             return when {
-                e.isTemporary -> AcceptResult.Unreachable
+                e.isTemporary -> AcceptResult.Unreachable(e)
                 e.status == 404 || e.status == 410 -> AcceptResult.InviteGone
                 else -> AcceptResult.Incompatible
             }

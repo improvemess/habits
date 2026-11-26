@@ -23,11 +23,15 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import org.isoron.platform.time.LocalDate
+import org.isoron.uhabits.core.sharing.SharingApiException.Kind
 import java.io.IOException
 import java.net.HttpURLConnection
+import java.net.SocketTimeoutException
 import java.net.URI
 import java.net.URLEncoder
+import java.net.UnknownHostException
 import java.time.Instant
+import javax.net.ssl.SSLException
 
 /**
  * [SharingApi] over HTTP(S) with [HttpURLConnection], for the JVM and Android.
@@ -176,12 +180,12 @@ class HttpSharingApi(
         val url = try {
             URI(serverUrl.trimEnd('/') + path).toURL()
         } catch (e: Exception) {
-            throw SharingApiException(null, "Invalid server URL", e)
+            throw SharingApiException(null, "Invalid server URL", e, Kind.INVALID_URL)
         }
         val connection = try {
             url.openConnection() as HttpURLConnection
         } catch (e: IOException) {
-            throw SharingApiException(null, "Cannot connect to ${url.host}", e)
+            throw SharingApiException(null, "Cannot connect to ${url.host}", e, kindOf(e))
         }
         try {
             connection.requestMethod = method
@@ -203,7 +207,10 @@ class HttpSharingApi(
             }
             text
         } catch (e: IOException) {
-            throw SharingApiException(null, "$method $path failed: ${e.message}", e)
+            throw SharingApiException(null, "$method $path failed: ${e.message}", e, kindOf(e))
+        } catch (e: SecurityException) {
+            // E.g. network access denied to the app.
+            throw SharingApiException(null, "$method $path failed: ${e.message}", e, Kind.CONNECTION)
         } finally {
             connection.disconnect()
         }
@@ -212,7 +219,14 @@ class HttpSharingApi(
     private inline fun <T> decode(serverUrl: String, block: () -> T): T = try {
         block()
     } catch (e: IllegalArgumentException) {
-        throw SharingApiException(null, "Unexpected response from $serverUrl", e)
+        throw SharingApiException(null, "Unexpected response from $serverUrl", e, Kind.INVALID_RESPONSE)
+    }
+
+    private fun kindOf(e: IOException): Kind = when (e) {
+        is UnknownHostException -> Kind.DNS
+        is SSLException -> Kind.TLS
+        is SocketTimeoutException -> Kind.TIMEOUT
+        else -> Kind.CONNECTION
     }
 
     private fun errorMessage(body: String): String = try {

@@ -58,10 +58,12 @@ object SharingServers {
 sealed class ServerCheck {
     data class Ok(val serverUrl: String, val info: ServerInfo) : ServerCheck()
     object InvalidUrl : ServerCheck()
-    object Unreachable : ServerCheck()
 
-    /** Reachable, but no uhabits-server with API v1. */
-    object Incompatible : ServerCheck()
+    /** No answer; [error] says why (DNS, TLS, timeout, ...). */
+    data class Unreachable(val error: SharingApiException) : ServerCheck()
+
+    /** Reachable, but no uhabits-server with API v1; [error] is null if it answered with other versions. */
+    data class Incompatible(val error: SharingApiException? = null) : ServerCheck()
 }
 
 /**
@@ -81,9 +83,15 @@ class SharingService(
         val info = try {
             api.discover(serverUrl)
         } catch (e: SharingApiException) {
-            return if (e.status == null || e.isTemporary) ServerCheck.Unreachable else ServerCheck.Incompatible
+            return when {
+                e.kind == SharingApiException.Kind.INVALID_URL -> ServerCheck.InvalidUrl
+                // Something answered, but not a uhabits-server (e.g. a login page of a Wi-Fi network).
+                e.kind == SharingApiException.Kind.INVALID_RESPONSE -> ServerCheck.Incompatible(e)
+                e.isTemporary -> ServerCheck.Unreachable(e)
+                else -> ServerCheck.Incompatible(e)
+            }
         }
-        return if (API_VERSION in info.apiVersions) ServerCheck.Ok(serverUrl, info) else ServerCheck.Incompatible
+        return if (API_VERSION in info.apiVersions) ServerCheck.Ok(serverUrl, info) else ServerCheck.Incompatible()
     }
 
     /** Active shares of [habit], newest last. */
