@@ -208,8 +208,6 @@
     <string name="decrement">Verlagen</string>
     <string name="pref_skip_title">Overgeslagen dagen inschakelen</string>
     <string name="pref_skip_description">Schakel tweemaal om een overgeslagen dag toe te voegen in plaats van een vinkje. Overgeslagen dagen houden je score ongewijzigd en verbreken je streak niet.</string>
-    <string name="pref_unknown_title">Vraagtekens weergeven wanneer gegevens ontbreken</string>
-    <string name="pref_unknown_description">Onderscheid dagen zonder gegevens van daadwerkelijke verlopen dagen. Klik twee keer om een verlopen dag in te voeren.</string>
     <string name="you_are_now_a_developer">Je bent nu een ontwikkelaar!</string>
     <string name="activity_not_found">Er is geen app gevonden om deze actie uit te voeren.</string>
     <string name="pref_midnight_delay_title">Verleng de dag tot een paar uur na middernacht</string>

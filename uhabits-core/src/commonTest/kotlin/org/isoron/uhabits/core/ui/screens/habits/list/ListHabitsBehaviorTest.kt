@@ -85,7 +85,7 @@ class ListHabitsBehaviorTest : BaseUnitTest() {
         }
         behavior.onEdit(habit2.id!!, today, 0f, 0f)
         verify {
-            screen.showNumberPopup(0.1, "", true, any())
+            screen.showNumberPopup(0.1, "", false, any())
         }
         capturedPicker!!.onNumberPicked(100.0, "")
         assertEquals(100000, habit2.computedEntries.get(today).value)

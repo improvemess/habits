@@ -403,4 +403,63 @@ class ListHabitsPresenterTest : BaseUnitTest() {
         habit.recompute()
         assertEquals(2, streakCard(habit).streak)
     }
+
+    @Test
+    fun testPauseAfterStreakIsZzInStreakColor() {
+        val habit = fixtures.createEmptyHabit()
+        val today = getToday()
+        habit.originalEntries.add(Entry(today.minus(4), Entry.YES_MANUAL))
+        habit.pauses.add(Pause(today.minus(3), today.minus(1)))
+        habit.originalEntries.add(Entry(today, Entry.YES_MANUAL))
+        habit.recompute()
+        // newest first: today, yesterday, ..., 4 days ago
+        assertEquals(
+            listOf(ZzState.NONE, ZzState.STREAK, ZzState.STREAK, ZzState.STREAK, ZzState.NONE),
+            zzStates(habit, today.minus(4), today)
+        )
+    }
+
+    @Test
+    fun testPauseWithoutPriorStreakIsGrayZz() {
+        val habit = fixtures.createEmptyHabit()
+        val today = getToday()
+        habit.originalEntries.add(Entry(today.minus(6), Entry.NO))
+        habit.pauses.add(Pause(today.minus(3), today.minus(1)))
+        habit.recompute()
+        assertEquals(
+            listOf(ZzState.NONE, ZzState.GRAY, ZzState.GRAY, ZzState.GRAY, ZzState.NONE),
+            zzStates(habit, today.minus(4), today)
+        )
+    }
+
+    @Test
+    fun testZzAfterBrokenStreakIsGray() {
+        val habit = fixtures.createEmptyHabit()
+        val today = getToday()
+        habit.originalEntries.add(Entry(today.minus(5), Entry.YES_MANUAL))
+        habit.originalEntries.add(Entry(today.minus(4), Entry.NO))
+        habit.originalEntries.add(Entry(today.minus(2), Entry.SKIP))
+        habit.recompute()
+        val zz = zzStates(habit, today.minus(5), today)
+        assertEquals(ZzState.GRAY, zz[2])
+        assertEquals(ZzState.NONE, zz[5])
+    }
+
+    @Test
+    fun testManualSkipInStreakIsZz() {
+        val habit = fixtures.createEmptyHabit()
+        val today = getToday()
+        habit.originalEntries.add(Entry(today.minus(2), Entry.YES_MANUAL))
+        habit.originalEntries.add(Entry(today.minus(1), Entry.SKIP))
+        habit.recompute()
+        assertEquals(ZzState.STREAK, zzStates(habit, today.minus(2), today)[1])
+    }
+
+    @Test
+    fun testDaysWithoutZzGiveEmptyList() {
+        val habit = fixtures.createEmptyHabit()
+        habit.originalEntries.add(Entry(getToday(), Entry.YES_MANUAL))
+        habit.recompute()
+        assertEquals(emptyList(), zzStates(habit, getToday().minus(3), getToday()))
+    }
 }

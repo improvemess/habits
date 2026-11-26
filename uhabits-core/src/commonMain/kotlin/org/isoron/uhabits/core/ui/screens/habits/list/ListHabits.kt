@@ -21,6 +21,8 @@ package org.isoron.uhabits.core.ui.screens.habits.list
 import org.isoron.platform.time.LocalDate
 import org.isoron.platform.time.getFirstWeekday
 import org.isoron.platform.time.getToday
+import org.isoron.uhabits.core.models.CheatDayEvaluator
+import org.isoron.uhabits.core.models.CheatDayHistory
 import org.isoron.uhabits.core.models.Entry
 import org.isoron.uhabits.core.models.EntryList
 import org.isoron.uhabits.core.models.Habit
@@ -52,7 +54,9 @@ object ListHabitsPresenter {
         theme: Theme,
         showStreak: Boolean = false,
         /** UUIDs of habits shared with friends; their cards get a marker. */
-        sharedHabits: Set<String> = emptySet()
+        sharedHabits: Set<String> = emptySet(),
+        /** Global cheat days level history (see #20). */
+        cheatDayHistory: CheatDayHistory = CheatDayHistory()
     ): ListHabitsState {
         val view = allHabits.getFiltered(filter)
         view.primaryOrder = primaryOrder
@@ -61,7 +65,7 @@ object ListHabitsPresenter {
         val items = mutableListOf<HabitCardState>()
         for (habit in view) {
             val id = habit.id ?: continue
-            items.add(cardState(habit, id, checkmarkCount, isShared = habit.uuid in sharedHabits))
+            items.add(cardState(habit, id, checkmarkCount, isShared = habit.uuid in sharedHabits, cheatDayHistory = cheatDayHistory))
         }
         return ListHabitsState(
             items = items,
@@ -79,20 +83,29 @@ object ListHabitsPresenter {
      * The card of one habit with its last [checkmarkCount] days. Also used for
      * friends' habits, which are shown with the same cards (read-only).
      */
-    fun cardState(habit: Habit, id: Long, checkmarkCount: Int, isShared: Boolean = false): HabitCardState {
+    fun cardState(
+        habit: Habit,
+        id: Long,
+        checkmarkCount: Int,
+        isShared: Boolean = false,
+        cheatDayHistory: CheatDayHistory = CheatDayHistory()
+    ): HabitCardState {
         val today = getToday()
         val dateFrom = today.minus(checkmarkCount - 1)
         val score = habit.scores[today].value
-        val ongoing = habit.streaks.getOngoingStreak(today)
         val streakUnit = habit.streakUnit ?: StreakUnit.defaultFor(habit.effectiveFrequency)
-        val streak = ongoing?.let { countStreak(habit, it.start, it.end, streakUnit) } ?: 0
+        val cheatDays = CheatDayEvaluator.evaluate(
+            CheatDayEvaluator.unitsOf(habit, streakUnit, today, getFirstWeekday()),
+            streakUnit
+        ) { cheatDayHistory.levelOn(it) }
+        val streak = cheatDays.count
         // A manually skipped day keeps the streak alive, but it is not "done". During a pause
         // the flame stays colored (if there is a streak); on the first day after the pause it
         // is gray again until the streak is continued or lapses.
         val skippedToday = habit.computedEntries.get(today).value == Entry.SKIP
         // In weeks or months the streak only counts completed periods; until the first one is
         // complete there is no streak yet and the flame stays gray at 0.
-        val streakDoneToday = ongoing != null && ongoing.end >= today &&
+        val streakDoneToday = cheatDays.alive && habit.computedEntries.get(today).completed &&
             (streakUnit == StreakUnit.DAYS || streak > 0) &&
             (!skippedToday || (streak > 0 && habit.pauses.isPaused(today)))
         val entries = habit.computedEntries.getByInterval(dateFrom, today)
@@ -108,17 +121,13 @@ object ListHabitsPresenter {
             checkmarks = entries.map { it.value },
             completed = entries.map { it.completed },
             notes = entries.map { it.notes },
-            paused = if (habit.pauses.isEmpty()) {
-                emptyList()
-            } else {
-                entries.map { it.value == Entry.SKIP && habit.pauses.isPaused(it.date) }
-            },
+            zz = zzStates(habit, dateFrom, today),
             category = habit.category,
             streak = streak,
             streakUnit = streakUnit,
             streakDoneToday = streakDoneToday,
-            restDay = if (habit.dueDays.isEverFixed) {
-                entries.map { it.value == Entry.SKIP && habit.isRestDay(it.date) && !habit.pauses.isPaused(it.date) }
+            beforeCreation = if (habit.creationDay != null) {
+                entries.map { habit.isUnknownAllowedOn(it.date) }
             } else {
                 emptyList()
             },
@@ -139,15 +148,65 @@ data class HabitCardState(
     val checkmarks: List<Int>,
     val completed: List<Boolean>,
     val notes: List<String>,
-    val paused: List<Boolean> = emptyList(),
-    /** Per day: skipped because the habit is not due on that weekday (see #19). */
-    val restDay: List<Boolean> = emptyList(),
+    /** Per day: whether it is shown as "zz" (see [ZzState]); empty if no day is. */
+    val zz: List<ZzState> = emptyList(),
+    /** Per day: lies before the creation day of the habit; empty when it has none (see #70). */
+    val beforeCreation: List<Boolean> = emptyList(),
     val category: String,
     val streak: Int = 0,
     val streakUnit: StreakUnit = StreakUnit.DAYS,
     val streakDoneToday: Boolean = false,
     val isShared: Boolean = false
 )
+
+/**
+ * How a day is shown: "zz" stands for every day that is passed over without affecting the streak.
+ * It does not break it and does not count towards it, no matter why (pause, weekday on which the
+ * habit is not due, covered by the weekly or monthly goal, or skipped by hand).
+ */
+enum class ZzState {
+    /** A normal day. */
+    NONE,
+
+    /** A "zz" that continues a streak: shown in the habit color. */
+    STREAK,
+
+    /** A "zz" without a running streak: shown gray. */
+    GRAY
+}
+
+private const val ZZ_LOOKBACK_DAYS = 366
+
+/**
+ * Returns the [ZzState] of every day from [today] back to [from] (newest first). A "zz" day
+ * continues a streak if a day that was actually performed lies before it in the same unbroken run
+ * of completed days.
+ */
+fun zzStates(habit: Habit, from: LocalDate, today: LocalDate): List<ZzState> {
+    // Days that the user checked themselves are never "zz"
+    fun isZz(e: Entry) = e.value == Entry.SKIP || (e.value == Entry.YES_AUTO && !habit.isNumerical)
+    val entries = habit.computedEntries.getByInterval(from.minus(ZZ_LOOKBACK_DAYS), today)
+    if (entries.none { isZz(it) }) return emptyList()
+    val result = ArrayList<ZzState>(entries.size)
+    var performedInRun = false
+    for (entry in entries.asReversed()) {
+        result.add(
+            when {
+                !entry.completed -> {
+                    performedInRun = false
+                    ZzState.NONE
+                }
+                isZz(entry) -> if (performedInRun) ZzState.STREAK else ZzState.GRAY
+                else -> {
+                    performedInRun = true
+                    ZzState.NONE
+                }
+            }
+        )
+    }
+    result.reverse()
+    return result.take(from.daysUntil(today) + 1)
+}
 
 /**
  * Counts the days in [from]..[to] on which the habit was actually performed. Days that are only

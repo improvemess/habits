@@ -214,8 +214,6 @@
     <string name="decrement">умањење</string>
     <string name="pref_skip_title">Омогући прескакање дана</string>
     <string name="pref_skip_description">Двапут промените да бисте прескочили уместо откачињања. Прескакање задржава резултат непромењеним и не прекида низ.</string>
-    <string name="pref_unknown_title">Приказ упитника где нема података</string>
-    <string name="pref_unknown_description">Разликује дане без података са стварним пропуштањем. За прескок, потврдите два пута.</string>
     <string name="you_are_now_a_developer">Постали сте програмер</string>
     <string name="activity_not_found">Нема апликације која подржава ову радњу</string>
     <string name="pref_midnight_delay_title">Продужите дан неколико сати иза поноћи</string>

@@ -208,8 +208,6 @@
     <string name="decrement">Μείωση</string>
     <string name="pref_skip_title">Ενεργοποίηση παράλειψης ημερών</string>
     <string name="pref_skip_description">Εναλλαγή δύο φορές για να προσθέσετε μια παράκαμψη αντί για ένα σημάδι ελέγχου. Οι παραλείψεις κρατούν το σκορ σας αμετάβλητο και να δε σπάνε το σερί σας.</string>
-    <string name="pref_unknown_title">Εμφάνιση ερωτηματικών για τα δεδομένα που λείπουν</string>
-    <string name="pref_unknown_description">Διαφορικές ημέρες χωρίς δεδομένα από πραγματικές παραλήψεις. Για να εισάγετε μια παράληψη, κάντε εναλλαγή δύο φορές.</string>
     <string name="you_are_now_a_developer">Είστε πλέον προγραμματιστής</string>
     <string name="activity_not_found">Δεν βρέθηκε εφαρμογή για την υποστήριξη αυτής της ενέργειας</string>
     <string name="pref_midnight_delay_title">Επεκτείνετε την ημέρα λίγες ώρες μετά τα μεσάνυχτα</string>

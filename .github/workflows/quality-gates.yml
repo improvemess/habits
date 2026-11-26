@@ -1,16 +1,23 @@
 name: Quality Gates
 
-# Kein paths-ignore: "Quality gate" ist Pflicht-Check auf dev und muss daher
-# bei jedem PR laufen, sonst bliebe er dauerhaft ausstehend.
+# Kein paths-ignore: "Quality gate" ist Pflicht-Check auf dev und main und
+# muss daher bei jedem PR laufen, sonst bliebe er dauerhaft ausstehend.
 #
 # Der Lauf auf dev füllt die Caches für die PRs: GitHub-Caches gelten pro
 # Branch, PRs dürfen nur die von dev lesen. setup-gradle speichert den
 # Gradle-Build-Cache nur auf dev (in PRs nur lesend); ohne diesen Lauf fänden
 # PRs keine Debug-Kompilate im Cache.
+#
+# Der Lauf auf main prüft den Stand, aus dem das Release gebaut wird. Er liest
+# den Cache von dev nur (main ist nicht der Standard-Branch) und stellt die
+# Debug-APK des Release-Stands als Artefakt bereit.
+#
+# workflow_dispatch läuft auch für Commits mit Skip-CI-Marker; damit lässt sich
+# der Pflicht-Check für einen solchen Commit von Hand nachholen.
 on:
   pull_request:
   push:
-    branches: [dev]
+    branches: [dev, main]
   workflow_dispatch:
 
 concurrency:
@@ -119,10 +126,11 @@ jobs:
       - name: Name debug APK
         id: apk
         run: |
-          VERSION=$(grep versionName uhabits-android/build.gradle.kts | sed -e 's/.*"\([^"]*\)".*/\1/')
+          VERSION=$(sed -n -E 's/^ *versionName = "([^"]+)".*/\1/p' uhabits-android/build.gradle.kts)
           SHORT_SHA=$(echo "${{ github.event.pull_request.head.sha || github.sha }}" | cut -c1-7)
           APP_ID=$(sed -n -E 's/^ *applicationId = "([^"]+)".*/\1/p' uhabits-android/build.gradle.kts)
-          NAME="${APP_ID}.${VERSION}-debug-${SHORT_SHA}.apk"
+          # Paket-ID des Debug-Builds (Endung .debug, #126) und Version
+          NAME="${APP_ID}.debug.${VERSION}-${SHORT_SHA}.apk"
           mkdir -p dist
           cp uhabits-android/build/outputs/apk/debug/uhabits-android-debug.apk "dist/${NAME}"
           echo "name=${NAME}" >> "$GITHUB_OUTPUT"
@@ -268,10 +276,63 @@ jobs:
           path: instrumented-output/
           if-no-files-found: ignore
 
+  # Release-Variante mit R8 (Minify), wie F-Droid sie baut: unsigniert, ohne
+  # LOOP_KEY_*. Baut sie und prüft sie auf dem Emulator mit einem Smoke-Test
+  # (Start + monkey), da die Instrumentation-Tests nur die Debug-Variante
+  # abdecken (#108). Läuft parallel zu den übrigen Jobs.
+  release:
+    name: Android (release build + smoke test)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Assemble release (R8)
+        run: ./gradlew --stacktrace :uhabits-android:assembleRelease
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Smoke test release APK
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          profile: Nexus 4
+          force-avd-creation: true
+          disable-animations: true
+          emulator-options: -no-window -no-audio -gpu swiftshader_indirect -no-boot-anim -no-snapshot
+          script: >-
+            tools/ci/release-smoke-test.sh
+            uhabits-android/build/outputs/apk/release/uhabits-android-release-unsigned.apk
+            release-smoke-output
+
+      - name: Upload results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-smoke-results
+          path: |
+            release-smoke-output/
+            !release-smoke-output/*.keystore
+            uhabits-android/build/outputs/mapping/release/
+          if-no-files-found: ignore
+
   quality-gate:
     name: Quality gate
     if: always()
-    needs: [ktlint, core, assemble, unit-tests, lint, instrumented]
+    needs: [ktlint, core, assemble, unit-tests, lint, instrumented, release]
     runs-on: ubuntu-latest
     steps:
       - name: Check results
@@ -282,6 +343,7 @@ jobs:
           echo "unit-tests: ${{ needs.unit-tests.result }}"
           echo "lint: ${{ needs.lint.result }}"
           echo "instrumented: ${{ needs.instrumented.result }}"
+          echo "release: ${{ needs.release.result }}"
           if [[ "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped') }}" == "true" ]]; then
             echo "::error::Mindestens ein Quality Gate ist fehlgeschlagen."
             exit 1

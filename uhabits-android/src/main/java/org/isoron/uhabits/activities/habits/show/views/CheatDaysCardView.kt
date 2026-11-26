@@ -1,0 +1,69 @@
+/*
+ * Copyright (C) 2016-2025 Álinson Santos Xavier <git@axavier.org>
+ *
+ * This file is part of Loop Habit Tracker.
+ *
+ * Loop Habit Tracker is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by the
+ * Free Software Foundation, either version 3 of the License, or (at your
+ * option) any later version.
+ *
+ * Loop Habit Tracker is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+package org.isoron.uhabits.activities.habits.show.views
+
+import android.content.Context
+import android.util.AttributeSet
+import android.view.LayoutInflater
+import android.widget.LinearLayout
+import org.isoron.platform.gui.toInt
+import org.isoron.uhabits.R
+import org.isoron.uhabits.core.models.StreakUnit
+import org.isoron.uhabits.core.ui.screens.habits.show.views.CheatDaysCardState
+import org.isoron.uhabits.databinding.ShowHabitCheatDaysBinding
+
+/** Shows how many cheat days the habit has left, at the top of the habit screen (see #20). */
+class CheatDaysCardView(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
+    private val binding = ShowHabitCheatDaysBinding.inflate(LayoutInflater.from(context), this)
+
+    fun setState(state: CheatDaysCardState) {
+        if (!state.visible) {
+            visibility = GONE
+            return
+        }
+        visibility = VISIBLE
+        binding.cheatDaysCount.text = context.getString(R.string.cheat_days_count, state.cheatDays, state.cap)
+        binding.cheatDaysCount.setTextColor(state.theme.color(state.color).toInt())
+        binding.cheatDaysStatus.text = statusText(state)
+        invalidate()
+    }
+
+    private fun statusText(state: CheatDaysCardState): String {
+        val lines = mutableListOf<String>()
+        when {
+            !state.streakAlive -> lines.add(context.getString(R.string.cheat_days_new_streak, state.startCheatDays))
+            state.atRisk -> lines.add(context.getString(R.string.cheat_days_none_left))
+            state.usedLast -> lines.add(context.getString(R.string.cheat_days_used))
+        }
+        val next = state.untilNext
+        if (state.streakAlive) {
+            if (next != null) {
+                val plural = when (state.unit) {
+                    StreakUnit.DAYS -> R.plurals.cheat_days_next_days
+                    StreakUnit.WEEKS -> R.plurals.cheat_days_next_weeks
+                    StreakUnit.MONTHS -> R.plurals.cheat_days_next_months
+                }
+                lines.add(resources.getQuantityString(plural, next, next))
+            } else {
+                lines.add(context.getString(R.string.cheat_days_full))
+            }
+        }
+        return lines.joinToString("\n")
+    }
+}

@@ -39,6 +39,7 @@ import org.isoron.uhabits.core.models.Entry.Companion.UNKNOWN
 import org.isoron.uhabits.core.models.Entry.Companion.YES_AUTO
 import org.isoron.uhabits.core.models.Entry.Companion.YES_MANUAL
 import org.isoron.uhabits.core.preferences.Preferences
+import org.isoron.uhabits.core.ui.screens.habits.list.ZzState
 import org.isoron.uhabits.inject.ActivityContext
 import org.isoron.uhabits.utils.drawNotesIndicator
 import org.isoron.uhabits.utils.getFontAwesome
@@ -50,13 +51,18 @@ data class CheckmarkButtonState(
     val color: Int,
     val value: Int,
     val notes: String,
-    val paused: Boolean = false,
     val isNegative: Boolean = false,
-    val restDay: Boolean = false
+    val zz: ZzState = ZzState.NONE,
+    /** The day lies before the habit was created; only there a tap can reset the day (see #70). */
+    val beforeCreation: Boolean = false
 )
 
-/** A day that rests: part of a pause, or a day on which the habit is not due. */
-private val CheckmarkButtonState.isResting: Boolean get() = value == SKIP && (paused || restDay)
+/**
+ * A day that is passed over without affecting the streak: shown as "zz". Once the user checks it
+ * (the value changes), it is a normal day again until the list is refreshed.
+ */
+private val CheckmarkButtonState.isResting: Boolean
+    get() = zz != ZzState.NONE && (value == SKIP || value == YES_AUTO)
 
 internal val NEGATIVE_RED = Color.rgb(0xD3, 0x2F, 0x2F)
 
@@ -95,7 +101,7 @@ class CheckmarkButtonView(
             Entry.nextToggleValue(
                 value = state.value,
                 isSkipEnabled = preferences.isSkipEnabled,
-                areQuestionMarksEnabled = preferences.areQuestionMarksEnabled
+                isBeforeCreation = state.beforeCreation
             )
         }
         state = state.copy(value = v)
@@ -147,44 +153,36 @@ class CheckmarkButtonView(
         }
 
         fun draw(canvas: Canvas) {
-            paint.color = when (state.value) {
-                YES_MANUAL, YES_AUTO, SKIP -> state.color
-                NO -> {
-                    if (state.isNegative) {
-                        NEGATIVE_RED
-                    } else if (preferences.areQuestionMarksEnabled) {
-                        mediumContrastColor
-                    } else {
-                        lowContrastColor
+            val isZz = state.isResting
+            paint.color = when {
+                // "zz" is the habit color if it continues a streak, otherwise gray
+                isZz -> if (state.zz == ZzState.STREAK) state.color else lowContrastColor
+                else -> when (state.value) {
+                    YES_MANUAL, YES_AUTO, SKIP -> state.color
+                    NO -> {
+                        if (state.isNegative) {
+                            NEGATIVE_RED
+                        } else if (state.beforeCreation) {
+                            mediumContrastColor
+                        } else {
+                            lowContrastColor
+                        }
                     }
+                    else -> lowContrastColor
                 }
-                else -> lowContrastColor
             }
             val id = when (state.value) {
                 SKIP -> R.string.fa_skipped
                 NO -> R.string.fa_times
-                UNKNOWN -> {
-                    if (preferences.areQuestionMarksEnabled) {
-                        R.string.fa_question
-                    } else {
-                        R.string.fa_times
-                    }
-                }
+                UNKNOWN -> R.string.fa_times
                 else -> R.string.fa_check
             }
-            paint.typeface = when {
-                state.isResting && state.paused -> Typeface.DEFAULT_BOLD
-                state.isResting -> Typeface.DEFAULT
-                else -> getFontAwesome()
-            }
-            // A rest day is shown faded, so that it is not mistaken for a real pause
-            if (state.isResting && !state.paused) paint.color = lowContrastColor
+            paint.typeface = if (isZz) Typeface.DEFAULT_BOLD else getFontAwesome()
             paint.textSize = when {
-                id == R.string.fa_question -> sp(12.0f)
-                state.value == YES_AUTO -> sp(13.0f)
+                state.value == YES_AUTO && !isZz -> sp(13.0f)
                 else -> sp(14.0f)
             }
-            if (state.value == YES_AUTO) {
+            if (state.value == YES_AUTO && !isZz) {
                 paint.strokeWidth = 5f
                 paint.style = Paint.Style.STROKE
             } else {
@@ -192,14 +190,13 @@ class CheckmarkButtonView(
                 paint.style = Paint.Style.FILL
             }
 
-            // A resting day (pause or not due) shows "zz" (sleeping) instead of the skip symbol
-            val isPaused = state.isResting
-            val label = if (isPaused) "zz" else resources.getString(id)
+            // Every day that does not affect the streak shows "zz" (sleeping) instead of a symbol
+            val label = if (isZz) "zz" else resources.getString(id)
             val em = paint.measureText("m")
 
             rect.set(0f, 0f, width.toFloat(), height.toFloat())
             rect.offset(0f, 0.4f * em)
-            if (isPaused) {
+            if (isZz) {
                 // Comic style: a normal "z" with a smaller, raised "z" to its upper right
                 val big = paint.textSize
                 val gap = 0.35f * em
@@ -213,7 +210,7 @@ class CheckmarkButtonView(
                 canvas.drawText(label, rect.centerX(), rect.centerY(), paint)
             }
 
-            if (state.value == YES_AUTO) {
+            if (state.value == YES_AUTO && !isZz) {
                 paint.color = bgColor
                 paint.style = Paint.Style.FILL
                 canvas.drawText(label, rect.centerX(), rect.centerY(), paint)

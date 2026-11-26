@@ -173,7 +173,7 @@ class FriendsActivity : AppCompatActivity() {
             val card = HabitCardView(this, checkmarkPanels(), numberPanels(), readOnly)
             card.setState(
                 HabitCardViewState(
-                    record = ListHabitsPresenter.cardState(habit, -share.id, count),
+                    record = ListHabitsPresenter.cardState(habit, -share.id, count, cheatDayHistory = preferences.cheatDayHistory),
                     selected = false,
                     buttonCount = count,
                     showStreak = preferences.isStreakFlameEnabled

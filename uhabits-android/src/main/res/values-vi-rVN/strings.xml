@@ -202,8 +202,6 @@
     <string name="decrement">Giảm xuống</string>
     <string name="pref_skip_title">Bật bỏ qua ngày</string>
     <string name="pref_skip_description">Bật/tắt hai lần để thêm một lần bỏ qua thay vì dấu kiểm. Bỏ qua giữ cho số điểm của bạn không thay đổi và không phá vỡ chuỗi của bạn.</string>
-    <string name="pref_unknown_title">Hiện dấu hỏi cho dữ liệu bị thiếu</string>
-    <string name="pref_unknown_description">Phân biệt những ngày không có dữ liệu với những lần trôi đi thực tế. Để nhập một lần trôi đi, hãy bật/tắt hai lần.</string>
     <string name="you_are_now_a_developer">Bạn đã là nhà phát triển</string>
     <string name="activity_not_found">Không tìm thấy ứng dụng nào để hỗ trợ hành động này</string>
     <string name="pref_midnight_delay_title">Kéo dài ngày thêm một vài giờ sau nửa đêm</string>

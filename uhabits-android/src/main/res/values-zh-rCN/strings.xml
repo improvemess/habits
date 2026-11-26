@@ -203,8 +203,6 @@
     <string name="decrement">减少（-1）</string>
     <string name="pref_skip_title">启用跳过天数功能</string>
     <string name="pref_skip_description">切换两次以添加跳过而不是复选标记。跳过将保持您的得分不变，且不会打破你的连续纪录</string>
-    <string name="pref_unknown_title">对丢失的数据显示问号</string>
-    <string name="pref_unknown_description">区分无数据和未完成习惯的日期。要输入一个习惯未完成，请切换两次。</string>
     <string name="you_are_now_a_developer">你现在是一个开发者！</string>
     <string name="activity_not_found">找不到支持此操作的应用</string>
     <string name="pref_midnight_delay_title">将一天延长到午夜后的几个小时</string>

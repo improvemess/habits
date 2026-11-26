@@ -60,7 +60,10 @@ android {
         // namespace (Kotlin-Pakete, R-Klasse) bleibt org.isoron.uhabits.
         applicationId = "com.improvemess.habits"
         // Für XML-Ressourcen, die die Paket-ID brauchen (preferences.xml: targetPackage).
+        // Debug-Builds überschreiben den Wert mit ihrer Endung (siehe buildTypes).
         resValue("string", "application_id", applicationId!!)
+        // Name der App im Launcher und in "Letzte Apps" (AndroidManifest.xml)
+        manifestPlaceholders["appLabel"] = "@string/main_activity_title"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -97,6 +100,13 @@ android {
 
         debug {
             enableUnitTestCoverage = true
+            // Eigene Paket-ID und eigener Name, damit Debug-APKs (CI-Artefakte,
+            // lokale Builds) neben der Production-App installierbar sind und
+            // sich von ihr unterscheiden lassen (#126).
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
+            resValue("string", "application_id", "${defaultConfig.applicationId}.debug")
+            manifestPlaceholders["appLabel"] = "@string/app_label_debug"
         }
     }
 

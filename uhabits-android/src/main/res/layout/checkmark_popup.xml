@@ -70,7 +70,7 @@
         <TextView
             android:id="@+id/unknownBtn"
             style="@style/CheckmarkPopupBtn"
-            android:text="@string/fa_question" />
+            android:text="@string/fa_undo" />
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <androidx.appcompat.widget.LinearLayoutCompat
@@ -106,6 +106,6 @@
         <TextView
             android:id="@+id/unknownBtnNumber"
             style="@style/CheckmarkPopupBtn"
-            android:text="@string/fa_question" />
+            android:text="@string/fa_undo" />
     </androidx.appcompat.widget.LinearLayoutCompat>
 </androidx.appcompat.widget.LinearLayoutCompat>

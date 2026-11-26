@@ -91,6 +91,23 @@ class LoopDBImporterNegativeHabitTest : BaseUnitTest() {
         habitList.forEach { assertEquals(DueDays(), it.dueDays) }
     }
 
+    @Test
+    fun testBackupKeepsCreationDay() = runTest {
+        val created = getToday().minus(20)
+        importBackup("update Habits set created_on = ${created.unixTime} where id = (select min(id) from Habits)")
+        assertEquals(1, habitList.count { it.createdOn == created })
+    }
+
+    @Test
+    fun testOlderBackupGetsCreationDayFromOldestEntry() = runTest {
+        importBackup(null)
+        habitList.forEach { habit ->
+            assertNotNull(habit.createdOn)
+            val oldest = habit.originalEntries.getKnown().minOfOrNull { it.date }
+            if (oldest != null) assertEquals(oldest, habit.createdOn)
+        }
+    }
+
     private suspend fun importBackup(sql: String?) {
         val userFile: UserFile = copyResourceToTempFile("loop.db")
         val db = databaseOpener().open(userFile.pathString)

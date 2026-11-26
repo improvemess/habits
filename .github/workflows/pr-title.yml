@@ -1,11 +1,13 @@
 name: PR Title
 
-# Der PR-Titel wird beim Squash-Merge zum Commit-Titel auf dev und bestimmt
-# damit, ob und wie semantic-release die Version erhöht:
+# Der PR-Titel wird beim Squash-Merge zum Commit-Titel auf dev (der PR-Text
+# zum Commit-Text) und bestimmt damit, wie semantic-release beim nächsten
+# Release-PR dev → main die Version erhöht:
 #   feat: …            -> Minor
 #   fix: / perf: / revert: … -> Patch
-#   feat!: … (oder "BREAKING CHANGE:" im Text) -> Major
+#   feat!: … (oder "BREAKING CHANGE:" im PR-Text) -> Major
 #   chore/ci/docs/refactor/style/test/build -> kein Release
+# Ablauf: docs/RELEASE.md
 on:
   pull_request:
     types: [opened, edited, synchronize, reopened]
@@ -39,3 +41,25 @@ jobs:
             test
             build
           requireScope: false
+
+      # Release-PRs dev → main werden als Merge-Commit gemergt, dessen Titel der
+      # PR-Titel ist. semantic-release wertet ihn mit aus; ein "feat:"-Titel
+      # würde die Version also zusätzlich erhöhen. Deshalb nach main nur
+      # "chore(release): …" und nur von dev aus diesem Repo (docs/RELEASE.md).
+      - name: Validate release PR
+        if: github.event.pull_request.base.ref == 'main'
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          REPO: ${{ github.repository }}
+        run: |
+          if [[ "$HEAD_REPO" != "$REPO" || "$HEAD_REF" != "dev" ]]; then
+            echo "::error::Pull Requests nach main nur von dev (Release-PR), nicht von ${HEAD_REPO}:${HEAD_REF}."
+            exit 1
+          fi
+          if [[ "$TITLE" != "chore(release): "* ]]; then
+            echo "::error::Titel eines Release-PRs muss mit \"chore(release): \" beginnen, z. B. \"chore(release): dev → main\"."
+            exit 1
+          fi
+          echo "Release-PR dev → main: ok"

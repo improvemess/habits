@@ -208,8 +208,6 @@
     <string name="decrement">შემცირება</string>
     <string name="pref_skip_title">დღეების გამოტოვების ჩართვა</string>
     <string name="pref_skip_description">ორჯერ გადართე, რათა გამოტოვება ჩაამატო თოლიის (✓) მაგივრად. გამოტოვებების მეშვეობით შეფასება უცვლელი დარჩება, ხოლო სერია შენარჩუნდება.</string>
-    <string name="pref_unknown_title">კითხვის ნიშნის ჩვენება მონაცემთა არარსებობის შემთხვევაში</string>
-    <string name="pref_unknown_description">უმონაცემო დღეებისა და გაცდენების განსხვავებულად განხილვა. გაცდენის შესატანად ორჯერ გადართე.</string>
     <string name="you_are_now_a_developer">ახლა დეველოპერი ხარ</string>
     <string name="activity_not_found">ვერ მოიძებნა აპლიკაცია ამ ოპერაციის განსახორციელებლად</string>
     <string name="pref_midnight_delay_title">ახალი დღის დასაწყისის გადატანა ნაშუაღამევის რამდენიმე საათისთვის</string>

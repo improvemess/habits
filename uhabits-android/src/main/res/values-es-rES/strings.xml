@@ -208,8 +208,6 @@
     <string name="decrement">Disminuir</string>
     <string name="pref_skip_title">Habilitar días libres</string>
     <string name="pref_skip_description">Presionar dos veces para agregar un salto en lugar de una marca de verificación. Los saltos mantienen tu puntaje sin cambios y no rompen tu racha.</string>
-    <string name="pref_unknown_title">Mostrar signos de interrogación para datos faltantes</string>
-    <string name="pref_unknown_description">Diferenciar los días sin datos de los lapsos reales. Para ingresar un lapso, presionar dos veces.</string>
     <string name="you_are_now_a_developer">Ahora eres desarrollador</string>
     <string name="activity_not_found">No se encontró ninguna aplicación que admita esta acción</string>
     <string name="pref_midnight_delay_title">Ampliar día unas horas después de medianoche</string>

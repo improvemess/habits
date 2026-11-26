@@ -34,6 +34,7 @@ import org.isoron.uhabits.core.models.Entry.Companion.UNKNOWN
 import org.isoron.uhabits.core.models.Entry.Companion.YES_AUTO
 import org.isoron.uhabits.core.models.Entry.Companion.YES_MANUAL
 import org.isoron.uhabits.core.preferences.Preferences
+import org.isoron.uhabits.core.ui.screens.habits.list.ZzState
 import org.isoron.uhabits.inject.HabitsApplicationComponent
 import org.isoron.uhabits.utils.InterfaceUtils.getDimension
 import org.isoron.uhabits.utils.PaletteUtils.getAndroidTestColor
@@ -52,6 +53,10 @@ class CheckmarkWidgetView : HabitWidgetView {
     var entryValue = 0
     var entryState = 0
     var isNumerical = false
+    var zz = ZzState.NONE
+
+    private val isZz: Boolean
+        get() = !isNumerical && zz != ZzState.NONE && (entryState == SKIP || entryState == YES_AUTO)
     var isNegative = false
     private var preferences: Preferences? = null
 
@@ -69,20 +74,26 @@ class CheckmarkWidgetView : HabitWidgetView {
         val bgColor: Int
         val fgColor: Int
         setShadowAlpha(0x4f)
-        when (entryState) {
-            YES_MANUAL, SKIP, YES_AUTO -> {
-                bgColor = activeColor
-                fgColor = res.getColor(R.attr.contrast0)
-                backgroundPaint!!.color = bgColor
-                frame!!.setBackgroundDrawable(background)
-            }
-            NO, UNKNOWN -> {
-                bgColor = res.getColor(R.attr.cardBgColor)
-                fgColor = if (isNegative && entryState == NO) NEGATIVE_RED else res.getColor(R.attr.contrast60)
-            }
-            else -> {
-                bgColor = res.getColor(R.attr.cardBgColor)
-                fgColor = res.getColor(R.attr.contrast60)
+        if (isZz) {
+            // A day that does not affect the streak: "zz", in the habit color only within a streak
+            bgColor = res.getColor(R.attr.cardBgColor)
+            fgColor = if (zz == ZzState.STREAK) activeColor else res.getColor(R.attr.contrast60)
+        } else {
+            when (entryState) {
+                YES_MANUAL, SKIP, YES_AUTO -> {
+                    bgColor = activeColor
+                    fgColor = res.getColor(R.attr.contrast0)
+                    backgroundPaint!!.color = bgColor
+                    frame!!.setBackgroundDrawable(background)
+                }
+                NO, UNKNOWN -> {
+                    bgColor = res.getColor(R.attr.cardBgColor)
+                    fgColor = if (isNegative && entryState == NO) NEGATIVE_RED else res.getColor(R.attr.contrast60)
+                }
+                else -> {
+                    bgColor = res.getColor(R.attr.cardBgColor)
+                    fgColor = res.getColor(R.attr.contrast60)
+                }
             }
         }
         ring.setPercentage(percentage)
@@ -101,28 +112,21 @@ class CheckmarkWidgetView : HabitWidgetView {
             false
         } else {
             when (entryState) {
-                YES_AUTO -> true
+                YES_AUTO -> !isZz
                 else -> false
             }
         }
 
     private val text: String
-        get() = if (isNumerical) {
+        get() = if (isZz) {
+            "zz"
+        } else if (isNumerical) {
             (max(0, entryValue) / 1000.0).toShortString()
         } else {
             when (entryState) {
                 YES_MANUAL, YES_AUTO -> resources.getString(R.string.fa_check)
                 SKIP -> resources.getString(R.string.fa_skipped)
-                UNKNOWN -> {
-                    run {
-                        if (preferences!!.areQuestionMarksEnabled) {
-                            return resources.getString(R.string.fa_question)
-                        } else {
-                            resources.getString(R.string.fa_times)
-                        }
-                    }
-                    resources.getString(R.string.fa_times)
-                }
+                UNKNOWN -> resources.getString(R.string.fa_times)
                 NO -> resources.getString(R.string.fa_times)
                 else -> resources.getString(R.string.fa_times)
             }

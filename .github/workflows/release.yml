@@ -49,16 +49,19 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
-      - name: Restore debug keystore
+      # Release-Schlüssel (#106, #127). Gradle erwartet in LOOP_KEY_STORE einen
+      # Pfad, das Secret enthält den Keystore base64-kodiert. Die Passwörter
+      # bekommt nur der Schritt "Semantic release" (dort baut prepare.sh).
+      - name: Restore release keystore
         env:
-          DEBUG_KEYSTORE_BASE64: ${{ secrets.DEBUG_KEYSTORE_BASE64 }}
+          LOOP_KEY_STORE_BASE64: ${{ secrets.LOOP_KEY_STORE_BASE64 }}
         run: |
-          if [[ -z "$DEBUG_KEYSTORE_BASE64" ]]; then
-            echo "::error::Secret DEBUG_KEYSTORE_BASE64 fehlt."
+          if [[ -z "$LOOP_KEY_STORE_BASE64" ]]; then
+            echo "::error::Secret LOOP_KEY_STORE_BASE64 fehlt."
             exit 1
           fi
-          echo "$DEBUG_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/debug.keystore"
-          echo "DEBUG_KEYSTORE=$RUNNER_TEMP/debug.keystore" >> "$GITHUB_ENV"
+          echo "$LOOP_KEY_STORE_BASE64" | base64 --decode > "$RUNNER_TEMP/release.keystore"
+          echo "LOOP_KEY_STORE=$RUNNER_TEMP/release.keystore" >> "$GITHUB_ENV"
 
       - name: Semantic release
         id: release
@@ -72,9 +75,15 @@ jobs:
             conventional-changelog-conventionalcommits@10
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Alias ist kein Geheimnis; als Secret würde GitHub das Wort "habits"
+          # in allen Logs maskieren (auch in der Paket-ID).
+          LOOP_KEY_ALIAS: habits
+          LOOP_KEY_PASSWORD: ${{ secrets.LOOP_KEY_PASSWORD }}
+          LOOP_STORE_PASSWORD: ${{ secrets.LOOP_STORE_PASSWORD }}
 
       # Läuft auch ohne neues Release (z. B. nur chore/docs seit dem letzten),
-      # damit dev den Merge-Commit von main ebenfalls enthält.
+      # damit dev den Merge-Commit von main ebenfalls enthält. Der
+      # Rückführungs-Commit trägt bewusst keinen Skip-CI-Marker, siehe Skript.
       - name: Merge main back into dev
         env:
           GIT_AUTHOR_NAME: semantic-release-bot

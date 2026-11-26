@@ -208,8 +208,6 @@
     <string name="decrement">குறைப்பு</string>
     <string name="pref_skip_title">தவிர்க்கக்கூடிய நாட்களைச் செயலாக்கவும்</string>
     <string name="pref_skip_description">இரண்டு முறை தொடல், \'தவிர்\' வசதியைச் சேர்க்கும். இது உங்கள் மதிப்பெண்ணை மாற்றாது மற்றும் உங்கள் தொடர்ச்சியைக் பாதிக்காது.</string>
-    <string name="pref_unknown_title">பதிவிடாத நாட்களுக்குக் கேள்விக்குறியை காமி</string>
-    <string name="pref_unknown_description">தகவல் இல்லாத நாட்களை வேறுபடுத்து.தவித்தலை பதிவிட, இருமுறை தொடவும்.</string>
     <string name="you_are_now_a_developer">நீங்கள் இப்போது டெவெலப்பராகிவிட்டீர்கள்</string>
     <string name="activity_not_found">இந்தச் செயலைச் செய்வதற்கான பயன்பாடு எதுவுமில்லை.</string>
     <string name="pref_midnight_delay_title">நாளை, நள்ளிரவை தாண்டி சில மணிநேரங்கள் நீட்டிக்கவும்</string>

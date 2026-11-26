@@ -184,7 +184,6 @@
     <string name="no_numerical_habits">Nu au fost găsite obiceiuri măsurabile</string>
     <string name="no_boolean_habits">Nu au fost găsite obiceiuri cu \"Da\" sau \"Nu\"</string>
     <string name="pref_skip_title">Activați omiterea de zile</string>
-    <string name="pref_unknown_title">Arată semnele de întrebare pentru datele lipsă</string>
     <string name="you_are_now_a_developer">Acum ești un dezvoltator</string>
     <string name="activity_not_found">Nu a fost găsită nicio aplicație care să efectueze această acțiune.</string>
     <string name="pref_midnight_delay_title">Extinde ziua câteva ore după miezul nopții</string>

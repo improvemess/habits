@@ -112,23 +112,13 @@ class ListHabitsMenuBehavior(
     }
 
     private fun updateAdapterFilter() {
-        if (preferences.areQuestionMarksEnabled) {
-            adapter.setFilter(
-                HabitMatcher(
-                    isArchivedAllowed = showArchived,
-                    isEnteredAllowed = showCompleted,
-                    searchQuery = searchQuery
-                )
+        adapter.setFilter(
+            HabitMatcher(
+                isArchivedAllowed = showArchived,
+                isCompletedAllowed = showCompleted,
+                searchQuery = searchQuery
             )
-        } else {
-            adapter.setFilter(
-                HabitMatcher(
-                    isArchivedAllowed = showArchived,
-                    isCompletedAllowed = showCompleted,
-                    searchQuery = searchQuery
-                )
-            )
-        }
+        )
         screen.refresh()
     }
 
