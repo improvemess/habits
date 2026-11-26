@@ -56,6 +56,7 @@
     <string name="quit_per_day">Pro Tag</string>
     <string name="quit_per_week">Pro Woche</string>
     <string name="quit_per_month">Pro Monat</string>
+    <string name="quit_per_year">Pro Jahr</string>
     <string name="quit_target_example">z.B. 3</string>
     <string name="goal_build">Ich will mir etwas aneignen</string>
     <string name="goal_build_example">z.B. Sport, Lesen, Meditieren</string>
@@ -152,16 +153,23 @@
     <string name="per_calendar_week">pro Kalenderwoche</string>
     <string name="per_rolling_month">pro rollierendem Monat</string>
     <string name="per_calendar_month">pro Kalendermonat</string>
+    <string name="per_rolling_year">pro rollierendem Jahr</string>
+    <string name="per_calendar_year">pro Kalenderjahr</string>
     <string name="every_rolling_week">Jede rollierende Woche</string>
     <string name="every_calendar_week">Jede Kalenderwoche</string>
     <string name="every_rolling_month">Jeder rollierende Monat</string>
     <string name="every_calendar_month">Jeder Kalendermonat</string>
+    <string name="every_rolling_year">Jedes rollierende Jahr</string>
+    <string name="every_calendar_year">Jedes Kalenderjahr</string>
     <string name="quit_per_rolling_week">Pro rollierender Woche</string>
     <string name="quit_per_calendar_week">Pro Kalenderwoche</string>
     <string name="quit_per_rolling_month">Pro rollierendem Monat</string>
     <string name="quit_per_calendar_month">Pro Kalendermonat</string>
+    <string name="quit_per_rolling_year">Pro rollierendem Jahr</string>
+    <string name="quit_per_calendar_year">Pro Kalenderjahr</string>
     <string name="x_times_per_calendar_week">%d mal pro Kalenderwoche</string>
     <string name="x_times_per_calendar_month">%d mal pro Kalendermonat</string>
+    <string name="x_times_per_calendar_year">%d mal pro Kalenderjahr</string>
     <string name="help">Hilfe &amp; FAQ</string>
     <string name="could_not_export">Fehler beim Exportieren der Daten.</string>
     <string name="could_not_import">Fehler beim Importieren der Daten.</string>
@@ -244,6 +252,7 @@
     <string name="measurable_example">z.B. Wie viele Kilometer bist du heute gelaufen? Wie viele Seiten hast du gelesen?</string>
     <string name="x_times_per_week">%d mal pro Woche</string>
     <string name="x_times_per_month">%d mal pro Monat</string>
+    <string name="x_times_per_year">%d mal pro Jahr</string>
     <string name="x_times_per_y_days">%d Mal in %d Tagen</string>
     <string name="yes_or_no_short_example">z.B. Übung</string>
     <string name="color">Farbe</string>
@@ -251,6 +260,7 @@
     <string name="measurable_short_example">z.B. Laufen</string>
     <string name="measurable_units_example">z.B. Kilometer</string>
     <string name="every_month">Monatlich</string>
+    <string name="every_year">Jährlich</string>
     <string name="validation_cannot_be_blank">Darf nicht leer sein</string>
     <string name="today">Heute</string>
     <string name="enter">Eingeben</string>
@@ -306,6 +316,7 @@
     <string name="streak_unit_days">Tage</string>
     <string name="streak_unit_weeks">Wochen</string>
     <string name="streak_unit_months">Monate</string>
+    <string name="streak_unit_years">Jahre</string>
     <string name="streak_unit_days_short">T</string>
     <string name="streak_unit_weeks_short">W</string>
     <string name="cheat_days_strict">Streng</string>
@@ -327,11 +338,16 @@
         <item quantity="one">Nächster Cheat Day nach %d weiterer erledigter Woche.</item>
         <item quantity="other">Nächster Cheat Day nach %d weiteren erledigten Wochen.</item>
     </plurals>
+    <plurals name="cheat_days_next_years">
+        <item quantity="one">Nächster Cheat Day nach %d weiterem erledigten Jahr.</item>
+        <item quantity="other">Nächster Cheat Day nach %d weiteren erledigten Jahren.</item>
+    </plurals>
     <plurals name="cheat_days_next_months">
         <item quantity="one">Nächster Cheat Day nach %d weiterem erledigten Monat.</item>
         <item quantity="other">Nächster Cheat Day nach %d weiteren erledigten Monaten.</item>
     </plurals>
     <string name="streak_unit_months_short">M</string>
+    <string name="streak_unit_years_short">J</string>
     <string name="friends">Freunde</string>
     <string name="friends_empty">Noch teilt kein Freund eine Gewohnheit mit dir. Wenn dir jemand einen Einladungslink schickt, öffne ihn, oder kopiere ihn und wähle hier „Einladung annehmen“.</string>
     <string name="friends_loading">Gewohnheit von %1$s wird geladen …</string>
