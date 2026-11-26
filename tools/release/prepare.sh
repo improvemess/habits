@@ -64,9 +64,11 @@ cp uhabits-android/build/outputs/apk/release/uhabits-android-release.apk "$APK"
 # wenn sich ein Update nicht installieren lässt.
 EXPECTED=$(tr -d ' \n:' < tools/release/release-cert.sha256 | tr 'A-F' 'a-f')
 APKSIGNER=$(ls -d "${ANDROID_HOME:?ANDROID_HOME fehlt}"/build-tools/* | sort -V | tail -1)/apksigner
-ACTUAL=$("$APKSIGNER" verify --print-certs "$APK" | sed -n -E 's/^Signer #1 certificate SHA-256 digest: ([0-9a-f]+)$/\1/p')
+CERTS=$("$APKSIGNER" verify --print-certs "$APK")
+ACTUAL=$(grep -m1 'certificate SHA-256 digest:' <<< "$CERTS" | sed -E 's/.*digest: *//' | tr -d ' :\r' | tr 'A-F' 'a-f' || true)
 if [[ -z "$ACTUAL" || "$ACTUAL" != "$EXPECTED" ]]; then
     echo "::error::APK ist nicht mit dem Release-Zertifikat signiert (erwartet $EXPECTED, gefunden ${ACTUAL:-keins})." >&2
+    grep -i 'certificate' <<< "$CERTS" >&2 || echo "$CERTS" >&2
     exit 1
 fi
 echo "Signatur: $ACTUAL"
