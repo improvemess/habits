@@ -64,9 +64,8 @@ for line in open(log_filename).readlines():
         status_code = int(matches[0])
         if (status_code < 0) and (status_code != STATUS_DISABLED):
             am_args += f"{current_class}#{current_method},"
-            error("FAIL detail %s#%s:
-  %s" % (current_class, current_method, "
-  ".join(last_stack[:8])))
+            detail = "\n  ".join(last_stack[:8])
+            error("FAIL detail %s#%s:\n  %s" % (current_class, current_method, detail))
             failed_tests.append(f"{current_class}#{current_method}")
         if status_code == STATUS_START:
             initial_time = current_time
