@@ -25,7 +25,7 @@ Only the release deploy key (`RELEASE_DEPLOY_KEY`) may bypass these rules. The r
   | `chore`, `ci`, `docs`, `refactor`, `style`, `test`, `build` | no release |
 
 * The pull request **description** becomes the commit message. Do not write CI skip markers (`[skip ci]` and similar) in it literally: GitHub would then skip all checks for that commit, and a release pull request with this commit on top would stay blocked.
-* Merging into `dev` does **not** create a release. Every merge produces a debug APK as a workflow artifact.
+* Merging into `dev` does **not** create a release. Every merge produces a debug APK as a workflow artifact. Debug APKs use the application ID `com.improvemess.habits.debug` and install next to the released app.
 
 ## 2. Release pull request `dev → main`
 

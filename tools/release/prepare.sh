@@ -35,12 +35,14 @@ grep -q "versionName = \"${VERSION}\"$" "$GRADLE_FILE"
 echo "Version gesetzt: ${VERSION} (versionCode ${VERSION_CODE})"
 
 # Debug-Build mit dem festen Schlüssel aus DEBUG_KEYSTORE, damit sich die
-# Release-APK über bisherige CI-Builds installieren lässt.
+# Release-APK über bisherige Releases installieren lässt. -PreleaseAsDebug
+# lässt die Endung .debug der Paket-ID weg (Übergang bis #127, siehe
+# uhabits-android/build.gradle.kts).
 if [[ -z "${DEBUG_KEYSTORE:-}" ]]; then
     echo "::error::DEBUG_KEYSTORE ist nicht gesetzt – die APK hätte eine zufällige Signatur." >&2
     exit 1
 fi
-./gradlew --stacktrace :uhabits-android:assembleDebug
+./gradlew --stacktrace -PreleaseAsDebug :uhabits-android:assembleDebug
 
 mkdir -p dist
 # Name nach Paket-ID und Version, z. B. com.improvemess.habits.2.27.0.apk

@@ -26,7 +26,8 @@ ADB=${ADB:-adb}
 ATTEMPTS=${ATTEMPTS:-2}
 NUM_SHARDS=${NUM_SHARDS:-1}
 SHARD_INDEX=${SHARD_INDEX:-0}
-PACKAGE=com.improvemess.habits
+# Debug-Build: Paket-ID mit Endung .debug (uhabits-android/build.gradle.kts)
+PACKAGE=com.improvemess.habits.debug
 RUNNER=$PACKAGE.test/androidx.test.runner.AndroidJUnitRunner
 
 shard_args=""
