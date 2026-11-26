@@ -84,8 +84,8 @@ abstract class ButtonPanelView<T : View>(
         buttons.forEachIndexed { index, button ->
             button.translationX = translation
             button.alpha = when (index) {
-                0 -> 1f - scrollFraction
-                buttonCount -> scrollFraction
+                0 -> fadeAlpha(1f - scrollFraction)
+                buttonCount -> fadeAlpha(scrollFraction)
                 else -> 1f
             }
         }
@@ -132,3 +132,9 @@ abstract class ButtonPanelView<T : View>(
     protected abstract fun setupButtons()
     protected abstract fun createButton(): T
 }
+
+/**
+ * Opacity of a partly visible edge column, given the visible part (0 until 1). Squared, so the
+ * fade is clearly noticeable instead of just following the visible width.
+ */
+fun fadeAlpha(visible: Float): Float = visible * visible

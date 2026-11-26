@@ -48,6 +48,8 @@ For **every** change (feature, fix, change of behavior, permissions, dependencie
 
 - Run `./gradlew ktlintCheck` (all modules) and the affected tests; the CI "Quality Gates" fail on ktlint violations (e.g. import order).
 - Known, pre-existing local test failures on Windows (not caused by us): `StringsTest.testFormat`, `HabitsCSVExporterTest.testExportCSV`, `HabitListTest.testWriteCSV`. Check CI before assuming a regression.
+- **Instrumented tests do not run locally** (no emulator); they are only compiled here. For changes to UI flows (dialogs, activities, navigation, back behavior), search `uhabits-android/src/androidTest` for affected steps before pushing (`CommonSteps.createHabit`, `HabitsTest` and others), update them and add an acceptance test for the new behavior. Results of `registerForActivityResult` arrive before `onStart`, i.e. after `onSaveInstanceState`: in the callback use `dismissAllowingStateLoss()` instead of `dismiss()`, and no fragment transactions with `commit()`.
+- **Check CI after every push** (`gh pr checks <nr> --repo improvemess/habits`, on failures `gh run view <id> --log-failed`) and fix failures before reporting the PR as done.
 
 ## Local build environment (Windows)
 
