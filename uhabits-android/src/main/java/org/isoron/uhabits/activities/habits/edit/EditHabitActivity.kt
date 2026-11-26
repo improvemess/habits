@@ -206,7 +206,11 @@ class EditHabitActivity : AppCompatActivity() {
 
         populateFrequency()
         binding.booleanFrequencyPicker.setOnClickListener {
-            val picker = FrequencyPickerDialog(freqNum, freqDen, calendarPeriod)
+            val picker = FrequencyPickerDialog(freqNum, freqDen, calendarPeriod, fixedWeekdays = fixedWeekdays)
+            picker.onFixedDaysPicked = { days ->
+                fixedWeekdays = days
+                populateFrequency()
+            }
             picker.onFrequencyPicked = { num, den, week ->
                 freqNum = num
                 freqDen = den
@@ -214,19 +218,6 @@ class EditHabitActivity : AppCompatActivity() {
                 populateFrequency()
             }
             picker.dismissCurrentAndShow(supportFragmentManager, "frequencyPicker")
-        }
-
-        populateFixedDays()
-        binding.fixedDaysPicker.setOnClickListener {
-            val dialog = WeekdayPickerDialog()
-            dialog.setListener { days: WeekdayList ->
-                // No day selected means: not fixed, the frequency applies
-                fixedWeekdays = DueDays.fromWeekdayList(days)
-                populateFixedDays()
-                updateFrequencyVisibility()
-            }
-            dialog.setSelectedDays(DueDays.toWeekdayList(fixedWeekdays))
-            dialog.dismissCurrentAndShow(supportFragmentManager, "fixedDaysPicker")
         }
 
         binding.streakUnitPicker.setOnClickListener {
@@ -266,8 +257,13 @@ class EditHabitActivity : AppCompatActivity() {
                 freqDen,
                 calendarPeriod,
                 measurable = true,
-                quit = isNegative
+                quit = isNegative,
+                fixedWeekdays = fixedWeekdays
             )
+            picker.onFixedDaysPicked = { days ->
+                fixedWeekdays = days
+                populateFrequency()
+            }
             picker.onFrequencyPicked = { num, den, period ->
                 freqNum = num
                 freqDen = den
@@ -404,10 +400,7 @@ class EditHabitActivity : AppCompatActivity() {
 
     private fun updateFrequencyVisibility() {
         val hidden = habitType == HabitType.NUMERICAL || isNegative
-        binding.frequencyOuterBox.visibility = if (hidden || fixedWeekdays != 0) View.GONE else View.VISIBLE
-        binding.fixedDaysOuterBox.visibility = if (isNegative) View.GONE else View.VISIBLE
-        // With fixed days a measurable habit has its target on every due day, so there is no period
-        binding.numericalFrequencyOuterBox.visibility = if (fixedWeekdays != 0) View.GONE else View.VISIBLE
+        binding.frequencyOuterBox.visibility = if (hidden) View.GONE else View.VISIBLE
     }
 
     private fun validate(): Boolean {
@@ -425,14 +418,6 @@ class EditHabitActivity : AppCompatActivity() {
         return isValid
     }
 
-    private fun populateFixedDays() {
-        binding.fixedDaysPicker.text = if (fixedWeekdays == 0) {
-            getString(R.string.fixed_days_off)
-        } else {
-            DueDays.toWeekdayList(fixedWeekdays).toFormattedString(this)
-        }
-    }
-
     private fun populateReminder() {
         if (reminderHour < 0) {
             binding.reminderTimePicker.text = getString(R.string.reminder_off)
@@ -448,7 +433,7 @@ class EditHabitActivity : AppCompatActivity() {
     }
 
     @SuppressLint("StringFormatMatches")
-    private fun defaultStreakUnit() = StreakUnit.defaultFor(Frequency(freqNum, freqDen))
+    private fun defaultStreakUnit() = StreakUnit.defaultFor(if (fixedWeekdays != 0) Frequency.DAILY else Frequency(freqNum, freqDen))
 
     private fun populateStreakUnit() {
         val unit = streakUnit
@@ -461,8 +446,9 @@ class EditHabitActivity : AppCompatActivity() {
 
     private fun populateFrequency() {
         populateStreakUnit()
-        binding.booleanFrequencyPicker.text = formatFrequency(freqNum, freqDen, resources, calendarPeriod)
-        binding.numericalFrequencyPicker.text = periodText(freqDen) ?: "$freqNum/$freqDen"
+        val fixedText = fixedWeekdays.takeIf { it != 0 && !isNegative }?.let { DueDays.toWeekdayList(it).toFormattedString(this) }
+        binding.booleanFrequencyPicker.text = fixedText ?: formatFrequency(freqNum, freqDen, resources, calendarPeriod)
+        binding.numericalFrequencyPicker.text = fixedText ?: periodText(freqDen) ?: "$freqNum/$freqDen"
     }
 
     /** Day, week or month period of a measurable habit; "per ..." wording for limits. */
