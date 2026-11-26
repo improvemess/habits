@@ -100,6 +100,9 @@ class EditHabitActivity : AppCompatActivity() {
     var calendarPeriod = false
     var streakUnit: StreakUnit? = null
     var fixedWeekdays = 0
+
+    /** More than one makes a new yes/no habit a measurable one with this target and step 1 (see #43). */
+    var timesPerDay = 1
     var reminderHour = -1
     var reminderMin = -1
     var reminderDays: WeekdayList = WeekdayList.EVERY_DAY
@@ -160,6 +163,7 @@ class EditHabitActivity : AppCompatActivity() {
             calendarPeriod = state.getBoolean("calendarPeriod")
             streakUnit = StreakUnit.fromId(state.getInt("streakUnit", StreakUnit.AUTO_ID))
             fixedWeekdays = state.getInt("fixedWeekdays")
+            timesPerDay = state.getInt("timesPerDay", 1)
             reminderHour = state.getInt("reminderHour")
             reminderMin = state.getInt("reminderMin")
             reminderDays = WeekdayList(state.getInt("reminderDays"))
@@ -206,9 +210,20 @@ class EditHabitActivity : AppCompatActivity() {
 
         populateFrequency()
         binding.booleanFrequencyPicker.setOnClickListener {
-            val picker = FrequencyPickerDialog(freqNum, freqDen, calendarPeriod, fixedWeekdays = fixedWeekdays)
+            val picker = FrequencyPickerDialog(
+                freqNum,
+                freqDen,
+                calendarPeriod,
+                fixedWeekdays = fixedWeekdays,
+                timesPerDay = timesPerDay,
+                timesPerDayEditable = habitId < 0
+            )
             picker.onFixedDaysPicked = { days ->
                 fixedWeekdays = days
+                populateFrequency()
+            }
+            picker.onTimesPerDayPicked = { times ->
+                timesPerDay = times
                 populateFrequency()
             }
             picker.onFrequencyPicked = { num, den, week ->
@@ -342,13 +357,22 @@ class EditHabitActivity : AppCompatActivity() {
             habit.reminder = null
         }
 
+        // A new habit with several repetitions per day is a measurable habit with steps of one
+        val counted = habitId < 0 && habitType == HabitType.YES_NO && timesPerDay > 1 && fixedWeekdays == 0 && freqDen == 1
+        if (counted) habitType = HabitType.NUMERICAL
+
         habit.frequency = Frequency(freqNum, freqDen)
         habit.calendarPeriod = calendarPeriod && (freqDen == 7 || freqDen >= 30)
         habit.streakUnit = streakUnit
         // A change of the fixed weekdays only counts from today on, a new habit has them from the start
         val dueSince = if (habitId >= 0) getToday() else LocalDate(0)
         habit.dueDays = habit.dueDays.changedFrom(dueSince, if (!isNegative) fixedWeekdays else 0)
-        if (habitType == HabitType.NUMERICAL) {
+        if (counted) {
+            habit.targetValue = timesPerDay.toDouble()
+            habit.targetType = NumericalHabitType.AT_LEAST
+            habit.unit = ""
+            habit.stepSize = 1.0
+        } else if (habitType == HabitType.NUMERICAL) {
             habit.targetValue = binding.targetInput.text.toString().toDouble()
             habit.targetType = targetType
             habit.unit = binding.unitInput.text.trim().toString()
@@ -447,7 +471,8 @@ class EditHabitActivity : AppCompatActivity() {
     private fun populateFrequency() {
         populateStreakUnit()
         val fixedText = fixedWeekdays.takeIf { it != 0 && !isNegative }?.let { DueDays.toWeekdayList(it).toFormattedString(this) }
-        binding.booleanFrequencyPicker.text = fixedText ?: formatFrequency(freqNum, freqDen, resources, calendarPeriod)
+        val timesText = if (timesPerDay > 1 && freqDen == 1) getString(R.string.x_times_per_day, timesPerDay) else null
+        binding.booleanFrequencyPicker.text = fixedText ?: timesText ?: formatFrequency(freqNum, freqDen, resources, calendarPeriod)
         binding.numericalFrequencyPicker.text = fixedText ?: periodText(freqDen) ?: "$freqNum/$freqDen"
     }
 
@@ -502,6 +527,7 @@ class EditHabitActivity : AppCompatActivity() {
             putBoolean("calendarPeriod", calendarPeriod)
             putInt("streakUnit", streakUnit?.id ?: StreakUnit.AUTO_ID)
             putInt("fixedWeekdays", fixedWeekdays)
+            putInt("timesPerDay", timesPerDay)
             putInt("reminderHour", reminderHour)
             putInt("reminderMin", reminderMin)
             putInt("reminderDays", reminderDays.toInteger())
