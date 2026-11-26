@@ -38,12 +38,23 @@ Only the release deploy key (`RELEASE_DEPLOY_KEY`) may bypass these rules. The r
 The workflow *Release* (`.github/workflows/release.yml`) runs on every push to `main`:
 
 1. semantic-release reads the commits since the last tag (`v<version>`). Without `feat`/`fix`/`perf`/`revert` or breaking changes, it stops here: no release.
-2. Otherwise `tools/release/prepare.sh` sets `versionName` and `versionCode` (`major * 10000 + minor * 100 + patch`) in `uhabits-android/build.gradle.kts`, updates `CHANGELOG.md` and builds the APK.
-3. The release commit `chore(release): <version>` is pushed to `main` and tagged; the APK is attached to a GitHub release.
+2. Otherwise `tools/release/prepare.sh` sets `versionName` and `versionCode` (`major * 10000 + minor * 100 + patch`) in `uhabits-android/build.gradle.kts`, updates `CHANGELOG.md` and builds the **release** variant (R8) signed with the release key. It fails unless the APK carries exactly the certificate in `tools/release/release-cert.sha256`.
+3. The release commit `chore(release): <version>` is pushed to `main` and tagged; the APK `com.improvemess.habits.<version>.apk` and the R8 mapping `com.improvemess.habits.<version>-mapping.txt` are attached to a GitHub release.
 4. `tools/release/back-merge.sh` merges `main` back into `dev` with a merge commit `chore(release): merge main into dev`, so `dev` contains everything on `main`. This step also runs when there was no release.
+
+## Signing
+
+| Build | Key | Where |
+|---|---|---|
+| Releases (GitHub) | Release key, alias `habits`, SHA-256 in `tools/release/release-cert.sha256` | Secrets `LOOP_KEY_STORE_BASE64` (keystore, base64), `LOOP_KEY_PASSWORD`, `LOOP_STORE_PASSWORD`; the workflow decodes the keystore, passes its path as `LOOP_KEY_STORE` and sets `LOOP_KEY_ALIAS=habits` itself |
+| Debug APKs (CI) | Fixed debug key | Secret `DEBUG_KEYSTORE_BASE64` |
+| F-Droid, local `assembleRelease` | none (unsigned) | Without `LOOP_KEY_*`, Gradle builds an unsigned release APK |
+
+The release keystore must also be kept outside GitHub (secrets cannot be read back). If it is lost, no update with the same signature can ever be built again.
 
 ## When something goes wrong
 
 * **Release pull request stays blocked, no checks reported.** The top commit of `dev` probably carries a CI skip marker. Run the quality gates by hand: `gh workflow run quality-gates.yml --ref dev` (manual runs ignore the marker, and the check attaches to the same commit).
 * **Back-merge fails with a conflict.** Nothing was pushed. Someone changed the same lines on `dev` (`versionCode`, `versionName`, top of `CHANGELOG.md`). Resolve it by hand as described at the top of `tools/release/back-merge.sh`. A squash pull request does not help, because it loses the link to `main`.
+* **Release run fails with "nicht mit dem Release-Zertifikat signiert" or "ist nicht gesetzt".** A secret (`LOOP_KEY_STORE_BASE64`, `LOOP_KEY_PASSWORD`, `LOOP_STORE_PASSWORD`) is missing or belongs to another key. Set it again from the backup of the release keystore; never change `release-cert.sha256` unless the key is replaced on purpose (that breaks updates for all users).
 * **Release run fails while pushing (`GH013`).** The deploy key lost its bypass in the rulesets of `main` or `dev` (repository settings → Rules). Add *Deploy keys* as bypass actor again and re-run the workflow.

@@ -51,8 +51,8 @@ android {
     }
 
     defaultConfig {
-        versionCode = 22700
-        versionName = "2.27.0"
+        versionCode = 30000
+        versionName = "3.0.0"
         minSdk = 28
         targetSdk = 36
         // Eigene ID statt upstream org.isoron.uhabits, damit der Fork in F-Droid
@@ -103,16 +103,10 @@ android {
             // Eigene Paket-ID und eigener Name, damit Debug-APKs (CI-Artefakte,
             // lokale Builds) neben der Production-App installierbar sind und
             // sich von ihr unterscheiden lassen (#126).
-            //
-            // Übergang bis #127: Releases sind noch Debug-Builds.
-            // tools/release/prepare.sh baut sie mit -PreleaseAsDebug ohne
-            // Endung, damit sie weiter die installierte App aktualisieren.
-            if (!project.hasProperty("releaseAsDebug")) {
-                applicationIdSuffix = ".debug"
-                versionNameSuffix = "-debug"
-                resValue("string", "application_id", "${defaultConfig.applicationId}.debug")
-                manifestPlaceholders["appLabel"] = "@string/app_label_debug"
-            }
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
+            resValue("string", "application_id", "${defaultConfig.applicationId}.debug")
+            manifestPlaceholders["appLabel"] = "@string/app_label_debug"
         }
     }
 
