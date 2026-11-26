@@ -24,7 +24,6 @@ import org.isoron.uhabits.BaseUserInterfaceTest
 import org.isoron.uhabits.acceptance.steps.CommonSteps.clickText
 import org.isoron.uhabits.acceptance.steps.CommonSteps.launchApp
 import org.isoron.uhabits.acceptance.steps.CommonSteps.longClickText
-import org.isoron.uhabits.acceptance.steps.CommonSteps.pressBack
 import org.isoron.uhabits.acceptance.steps.CommonSteps.scrollToText
 import org.isoron.uhabits.acceptance.steps.CommonSteps.verifyDisplaysText
 import org.isoron.uhabits.acceptance.steps.CommonSteps.verifyDoesNotDisplayText
@@ -66,7 +65,6 @@ class BackupTest : BaseUserInterfaceTest() {
         clickText("Delete all data")
         clickText("Continue")
         clickText("Cancel")
-        pressBack()
         verifyDisplaysText("Wake up early")
     }
 
