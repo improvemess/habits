@@ -14,8 +14,8 @@ cd "$(dirname "$0")/../.." || exit 1
 UNSIGNED_APK=${1:?Aufruf: $0 <unsigned-release.apk> <output-dir>}
 OUT=${2:?Aufruf: $0 <unsigned-release.apk> <output-dir>}
 ADB=${ADB:-adb}
-EVENTS=${EVENTS:-3000}
-SEED=${SEED:-108}
+EVENTS=${EVENTS:-4000}
+SEEDS=${SEEDS:-"108 1080 10800"}
 PACKAGE=$(sed -n -E 's/^ *applicationId = "([^"]+)".*/\1/p' uhabits-android/build.gradle.kts)
 
 mkdir -p "$OUT"
@@ -42,19 +42,46 @@ if ! $ADB shell pidof "$PACKAGE" > /dev/null; then
     status=1
 fi
 
-# 2. Zufällige Eingaben in der App (ohne Systemtasten, damit monkey die App nicht verlässt).
-echo "::group::monkey ($EVENTS Ereignisse, Seed $SEED)"
-$ADB shell monkey -p "$PACKAGE" -s "$SEED" --throttle 50 --pct-syskeys 0 \
-    --pct-appswitch 0 --ignore-timeouts -v "$EVENTS" > "$OUT/monkey.txt" 2>&1
-monkey_status=$?
-tail -n 20 "$OUT/monkey.txt"
-echo "::endgroup::"
-if [ $monkey_status -ne 0 ] || grep -q "// CRASH" "$OUT/monkey.txt"; then
-    echo "::error::monkey hat einen Absturz der Release-APK gemeldet (siehe monkey.txt)."
-    status=1
-fi
+# Tippt auf die Mitte der ersten View, deren resource-id oder Text auf das
+# Muster passt (uiautomator dump). Rückgabe 1, wenn keine gefunden wurde.
+tap_view() {
+    local pattern=$1 bounds
+    $ADB shell uiautomator dump /sdcard/ui.xml > /dev/null 2>&1 || return 1
+    bounds=$($ADB shell cat /sdcard/ui.xml | tr '>' '\n' |
+        grep -E "(resource-id|text)=\"($pattern)\"" | head -1 |
+        sed -n -E 's/.*bounds="\[([0-9]+),([0-9]+)\]\[([0-9]+),([0-9]+)\]".*/\1 \2 \3 \4/p')
+    [ -n "$bounds" ] || return 1
+    set -- $bounds
+    $ADB shell input tap $((($1 + $3) / 2)) $((($2 + $4) / 2))
+}
 
-# 3. Crash-Puffer: jede FATAL EXCEPTION der App ist ein Fehler.
+# 2. Die Einführung beim ersten Start überspringen, sonst landen fast alle
+#    monkey-Eingaben dort statt in der eigentlichen App.
+if tap_view "$PACKAGE:id/skip|SKIP|Skip"; then
+    echo "Einführung übersprungen."
+else
+    echo "::warning::Skip-Schaltfläche der Einführung nicht gefunden."
+fi
+sleep 2
+
+# 3. Zufällige Eingaben in der App (ohne Systemtasten, damit monkey die App
+#    nicht verlässt), in mehreren Runden mit verschiedenen Seeds.
+: > "$OUT/monkey.txt"
+for seed in $SEEDS; do
+    echo "::group::monkey ($EVENTS Ereignisse, Seed $seed)"
+    $ADB shell monkey -p "$PACKAGE" -s "$seed" --throttle 50 --pct-syskeys 0 \
+        --pct-appswitch 0 --ignore-timeouts -v "$EVENTS" > "$OUT/monkey-$seed.txt" 2>&1
+    monkey_status=$?
+    cat "$OUT/monkey-$seed.txt" >> "$OUT/monkey.txt"
+    tail -n 5 "$OUT/monkey-$seed.txt"
+    echo "::endgroup::"
+    if [ $monkey_status -ne 0 ] || grep -q "// CRASH" "$OUT/monkey-$seed.txt"; then
+        echo "::error::monkey hat mit Seed $seed einen Absturz der Release-APK gemeldet (siehe monkey-$seed.txt)."
+        status=1
+    fi
+done
+
+# 4. Crash-Puffer: jede FATAL EXCEPTION der App ist ein Fehler.
 $ADB logcat -d -b crash > "$OUT/crash.txt"
 $ADB logcat -d > "$OUT/logcat.txt"
 if grep -q "Process: $PACKAGE" "$OUT/crash.txt"; then
@@ -62,6 +89,19 @@ if grep -q "Process: $PACKAGE" "$OUT/crash.txt"; then
     grep -A 30 "Process: $PACKAGE" "$OUT/crash.txt" | head -60
     status=1
 fi
+
+# Welche Bildschirme erreicht wurden, damit die Abdeckung sichtbar bleibt
+# (ActivityTaskManager loggt jeden Start mit "START u0 {... cmp=<paket>/<klasse>}").
+activities() {
+    grep -oE "START u0 .*cmp=$PACKAGE/[A-Za-z0-9_.]+" "$OUT/logcat.txt" |
+        sed -E 's/.*cmp=[^/]+\///' | sort | uniq -c | sort -rn
+}
+echo "Erreichte Activities (Anzahl Starts):"
+activities
+{
+    echo "### Release-Smoke-Test: erreichte Activities"
+    activities | awk '{print "- `" $2 "` (" $1 "x)"}'
+} >> "${GITHUB_STEP_SUMMARY:-/dev/null}"
 
 [ $status -eq 0 ] && echo "Release-Smoke-Test bestanden."
 exit $status
