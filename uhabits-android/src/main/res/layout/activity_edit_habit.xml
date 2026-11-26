@@ -213,6 +213,7 @@
                     </LinearLayout>
                 </FrameLayout>
                 <FrameLayout
+                    android:id="@+id/numericalFrequencyOuterBox"
                     style="@style/FormOuterBox"
                     android:layout_width="0dp"
                     android:layout_weight="1">

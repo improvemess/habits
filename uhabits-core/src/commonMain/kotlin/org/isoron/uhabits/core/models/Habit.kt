@@ -171,7 +171,7 @@ data class Habit(
      */
     private fun entriesWithRestDays(source: EntryList): EntryList {
         val firstFixed = dueDays.firstFixedSince
-        if (firstFixed == null || isNumerical || isNegative) return source
+        if (firstFixed == null || isNegative) return source
         val today = getToday()
         val limit = today.plus(PauseList.MAX_DAYS_AHEAD)
         // Starts 90 days back or at the oldest entry, not at the year 2000 of a new habit
@@ -193,14 +193,14 @@ data class Habit(
     }
 
     /** Whether the habit is not due on [date] because of its fixed weekdays. */
-    fun isRestDay(date: LocalDate): Boolean = !isNumerical && !isNegative && !dueDays.isDueOn(date)
+    fun isRestDay(date: LocalDate): Boolean = !isNegative && !dueDays.isDueOn(date)
 
     /**
      * Avoided habits are always evaluated daily: every day is either kept or relapsed. The same
      * holds for habits with fixed weekdays: each due day counts like a day of a daily habit.
      */
     val effectiveFrequency: Frequency
-        get() = if ((isNegative && !isNumerical) || (dueDays.isEverFixed && !isNumerical)) Frequency.DAILY else frequency
+        get() = if ((isNegative && !isNumerical) || (dueDays.isEverFixed && !isNegative)) Frequency.DAILY else frequency
 
     /**
      * Days before [negativeSince] of an avoided habit are not part of it. A question mark set there

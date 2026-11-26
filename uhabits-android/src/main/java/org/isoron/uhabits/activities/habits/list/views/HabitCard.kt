@@ -121,7 +121,8 @@ class HabitCardView(
                 r.unit,
                 r.notes,
                 newState.buttonCount,
-                r.isNegative
+                r.isNegative,
+                r.restDay
             )
         )
         setSelected(newState.selected)

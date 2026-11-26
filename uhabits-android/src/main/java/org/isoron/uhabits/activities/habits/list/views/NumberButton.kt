@@ -46,7 +46,8 @@ data class NumberButtonState(
     val completed: Boolean,
     val units: String,
     val notes: String,
-    val isNegative: Boolean = false
+    val isNegative: Boolean = false,
+    val restDay: Boolean = false
 )
 
 private val BOLD_TYPEFACE = Typeface.create("sans-serif-condensed", Typeface.BOLD)
@@ -148,6 +149,7 @@ class NumberButtonView(
 
         fun draw(canvas: Canvas) {
             val activeColor = when {
+                state.restDay && state.value == Entry.SKIP.toDouble() / 1000 -> lowContrast
                 state.isNegative && !state.completed && state.value > 0.0 -> NEGATIVE_RED
                 state.completed -> state.color
                 // A day without entry and an entry reset to 0 look the same
@@ -160,6 +162,13 @@ class NumberButtonView(
             val textSize: Float
 
             when {
+                state.value == Entry.SKIP.toDouble() / 1000 && state.restDay -> {
+                    // A day on which the habit is not due: faded "zz", like in the checkmark button
+                    label = "zz"
+                    textSize = dim(R.dimen.smallTextSize)
+                    typeface = NORMAL_TYPEFACE
+                }
+
                 state.value == Entry.SKIP.toDouble() / 1000 -> {
                     label = resources.getString(R.string.fa_skipped)
                     textSize = dim(R.dimen.smallTextSize)

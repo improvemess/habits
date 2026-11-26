@@ -49,7 +49,7 @@ class SubtitleCardPresenter {
         ): SubtitleCardState = SubtitleCardState(
             color = habit.color,
             frequency = habit.frequency,
-            fixedWeekdays = habit.dueDays.current.takeIf { !habit.isNumerical && !habit.isNegative },
+            fixedWeekdays = habit.dueDays.current.takeIf { !habit.isNegative },
             isNumerical = habit.isNumerical,
             reminder = habit.reminder,
             targetValue = habit.targetValue,

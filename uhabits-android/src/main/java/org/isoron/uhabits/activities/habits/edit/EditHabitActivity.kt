@@ -351,7 +351,7 @@ class EditHabitActivity : AppCompatActivity() {
         habit.streakUnit = streakUnit
         // A change of the fixed weekdays only counts from today on, a new habit has them from the start
         val dueSince = if (habitId >= 0) getToday() else LocalDate(0)
-        habit.dueDays = habit.dueDays.changedFrom(dueSince, if (habitType == HabitType.YES_NO && !isNegative) fixedWeekdays else 0)
+        habit.dueDays = habit.dueDays.changedFrom(dueSince, if (!isNegative) fixedWeekdays else 0)
         if (habitType == HabitType.NUMERICAL) {
             habit.targetValue = binding.targetInput.text.toString().toDouble()
             habit.targetType = targetType
@@ -405,7 +405,9 @@ class EditHabitActivity : AppCompatActivity() {
     private fun updateFrequencyVisibility() {
         val hidden = habitType == HabitType.NUMERICAL || isNegative
         binding.frequencyOuterBox.visibility = if (hidden || fixedWeekdays != 0) View.GONE else View.VISIBLE
-        binding.fixedDaysOuterBox.visibility = if (hidden) View.GONE else View.VISIBLE
+        binding.fixedDaysOuterBox.visibility = if (isNegative) View.GONE else View.VISIBLE
+        // With fixed days a measurable habit has its target on every due day, so there is no period
+        binding.numericalFrequencyOuterBox.visibility = if (fixedWeekdays != 0) View.GONE else View.VISIBLE
     }
 
     private fun validate(): Boolean {

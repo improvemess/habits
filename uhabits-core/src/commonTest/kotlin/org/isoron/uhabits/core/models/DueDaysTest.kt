@@ -155,6 +155,32 @@ class DueDaysTest : BaseUnitTest() {
     }
 
     @Test
+    fun testMeasurableHabitWithFixedDays() {
+        val h = modelFactory.buildHabit()
+        h.type = HabitType.NUMERICAL
+        h.frequency = Frequency(1, 7) // weekly goal before; with fixed days the target counts per due day
+        h.targetValue = 3.0
+        h.dueDays = DueDays().changedFrom(day(1), monWedFri)
+        listOf(19, 21, 23).forEach { h.originalEntries.add(Entry(day(it), 3000)) }
+        h.recompute()
+        assertEquals(Frequency.DAILY, h.effectiveFrequency)
+        assertEquals(Entry.SKIP, h.computedEntries.get(day(20)).value)
+        assertTrue(h.isCompletedOn(day(21)))
+        assertEquals(day(17), h.streaks.getOngoingStreak(day(23))?.start)
+    }
+
+    @Test
+    fun testMissedMeasurableDueDayBreaksTheStreak() {
+        val h = modelFactory.buildHabit()
+        h.type = HabitType.NUMERICAL
+        h.targetValue = 3.0
+        h.dueDays = DueDays().changedFrom(day(1), monWedFri)
+        listOf(19, 23).forEach { h.originalEntries.add(Entry(day(it), 3000)) }
+        h.recompute()
+        assertEquals(day(22), h.streaks.getOngoingStreak(day(23))?.start)
+    }
+
+    @Test
     fun testPastKeepsTheOldWeekdaysAfterAChange() {
         val h = modelFactory.buildHabit()
         h.dueDays = DueDays().changedFrom(day(1), monWedFri).changedFrom(day(23), DueDays.bit(DayOfWeek.SATURDAY))
