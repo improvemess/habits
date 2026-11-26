@@ -133,6 +133,7 @@ class HabitCardListView(
         if (!isHorizontalScroll) return super.onTouchEvent(e)
         horizontalDetector.onTouchEvent(e)
         if (e.actionMasked == MotionEvent.ACTION_UP || e.actionMasked == MotionEvent.ACTION_CANCEL) {
+            horizontalScrollTarget?.settle()
             isHorizontalScroll = false
         }
         return true
@@ -143,6 +144,15 @@ class HabitCardListView(
         attachedHolders
             .map { it.itemView as HabitCardView }
             .forEach { it.setDataOffset(offset) }
+    }
+
+    private var scrollFraction = 0f
+
+    fun setScrollFraction(fraction: Float) {
+        scrollFraction = fraction
+        attachedHolders
+            .map { it.itemView as HabitCardView }
+            .forEach { it.setScrollFraction(fraction) }
     }
 
     private val attachedHolders = mutableListOf<HabitCardViewHolder>()
@@ -211,6 +221,7 @@ class HabitCardListView(
 
     fun attachCardView(holder: HabitCardViewHolder) {
         (holder.itemView as HabitCardView).setDataOffset(dataOffset)
+        (holder.itemView as HabitCardView).setScrollFraction(scrollFraction)
         attachedHolders.add(holder)
     }
 
