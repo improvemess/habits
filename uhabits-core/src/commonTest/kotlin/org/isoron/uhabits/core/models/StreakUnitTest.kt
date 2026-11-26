@@ -35,7 +35,6 @@ class StreakUnitTest {
         assertEquals(StreakUnit.WEEKS, StreakUnit.defaultFor(Frequency.WEEKLY))
         assertEquals(StreakUnit.MONTHS, StreakUnit.defaultFor(Frequency(1, 30)))
         assertEquals(StreakUnit.MONTHS, StreakUnit.defaultFor(Frequency(2, 31)))
-        assertEquals(StreakUnit.YEARS, StreakUnit.defaultFor(Frequency(12, 365)))
     }
 
     @Test
@@ -51,8 +50,6 @@ class StreakUnitTest {
         assertEquals(30, StreakUnit.convert(from, to, StreakUnit.DAYS, false, monday))
         assertEquals(4, StreakUnit.convert(from, to, StreakUnit.WEEKS, false, monday))
         assertEquals(1, StreakUnit.convert(from, to, StreakUnit.MONTHS, false, monday))
-        assertEquals(1, StreakUnit.convert(from, from.plus(364), StreakUnit.YEARS, false, monday))
-        assertEquals(0, StreakUnit.convert(from, from.plus(363), StreakUnit.YEARS, false, monday))
         assertEquals(0, StreakUnit.convert(from, from.plus(5), StreakUnit.WEEKS, false, monday))
     }
 
@@ -67,9 +64,5 @@ class StreakUnitTest {
         // February 2026 has 28 days and March 31
         assertEquals(2, StreakUnit.convert(LocalDate(2026, 2, 1), LocalDate(2026, 3, 31), StreakUnit.MONTHS, true, monday))
         assertEquals(1, StreakUnit.convert(LocalDate(2026, 2, 10), LocalDate(2026, 3, 31), StreakUnit.MONTHS, true, monday))
-        // Only complete calendar years count, a leap year (2024) has 366 days
-        assertEquals(2, StreakUnit.convert(LocalDate(2023, 1, 1), LocalDate(2024, 12, 31), StreakUnit.YEARS, true, monday))
-        assertEquals(1, StreakUnit.convert(LocalDate(2023, 6, 1), LocalDate(2024, 12, 31), StreakUnit.YEARS, true, monday))
-        assertEquals(0, StreakUnit.convert(LocalDate(2024, 1, 1), LocalDate(2024, 12, 30), StreakUnit.YEARS, true, monday))
     }
 }

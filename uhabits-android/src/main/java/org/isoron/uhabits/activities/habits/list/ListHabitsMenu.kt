@@ -65,7 +65,11 @@ class ListHabitsMenu(
         nightModeItem.isChecked = themeSwitcher.isNightMode
         hideArchivedItem.isChecked = !preferences.showArchived
         hideCompletedItem.isChecked = !preferences.showCompleted
-        hideCompletedItem.title = activity.resources.getString(R.string.hide_entered)
+        if (preferences.isSkipEnabled) {
+            hideCompletedItem.title = activity.resources.getString(R.string.hide_entered)
+        } else {
+            hideCompletedItem.title = activity.resources.getString(R.string.hide_completed)
+        }
     }
 
     private fun createSearchBar(menu: Menu) {

@@ -54,6 +54,7 @@ class WidgetBehavior(
         val currentValue = entry.value
         val newValue = nextToggleValue(
             value = currentValue,
+            isSkipEnabled = preferences.isSkipEnabled,
             isBeforeCreation = habit.isUnknownAllowedOn(date)
         )
         setValue(habit, date, newValue, entry.notes, source)

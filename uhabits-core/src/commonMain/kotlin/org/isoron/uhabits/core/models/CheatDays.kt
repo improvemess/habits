@@ -26,7 +26,7 @@ import org.isoron.platform.time.LocalDate
  * (day, week or month) is missed: the streak survives, but the number does not grow. Cheat days are
  * earned by done units, up to [cap]; a new streak starts with [startCheatDays].
  *
- * [earnEvery] holds the number of done units that earn one cheat day, for days, weeks, months and years.
+ * [earnEvery] holds the number of done units that earn one cheat day, for days, weeks and months.
  */
 enum class CheatDayLevel(
     val id: Int,
@@ -35,11 +35,11 @@ enum class CheatDayLevel(
     private val earnEvery: List<Int>
 ) {
     /** No cheat days: a miss breaks the streak. */
-    STRICT(0, 0, 0, listOf(0, 0, 0, 0)),
+    STRICT(0, 0, 0, listOf(0, 0, 0)),
 
-    BALANCED(1, 1, 2, listOf(14, 4, 3, 1)),
+    BALANCED(1, 1, 2, listOf(14, 4, 3)),
 
-    RELAXED(2, 2, 3, listOf(7, 3, 2, 1));
+    RELAXED(2, 2, 3, listOf(7, 3, 2));
 
     /** Done units that earn one cheat day in [unit]; 0 if the level has no cheat days. */
     fun earnEvery(unit: StreakUnit): Int = earnEvery[unit.id]
@@ -214,7 +214,7 @@ object CheatDayEvaluator {
             return result
         }
         val den = habit.effectiveFrequency.denominator
-        val matchesGoal = (unit == StreakUnit.WEEKS && den == 7) || (unit == StreakUnit.MONTHS && (den == 30 || den == 31)) || (unit == StreakUnit.YEARS && den == Frequency.YEAR_DAYS)
+        val matchesGoal = (unit == StreakUnit.WEEKS && den == 7) || (unit == StreakUnit.MONTHS && (den == 30 || den == 31))
         val goal = maxOf(1, habit.effectiveFrequency.numerator)
         for ((start, end) in periodsOf(habit, unit, first, today, firstWeekday, matchesGoal)) {
             val last = if (end.isNewerThan(today)) today else end
@@ -256,22 +256,14 @@ object CheatDayEvaluator {
     ): List<Pair<LocalDate, LocalDate>> {
         val periods = mutableListOf<Pair<LocalDate, LocalDate>>()
         if (EntryList.isCalendarPeriod(habit.effectiveFrequency, habit.calendarPeriod)) {
-            var start = when (unit) {
-                StreakUnit.WEEKS -> first.startOfWeek(firstWeekday)
-                StreakUnit.YEARS -> first.startOfYear()
-                else -> first.startOfMonth()
-            }
+            var start = if (unit == StreakUnit.WEEKS) first.startOfWeek(firstWeekday) else first.startOfMonth()
             while (!start.isNewerThan(today)) {
-                val end = when (unit) {
-                    StreakUnit.WEEKS -> start.plus(6)
-                    StreakUnit.YEARS -> start.plus(start.yearLength - 1)
-                    else -> start.plus(start.monthLength - 1)
-                }
+                val end = if (unit == StreakUnit.WEEKS) start.plus(6) else start.plus(start.monthLength - 1)
                 if (!start.isOlderThan(first) || matchesGoal) periods.add(start to end)
                 start = end.plus(1)
             }
         } else {
-            val length = unit.days
+            val length = if (unit == StreakUnit.WEEKS) 7 else 30
             var end = today
             while (!end.isOlderThan(first)) {
                 val start = end.minus(length - 1)

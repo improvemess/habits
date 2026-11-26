@@ -23,11 +23,10 @@ import org.isoron.platform.time.DayOfWeek
 import org.isoron.platform.time.LocalDate
 
 /** Unit in which the streak flame counts and shows a streak (see #15). */
-enum class StreakUnit(val id: Int, val days: Int) {
-    DAYS(0, 1),
-    WEEKS(1, 7),
-    MONTHS(2, 30),
-    YEARS(3, 365);
+enum class StreakUnit(val id: Int) {
+    DAYS(0),
+    WEEKS(1),
+    MONTHS(2);
 
     companion object {
         /** Stored value for "automatic", i.e. derived from the frequency. */
@@ -35,11 +34,10 @@ enum class StreakUnit(val id: Int, val days: Int) {
 
         fun fromId(id: Int): StreakUnit? = entries.firstOrNull { it.id == id }
 
-        /** Default unit for a frequency: x per week -> weeks, per month -> months, per year -> years, else days. */
+        /** Default unit for a frequency: x per week -> weeks, per month -> months, else days. */
         fun defaultFor(frequency: Frequency): StreakUnit = when {
             frequency.denominator == 7 -> WEEKS
             frequency.denominator == 30 || frequency.denominator == 31 -> MONTHS
-            frequency.isYearly -> YEARS
             else -> DAYS
         }
 
@@ -58,7 +56,7 @@ enum class StreakUnit(val id: Int, val days: Int) {
             if (to < from) return 0
             return when {
                 unit == DAYS -> from.daysUntil(to) + 1
-                !calendar -> (from.daysUntil(to) + 1) / unit.days
+                !calendar -> (from.daysUntil(to) + 1) / (if (unit == WEEKS) 7 else 30)
                 unit == WEEKS -> {
                     var start = from.startOfWeek(firstWeekday)
                     if (start < from) start = start.plus(7)
@@ -66,16 +64,6 @@ enum class StreakUnit(val id: Int, val days: Int) {
                     while (start.plus(6) <= to) {
                         count++
                         start = start.plus(7)
-                    }
-                    count
-                }
-                unit == YEARS -> {
-                    var start = from.startOfYear()
-                    if (start < from) start = LocalDate(start.year + 1, 1, 1)
-                    var count = 0
-                    while (LocalDate(start.year + 1, 1, 1).minus(1) <= to) {
-                        count++
-                        start = LocalDate(start.year + 1, 1, 1)
                     }
                     count
                 }

@@ -121,6 +121,7 @@ class HistoryCardPresenter(
         } else {
             Entry.nextToggleValue(
                 value = entry.value,
+                isSkipEnabled = preferences.isSkipEnabled,
                 isBeforeCreation = habit.isUnknownAllowedOn(date)
             )
         }

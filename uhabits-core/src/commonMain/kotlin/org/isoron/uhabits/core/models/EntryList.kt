@@ -133,7 +133,7 @@ open class EntryList {
      * habit.
      *
      * For boolean habits, an entry is completed when its value is neither NO nor UNKNOWN. For
-     * numerical habits, completion is evaluated per period (day, week, month or year, depending on the
+     * numerical habits, completion is evaluated per period (day, week, or month, depending on the
      * frequency): the sum of the clamped values of the entries in the period is compared against
      * the period target, which is reduced by the number of skipped days.
      */
@@ -153,7 +153,6 @@ open class EntryList {
             val periodLength = when {
                 denominator <= 1 -> 1
                 denominator <= 7 -> 7
-                denominator >= Frequency.YEAR_DAYS -> Frequency.YEAR_DAYS
                 else -> 30
             }
             val dailyTarget = targetValue / denominator
@@ -237,7 +236,6 @@ open class EntryList {
     private fun periodStart(date: LocalDate, firstWeekday: DayOfWeek, frequency: Frequency): LocalDate = when {
         frequency.denominator <= 1 -> date
         frequency.denominator <= 7 -> date.startOfWeek(firstWeekday)
-        frequency.isYearly -> date.startOfYear()
         else -> date.startOfMonth()
     }
 
@@ -390,10 +388,8 @@ open class EntryList {
 
         private fun isMonthly(frequency: Frequency) = frequency.denominator == 30 || frequency.denominator == 31
 
-        private fun isYearly(frequency: Frequency) = frequency.isYearly
-
-        /** Weekly, monthly and yearly goals can be counted per rolling period or per calendar period. */
-        fun hasCalendarChoice(frequency: Frequency) = isWeekly(frequency) || isMonthly(frequency) || isYearly(frequency)
+        /** Weekly and monthly goals can be counted per rolling period or per calendar period. */
+        fun hasCalendarChoice(frequency: Frequency) = isWeekly(frequency) || isMonthly(frequency)
 
         fun isCalendarPeriod(frequency: Frequency, calendarPeriod: Boolean) =
             calendarPeriod && hasCalendarChoice(frequency)
@@ -410,23 +406,13 @@ open class EntryList {
         ): ArrayList<Interval> {
             val intervals = arrayListOf<Interval>()
             entries.filter { it.value == YES_MANUAL }
-                .groupBy {
-                    when {
-                        isYearly(freq) -> it.date.startOfYear()
-                        isMonthly(freq) -> it.date.startOfMonth()
-                        else -> it.date.startOfWeek(firstWeekday)
-                    }
-                }
+                .groupBy { if (isMonthly(freq)) it.date.startOfMonth() else it.date.startOfWeek(firstWeekday) }
                 .toList()
                 .sortedByDescending { it.first }
                 .forEach { (start, checks) ->
                     if (checks.size >= freq.numerator) {
                         val newest = checks.maxOf { it.date }
-                        val length = when {
-                            isYearly(freq) -> start.yearLength
-                            isMonthly(freq) -> start.monthLength
-                            else -> 7
-                        }
+                        val length = if (isMonthly(freq)) start.monthLength else 7
                         intervals.add(Interval(start, newest, start.plus(length - 1)))
                     }
                 }

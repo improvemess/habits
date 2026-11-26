@@ -66,11 +66,12 @@ data class Entry(
 
         fun nextToggleValue(
             value: Int,
+            isSkipEnabled: Boolean,
             isBeforeCreation: Boolean
         ): Int {
             return when (value) {
                 YES_AUTO -> YES_MANUAL
-                YES_MANUAL -> NO
+                YES_MANUAL -> if (isSkipEnabled) SKIP else NO
                 SKIP -> NO
                 NO -> if (isBeforeCreation) UNKNOWN else YES_MANUAL
                 UNKNOWN -> YES_MANUAL

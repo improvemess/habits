@@ -65,13 +65,6 @@ import org.isoron.uhabits.utils.formatTime
 import org.isoron.uhabits.utils.toFormattedString
 
 fun formatFrequency(freqNum: Int, freqDen: Int, resources: Resources, calendarPeriod: Boolean = false) = when {
-    freqNum == 1 && freqDen == Frequency.YEAR_DAYS ->
-        resources.getString(if (calendarPeriod) R.string.every_calendar_year else R.string.every_year)
-    freqDen == Frequency.YEAR_DAYS ->
-        resources.getString(
-            if (calendarPeriod) R.string.x_times_per_calendar_year else R.string.x_times_per_year,
-            freqNum
-        )
     freqNum == 1 && (freqDen == 30 || freqDen == 31) ->
         resources.getString(if (calendarPeriod) R.string.every_calendar_month else R.string.every_month)
     freqDen == 30 || freqDen == 31 ->
@@ -485,7 +478,7 @@ class EditHabitActivity : AppCompatActivity() {
         binding.numericalFrequencyPicker.text = fixedText ?: periodText(freqDen) ?: "$freqNum/$freqDen"
     }
 
-    /** Day, week, month or year period of a measurable habit; "per ..." wording for limits. */
+    /** Day, week or month period of a measurable habit; "per ..." wording for limits. */
     private fun periodText(den: Int): String? = when (den) {
         1 -> getString(if (isNegative) R.string.quit_per_day else R.string.every_day)
         7 -> getString(
@@ -498,12 +491,6 @@ class EditHabitActivity : AppCompatActivity() {
             when {
                 isNegative -> if (calendarPeriod) R.string.quit_per_calendar_month else R.string.quit_per_rolling_month
                 else -> if (calendarPeriod) R.string.every_calendar_month else R.string.every_rolling_month
-            }
-        )
-        Frequency.YEAR_DAYS -> getString(
-            when {
-                isNegative -> if (calendarPeriod) R.string.quit_per_calendar_year else R.string.quit_per_rolling_year
-                else -> if (calendarPeriod) R.string.every_calendar_year else R.string.every_rolling_year
             }
         )
         else -> null

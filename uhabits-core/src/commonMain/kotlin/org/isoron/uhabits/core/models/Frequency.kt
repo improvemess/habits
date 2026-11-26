@@ -29,17 +29,11 @@ data class Frequency(
         }
     }
 
-    /** "X times per year": stored with the denominator 365, like months with 30 (see #79). */
-    val isYearly: Boolean get() = denominator == YEAR_DAYS
-
     fun toDouble(): Double {
         return numerator.toDouble() / denominator
     }
 
     companion object {
-        /** Denominator of a yearly frequency. */
-        const val YEAR_DAYS = 365
-
         val DAILY = Frequency(1, 1)
 
         val THREE_TIMES_PER_WEEK = Frequency(3, 7)

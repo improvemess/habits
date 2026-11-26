@@ -108,18 +108,6 @@ class LoopDBImporterNegativeHabitTest : BaseUnitTest() {
         }
     }
 
-    @Test
-    fun testBackupKeepsYearlyFrequency() = runTest {
-        importBackup(
-            "update Habits set freq_num = 4, freq_den = 365, calendar_period = 1 " +
-                "where id = (select min(id) from Habits)"
-        )
-        val yearly = habitList.filter { it.frequency.isYearly }
-        assertEquals(1, yearly.size)
-        assertEquals(4, yearly[0].frequency.numerator)
-        assertTrue(yearly[0].calendarPeriod)
-    }
-
     private suspend fun importBackup(sql: String?) {
         val userFile: UserFile = copyResourceToTempFile("loop.db")
         val db = databaseOpener().open(userFile.pathString)

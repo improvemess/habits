@@ -23,7 +23,6 @@ import org.isoron.platform.time.LocalDate
 import org.isoron.platform.time.TruncateField
 import org.isoron.platform.time.getToday
 import org.isoron.uhabits.core.models.Entry
-import org.isoron.uhabits.core.models.Frequency
 import org.isoron.uhabits.core.models.Habit
 import org.isoron.uhabits.core.models.PaletteColor
 import org.isoron.uhabits.core.models.countRelapses
@@ -117,7 +116,6 @@ class BarCardPresenter(
                 field == TruncateField.DAY && denominator <= 1 -> habit.targetValue
                 field == TruncateField.WEEK_NUMBER && denominator == 7 -> habit.targetValue
                 field == TruncateField.MONTH && denominator == 30 -> habit.targetValue
-                field == TruncateField.YEAR && denominator == Frequency.YEAR_DAYS -> habit.targetValue
                 else -> daily * when (field) {
                     TruncateField.DAY -> 1
                     TruncateField.WEEK_NUMBER -> 7

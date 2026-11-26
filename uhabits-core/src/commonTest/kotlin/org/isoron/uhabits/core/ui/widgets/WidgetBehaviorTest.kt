@@ -18,6 +18,8 @@
  */
 package org.isoron.uhabits.core.ui.widgets
 
+import dev.mokkery.answering.returns
+import dev.mokkery.every
 import dev.mokkery.mock
 import dev.mokkery.resetCalls
 import dev.mokkery.verify
@@ -34,6 +36,7 @@ import org.isoron.uhabits.core.preferences.Preferences
 import org.isoron.uhabits.core.ui.NotificationTray
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import dev.mokkery.verify.VerifyMode.Companion.not as notCalled
 
 class WidgetBehaviorTest : BaseUnitTest() {
     private lateinit var notificationTray: NotificationTray
@@ -63,6 +66,7 @@ class WidgetBehaviorTest : BaseUnitTest() {
             )
         }
         verify { notificationTray.cancel(habit) }
+        verify(notCalled) { preferences.isSkipEnabled }
     }
 
     @Test
@@ -74,11 +78,12 @@ class WidgetBehaviorTest : BaseUnitTest() {
             )
         }
         verify { notificationTray.cancel(habit) }
+        verify(notCalled) { preferences.isSkipEnabled }
     }
 
     @Test
     fun testOnToggleRepetition() {
-        for (
+        for (skipEnabled in listOf(true, false)) for (
         currentValue in listOf(
             Entry.NO,
             Entry.YES_MANUAL,
@@ -86,12 +91,15 @@ class WidgetBehaviorTest : BaseUnitTest() {
             Entry.SKIP
         )
         ) {
+            every { preferences.isSkipEnabled } returns skipEnabled
             val nextValue: Int = nextToggleValue(
                 currentValue,
+                isSkipEnabled = skipEnabled,
                 isBeforeCreation = false
             )
             habit.originalEntries.add(Entry(today, currentValue))
             behavior.onToggleRepetition(habit, today)
+            verify { preferences.isSkipEnabled }
             verify {
                 commandRunner.run(
                     CreateRepetitionCommand(habitList, habit, today, nextValue, "", WIDGET)
@@ -118,6 +126,7 @@ class WidgetBehaviorTest : BaseUnitTest() {
             )
         }
         verify { notificationTray.cancel(habit) }
+        verify(notCalled) { preferences.isSkipEnabled }
     }
 
     @Test
@@ -132,6 +141,7 @@ class WidgetBehaviorTest : BaseUnitTest() {
             )
         }
         verify { notificationTray.cancel(habit) }
+        verify(notCalled) { preferences.isSkipEnabled }
     }
 
     @Test

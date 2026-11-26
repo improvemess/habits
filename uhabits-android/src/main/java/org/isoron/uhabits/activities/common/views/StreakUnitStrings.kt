@@ -31,7 +31,6 @@ val StreakUnit.nameRes: Int
         StreakUnit.DAYS -> R.string.streak_unit_days
         StreakUnit.WEEKS -> R.string.streak_unit_weeks
         StreakUnit.MONTHS -> R.string.streak_unit_months
-        StreakUnit.YEARS -> R.string.streak_unit_years
     }
 
 /** Compact label shown next to the number on the flame, e.g. "W". */
@@ -41,7 +40,6 @@ val StreakUnit.shortRes: Int
         StreakUnit.DAYS -> R.string.streak_unit_days_short
         StreakUnit.WEEKS -> R.string.streak_unit_weeks_short
         StreakUnit.MONTHS -> R.string.streak_unit_months_short
-        StreakUnit.YEARS -> R.string.streak_unit_years_short
     }
 
 /** Name of the level, e.g. "Balanced". */

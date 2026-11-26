@@ -41,7 +41,6 @@
     <string name="quit_per_day">Per day</string>
     <string name="quit_per_week">Per week</string>
     <string name="quit_per_month">Per month</string>
-    <string name="quit_per_year">Per year</string>
     <string name="quit_target_example">e.g. 3</string>
     <string name="goal_build">I want to build a habit</string>
     <string name="goal_build_example">e.g. exercise, read, meditate</string>
@@ -168,23 +167,16 @@
     <string name="per_calendar_week">per calendar week</string>
     <string name="per_rolling_month">per rolling month</string>
     <string name="per_calendar_month">per calendar month</string>
-    <string name="per_rolling_year">per rolling year</string>
-    <string name="per_calendar_year">per calendar year</string>
     <string name="every_rolling_week">Every rolling week</string>
     <string name="every_calendar_week">Every calendar week</string>
     <string name="every_rolling_month">Every rolling month</string>
     <string name="every_calendar_month">Every calendar month</string>
-    <string name="every_rolling_year">Every rolling year</string>
-    <string name="every_calendar_year">Every calendar year</string>
     <string name="quit_per_rolling_week">Per rolling week</string>
     <string name="quit_per_calendar_week">Per calendar week</string>
     <string name="quit_per_rolling_month">Per rolling month</string>
     <string name="quit_per_calendar_month">Per calendar month</string>
-    <string name="quit_per_rolling_year">Per rolling year</string>
-    <string name="quit_per_calendar_year">Per calendar year</string>
     <string name="x_times_per_calendar_week">%d times per calendar week</string>
     <string name="x_times_per_calendar_month">%d times per calendar month</string>
-    <string name="x_times_per_calendar_year">%d times per calendar year</string>
     <string name="help">Help &amp; FAQ</string>
     <string name="could_not_export">Failed to export data.</string>
     <string name="could_not_import">Failed to import data.</string>
@@ -270,16 +262,14 @@
     <string name="streak_unit_days">Days</string>
     <string name="streak_unit_weeks">Weeks</string>
     <string name="streak_unit_months">Months</string>
-    <string name="streak_unit_years">Years</string>
     <string name="streak_unit_days_short">d</string>
     <string name="streak_unit_weeks_short">w</string>
     <string name="streak_unit_months_short">mo</string>
-    <string name="streak_unit_years_short">y</string>
     <string name="cheat_days_strict">Strict</string>
     <string name="cheat_days_balanced">Balanced</string>
     <string name="cheat_days_relaxed">Relaxed</string>
     <string name="pref_cheat_days_title">Cheat days</string>
-    <string name="pref_cheat_days_description">A cheat day is used automatically when you miss a due day, week, month or year: the streak survives, but the number does not grow. You earn cheat days by completing units. Strict: none. Balanced: 1 to start, 1 more per 14 days / 4 weeks / 3 months / 1 year, up to 2. Relaxed: 2 to start, 1 more per 7 days / 3 weeks / 2 months / 1 year, up to 3. Changes only apply from today on. You see your cheat days at the top of each habit.</string>
+    <string name="pref_cheat_days_description">A cheat day is used automatically when you miss a due day, week or month: the streak survives, but the number does not grow. You earn cheat days by completing units. Strict: none. Balanced: 1 to start, 1 more per 14 days / 4 weeks / 3 months, up to 2. Relaxed: 2 to start, 1 more per 7 days / 3 weeks / 2 months, up to 3. Changes only apply from today on. You see your cheat days at the top of each habit.</string>
     <string name="cheat_days_title">Cheat days</string>
     <string name="cheat_days_count">%1$d of %2$d</string>
     <string name="cheat_days_new_streak">Your next streak starts with %1$d.</string>
@@ -293,10 +283,6 @@
     <plurals name="cheat_days_next_weeks">
         <item quantity="one">Next cheat day after %d more done week.</item>
         <item quantity="other">Next cheat day after %d more done weeks.</item>
-    </plurals>
-    <plurals name="cheat_days_next_years">
-        <item quantity="one">Next cheat day after %d more done year.</item>
-        <item quantity="other">Next cheat day after %d more done years.</item>
     </plurals>
     <plurals name="cheat_days_next_months">
         <item quantity="one">Next cheat day after %d more done month.</item>
@@ -318,7 +304,6 @@
     <string name="measurable_example">e.g. How many miles did you run today? How many pages did you read?</string>
     <string name="x_times_per_week">%d times per week</string>
     <string name="x_times_per_month">%d times per month</string>
-    <string name="x_times_per_year">%d times per year</string>
     <string name="x_times_per_y_days">%d times in %d days</string>
     <string name="yes_or_no_short_example">e.g. Exercise</string>
     <string name="color">Color</string>
@@ -326,7 +311,6 @@
     <string name="measurable_short_example">e.g. Run</string>
     <string name="measurable_units_example">e.g. miles</string>
     <string name="every_month">Every month</string>
-    <string name="every_year">Every year</string>
     <string name="validation_cannot_be_blank">Cannot be blank</string>
     <string name="today">Today</string>
     <string name="enter">Enter</string>

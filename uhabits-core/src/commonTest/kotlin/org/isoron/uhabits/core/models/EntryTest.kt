@@ -34,12 +34,35 @@ class EntryTest {
         check(
             mapOf(
                 YES_AUTO to YES_MANUAL,
+                YES_MANUAL to SKIP,
+                SKIP to NO,
+                NO to UNKNOWN,
+                UNKNOWN to YES_MANUAL
+            ),
+            isSkipEnabled = true,
+            isBeforeCreation = true
+        )
+        check(
+            mapOf(
+                YES_AUTO to YES_MANUAL,
                 YES_MANUAL to NO,
                 SKIP to NO,
                 NO to UNKNOWN,
                 UNKNOWN to YES_MANUAL
             ),
+            isSkipEnabled = false,
             isBeforeCreation = true
+        )
+        check(
+            mapOf(
+                YES_AUTO to YES_MANUAL,
+                YES_MANUAL to SKIP,
+                SKIP to NO,
+                NO to YES_MANUAL,
+                UNKNOWN to YES_MANUAL
+            ),
+            isSkipEnabled = true,
+            isBeforeCreation = false
         )
         check(
             mapOf(
@@ -49,18 +72,21 @@ class EntryTest {
                 NO to YES_MANUAL,
                 UNKNOWN to YES_MANUAL
             ),
+            isSkipEnabled = false,
             isBeforeCreation = false
         )
     }
 
     private fun check(
         map: Map<Int, Int>,
+        isSkipEnabled: Boolean,
         isBeforeCreation: Boolean
     ) {
         for ((value, expected) in map) {
             assertEquals(
                 nextToggleValue(
                     value = value,
+                    isSkipEnabled = isSkipEnabled,
                     isBeforeCreation = isBeforeCreation
                 ),
                 expected
