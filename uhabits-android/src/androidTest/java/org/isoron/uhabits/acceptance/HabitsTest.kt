@@ -23,6 +23,7 @@ import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
+import org.hamcrest.CoreMatchers
 import org.isoron.uhabits.BaseUserInterfaceTest
 import org.isoron.uhabits.acceptance.steps.CommonSteps.Screen.EDIT_HABIT
 import org.isoron.uhabits.acceptance.steps.CommonSteps.Screen.LIST_HABITS
@@ -106,17 +107,23 @@ class HabitsTest : BaseUserInterfaceTest() {
         pressBack()
         Espresso.onView(ViewMatchers.withText("Yes or No"))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        verifyDoesNotDisplayText("I want to build a habit")
+        verifyNotShown("I want to build a habit")
 
         // Choice between yes/no and measurable -> choice between build and quit
         pressBack()
         verifyShowsScreen(SELECT_HABIT_TYPE)
-        verifyDoesNotDisplayText("Yes or No")
+        verifyNotShown("Yes or No")
 
         // First choice -> leaves the flow
         pressBack()
         verifyShowsScreen(LIST_HABITS)
         verifyDoesNotDisplayText("I want to build a habit")
+    }
+
+    /** Hidden (GONE) views stay in the hierarchy, so doesNotExist() does not apply. */
+    private fun verifyNotShown(text: String) {
+        Espresso.onView(ViewMatchers.withText(text))
+            .check(ViewAssertions.matches(CoreMatchers.not(ViewMatchers.isDisplayed())))
     }
 
     @Test
