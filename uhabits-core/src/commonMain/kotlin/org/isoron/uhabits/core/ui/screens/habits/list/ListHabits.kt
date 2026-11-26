@@ -84,7 +84,7 @@ object ListHabitsPresenter {
         val dateFrom = today.minus(checkmarkCount - 1)
         val score = habit.scores[today].value
         val ongoing = habit.streaks.getOngoingStreak(today)
-        val streakUnit = habit.streakUnit ?: StreakUnit.defaultFor(habit.frequency)
+        val streakUnit = habit.streakUnit ?: StreakUnit.defaultFor(habit.effectiveFrequency)
         val streak = ongoing?.let { countStreak(habit, it.start, it.end, streakUnit) } ?: 0
         // A manually skipped day keeps the streak alive, but it is not "done". During a pause
         // the flame stays colored (if there is a streak); on the first day after the pause it
@@ -117,6 +117,11 @@ object ListHabitsPresenter {
             streak = streak,
             streakUnit = streakUnit,
             streakDoneToday = streakDoneToday,
+            restDay = if (habit.dueDays.isEverFixed) {
+                entries.map { it.value == Entry.SKIP && habit.isRestDay(it.date) && !habit.pauses.isPaused(it.date) }
+            } else {
+                emptyList()
+            },
             isShared = isShared
         )
     }
@@ -135,6 +140,8 @@ data class HabitCardState(
     val completed: List<Boolean>,
     val notes: List<String>,
     val paused: List<Boolean> = emptyList(),
+    /** Per day: skipped because the habit is not due on that weekday (see #19). */
+    val restDay: List<Boolean> = emptyList(),
     val category: String,
     val streak: Int = 0,
     val streakUnit: StreakUnit = StreakUnit.DAYS,
@@ -163,8 +170,8 @@ internal fun countPerformedDays(habit: Habit, from: LocalDate, to: LocalDate): I
  */
 internal fun countStreak(habit: Habit, from: LocalDate, to: LocalDate, unit: StreakUnit): Int {
     if (unit == StreakUnit.DAYS) return countPerformedDays(habit, from, to)
-    val calendar = EntryList.isCalendarPeriod(habit.frequency, habit.calendarPeriod)
-    val den = habit.frequency.denominator
+    val calendar = EntryList.isCalendarPeriod(habit.effectiveFrequency, habit.calendarPeriod)
+    val den = habit.effectiveFrequency.denominator
     val matchesGoal = (unit == StreakUnit.WEEKS && den == 7) || (unit == StreakUnit.MONTHS && (den == 30 || den == 31))
     if (matchesGoal && !calendar) {
         // Only full weeks or months count, also with the days the goal filled in: 6 check marks in a
@@ -173,7 +180,7 @@ internal fun countStreak(habit: Habit, from: LocalDate, to: LocalDate, unit: Str
         // rest of its period still lies in the future): that is already 1.
         val periodLength = if (unit == StreakUnit.WEEKS) 7 else 30
         val fullPeriods = (from.daysUntil(to) + 1) / periodLength
-        val goalReached = countPerformedDays(habit, from, to) >= maxOf(1, habit.frequency.numerator)
+        val goalReached = countPerformedDays(habit, from, to) >= maxOf(1, habit.effectiveFrequency.numerator)
         return maxOf(fullPeriods, if (goalReached) 1 else 0)
     }
     return StreakUnit.convert(

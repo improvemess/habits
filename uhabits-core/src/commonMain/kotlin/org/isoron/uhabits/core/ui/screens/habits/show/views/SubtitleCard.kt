@@ -19,6 +19,7 @@
 
 package org.isoron.uhabits.core.ui.screens.habits.show.views
 
+import org.isoron.uhabits.core.models.DueDays
 import org.isoron.uhabits.core.models.Frequency
 import org.isoron.uhabits.core.models.Habit
 import org.isoron.uhabits.core.models.NumericalHabitType
@@ -35,6 +36,8 @@ data class SubtitleCardState(
     val targetType: NumericalHabitType = NumericalHabitType.AT_LEAST,
     val unit: String = "",
     val category: String = "",
+    /** Bit mask of the fixed weekdays (see [DueDays]) or null if the habit uses its frequency. */
+    val fixedWeekdays: Int? = null,
     val theme: Theme
 )
 
@@ -46,6 +49,7 @@ class SubtitleCardPresenter {
         ): SubtitleCardState = SubtitleCardState(
             color = habit.color,
             frequency = habit.frequency,
+            fixedWeekdays = habit.dueDays.current.takeIf { !habit.isNegative },
             isNumerical = habit.isNumerical,
             reminder = habit.reminder,
             targetValue = habit.targetValue,

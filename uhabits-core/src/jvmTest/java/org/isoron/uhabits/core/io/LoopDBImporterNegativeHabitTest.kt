@@ -23,9 +23,12 @@ import org.isoron.platform.io.TestDatabaseHelper
 import org.isoron.platform.io.UserFile
 import org.isoron.platform.io.migrateTo
 import org.isoron.platform.io.run
+import org.isoron.platform.time.LocalDate
 import org.isoron.platform.time.getToday
 import org.isoron.uhabits.core.BaseUnitTest
 import org.isoron.uhabits.core.DATABASE_VERSION
+import org.isoron.uhabits.core.models.DueDays
+import org.isoron.uhabits.core.models.DueDaysChange
 import org.isoron.uhabits.core.models.StreakUnit
 import org.isoron.uhabits.core.sharing.OwnerIdentityStore
 import org.isoron.uhabits.core.sharing.ShareStore
@@ -72,6 +75,20 @@ class LoopDBImporterNegativeHabitTest : BaseUnitTest() {
     fun testOlderBackupHasAutomaticStreakUnit() = runTest {
         importBackup(null)
         habitList.forEach { assertNull(it.streakUnit) }
+    }
+
+    @Test
+    fun testBackupKeepsFixedWeekdays() = runTest {
+        val history = DueDays(listOf(DueDaysChange(LocalDate(5000), 0b0101010)))
+        importBackup("update Habits set due_days = '${history.encode()}' where id = (select min(id) from Habits)")
+        assertEquals(1, habitList.count { it.dueDays == history })
+        assertEquals(habitList.size() - 1, habitList.count { it.dueDays == DueDays() })
+    }
+
+    @Test
+    fun testOlderBackupHasNoFixedWeekdays() = runTest {
+        importBackup(null)
+        habitList.forEach { assertEquals(DueDays(), it.dueDays) }
     }
 
     private suspend fun importBackup(sql: String?) {

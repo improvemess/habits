@@ -23,6 +23,7 @@ import org.isoron.platform.Synchronized
 import org.isoron.platform.time.LocalDate
 import org.isoron.uhabits.core.database.HabitData
 import org.isoron.uhabits.core.database.HabitRepository
+import org.isoron.uhabits.core.models.DueDays
 import org.isoron.uhabits.core.models.Frequency
 import org.isoron.uhabits.core.models.Habit
 import org.isoron.uhabits.core.models.HabitList
@@ -277,7 +278,8 @@ class SQLiteHabitList(private val modelFactory: ModelFactory) : HabitList() {
                 stepSize = habit.stepSize,
                 negativeSince = habit.negativeSince?.unixTime,
                 calendarPeriod = if (habit.calendarPeriod) 1 else 0,
-                streakUnit = habit.streakUnit?.id ?: StreakUnit.AUTO_ID
+                streakUnit = habit.streakUnit?.id ?: StreakUnit.AUTO_ID,
+                dueDays = habit.dueDays.encode()
             )
         }
 
@@ -299,6 +301,7 @@ class SQLiteHabitList(private val modelFactory: ModelFactory) : HabitList() {
             habit.negativeSince = data.negativeSince?.let { LocalDate.fromUnixTime(it) }
             habit.calendarPeriod = data.calendarPeriod != 0
             habit.streakUnit = StreakUnit.fromId(data.streakUnit)
+            habit.dueDays = DueDays.decode(data.dueDays)
             if (data.reminderHour != null && data.reminderMin != null) {
                 habit.reminder = Reminder(
                     data.reminderHour!!,

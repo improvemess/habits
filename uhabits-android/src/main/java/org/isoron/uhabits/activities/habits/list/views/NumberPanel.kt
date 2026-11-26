@@ -33,7 +33,8 @@ data class NumberPanelState(
     val units: String,
     val notes: List<String>,
     val buttonCount: Int,
-    val isNegative: Boolean = false
+    val isNegative: Boolean = false,
+    val restDay: List<Boolean> = emptyList()
 )
 
 class NumberPanelView(
@@ -92,7 +93,8 @@ class NumberPanelView(
                         index + dataOffset < state.notes.size -> state.notes[index + dataOffset]
                         else -> ""
                     },
-                    state.isNegative
+                    state.isNegative,
+                    state.restDay.getOrElse(index + dataOffset) { false }
                 )
             )
             button.onEdit = { onEdit(date) }

@@ -46,6 +46,8 @@ data class Habit(
     var calendarPeriod: Boolean = false,
     /** Unit of the streak flame; null means automatic, derived from the frequency (see #15). */
     var streakUnit: StreakUnit? = null,
+    /** Fixed weekdays on which the habit is due, as a history; empty for the plain frequency (see #19). */
+    var dueDays: DueDays = DueDays(),
     val computedEntries: EntryList,
     val originalEntries: EntryList,
     val scores: ScoreList,
@@ -94,7 +96,7 @@ data class Habit(
 
     fun recompute() {
         computedEntries.recomputeFrom(
-            originalEntries = entriesWithAutoChecks(entriesWithPauses()),
+            originalEntries = entriesWithAutoChecks(entriesWithRestDays(entriesWithPauses())),
             frequency = effectiveFrequency,
             isNumerical = isNumerical,
             calendarPeriod = calendarPeriod
@@ -161,9 +163,44 @@ data class Habit(
         return result
     }
 
-    /** Avoided habits are always evaluated daily: every day is either kept or relapsed. */
-    private val effectiveFrequency: Frequency
-        get() = if (isNegative && !isNumerical) Frequency.DAILY else frequency
+    /**
+     * Returns [source], where every day on which the habit is not due (see [dueDays]) and that has
+     * no entry of its own (or only a NO) is marked as SKIP: a rest day. It does not count as done,
+     * but it is not missed either, so it neither breaks a streak nor lowers the score. A manual
+     * "yes" on a rest day stays. Rest days far in the future are ignored until they come closer.
+     */
+    private fun entriesWithRestDays(source: EntryList): EntryList {
+        val firstFixed = dueDays.firstFixedSince
+        if (firstFixed == null || isNegative) return source
+        val today = getToday()
+        val limit = today.plus(PauseList.MAX_DAYS_AHEAD)
+        // Starts 90 days back or at the oldest entry, not at the year 2000 of a new habit
+        val oldestEntry = source.getKnown().lastOrNull()?.date ?: today
+        val oldest = if (oldestEntry.isOlderThan(today.minus(90))) oldestEntry else today.minus(90)
+        var day = if (oldest.isOlderThan(firstFixed)) firstFixed else oldest
+        val result = EntryList()
+        source.getKnown().forEach { result.add(it) }
+        while (!day.isNewerThan(limit)) {
+            if (!dueDays.isDueOn(day)) {
+                val existing = source.get(day)
+                if (existing.value == Entry.UNKNOWN || existing.value == Entry.NO) {
+                    result.add(Entry(day, Entry.SKIP, existing.notes))
+                }
+            }
+            day = day.plus(1)
+        }
+        return result
+    }
+
+    /** Whether the habit is not due on [date] because of its fixed weekdays. */
+    fun isRestDay(date: LocalDate): Boolean = !isNegative && !dueDays.isDueOn(date)
+
+    /**
+     * Avoided habits are always evaluated daily: every day is either kept or relapsed. The same
+     * holds for habits with fixed weekdays: each due day counts like a day of a daily habit.
+     */
+    val effectiveFrequency: Frequency
+        get() = if ((isNegative && !isNumerical) || (dueDays.isEverFixed && !isNegative)) Frequency.DAILY else frequency
 
     /**
      * Days before [negativeSince] of an avoided habit are not part of it. A question mark set there
@@ -221,6 +258,7 @@ data class Habit(
         this.negativeSince = other.negativeSince
         this.calendarPeriod = other.calendarPeriod
         this.streakUnit = other.streakUnit
+        this.dueDays = other.dueDays
     }
 
     override fun equals(other: Any?): Boolean {
@@ -245,6 +283,7 @@ data class Habit(
         if (negativeSince != other.negativeSince) return false
         if (calendarPeriod != other.calendarPeriod) return false
         if (streakUnit != other.streakUnit) return false
+        if (dueDays != other.dueDays) return false
 
         return true
     }
@@ -268,6 +307,7 @@ data class Habit(
         result = 31 * result + (negativeSince?.hashCode() ?: 0)
         result = 31 * result + calendarPeriod.hashCode()
         result = 31 * result + (streakUnit?.hashCode() ?: 0)
+        result = 31 * result + dueDays.hashCode()
         return result
     }
 }

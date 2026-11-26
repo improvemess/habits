@@ -31,8 +31,14 @@ import android.widget.RadioButton
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDialogFragment
+import org.isoron.platform.time.DayOfWeek
+import org.isoron.platform.time.JavaLocalDateFormatter
 import org.isoron.uhabits.R
+import org.isoron.uhabits.core.models.DueDays
+import org.isoron.uhabits.core.models.WeekdayList
 import org.isoron.uhabits.databinding.FrequencyPickerDialogBinding
+import org.isoron.uhabits.utils.toFormattedString
+import java.util.Locale
 
 class FrequencyPickerDialog(
     var freqNumerator: Int,
@@ -41,7 +47,9 @@ class FrequencyPickerDialog(
     /** Measurable habits only choose day, week or month, there is no number of repetitions. */
     private val measurable: Boolean = false,
     /** Wording "per week" instead of "every week" for limits of habits to quit. */
-    private val quit: Boolean = false
+    private val quit: Boolean = false,
+    /** Bit mask of the fixed weekdays (see DueDays), 0 if the habit uses a frequency (see #19). */
+    private val fixedWeekdays: Int = 0
 ) : AppCompatDialogFragment() {
     // The rolling or calendar choice of the week row and of the month row are independent; only the
     // choice of the selected row is kept.
@@ -51,6 +59,11 @@ class FrequencyPickerDialog(
     private val binding get() = _binding!!
 
     var onFrequencyPicked: (num: Int, den: Int, calendarPeriod: Boolean) -> Unit = { _, _, _ -> }
+
+    /** Called on save with the chosen weekdays, or 0 if a frequency was chosen instead. */
+    var onFixedDaysPicked: (weekdays: Int) -> Unit = {}
+
+    private var pickedDays = fixedWeekdays
 
     constructor() : this(1, 1)
 
@@ -86,6 +99,7 @@ class FrequencyPickerDialog(
             )
         }
 
+        setUpFixedDays()
         updateModeTexts()
         setUpModePicker(binding.weekModePicker, binding.xTimesPerWeekRadioButton, isWeek = true)
         setUpModePicker(binding.monthModePicker, binding.xTimesPerMonthRadioButton, isWeek = false)
@@ -141,6 +155,45 @@ class FrequencyPickerDialog(
             .create()
     }
 
+    /** Row "specific days": a dropdown with the chosen weekdays, picked in a multi-choice dialog. */
+    private fun setUpFixedDays() {
+        // Habits to quit are always daily, they have no fixed days
+        if (quit) binding.fixedDaysContainer.visibility = View.GONE
+        updateFixedDaysText()
+        binding.fixedDaysRadioButton.setOnClickListener {
+            check(binding.fixedDaysRadioButton)
+            if (pickedDays == 0) showWeekdayChoice()
+        }
+        binding.fixedDaysPicker.setOnClickListener {
+            check(binding.fixedDaysRadioButton)
+            showWeekdayChoice()
+        }
+    }
+
+    private fun updateFixedDaysText() {
+        binding.fixedDaysPicker.text = if (pickedDays == 0) {
+            getString(R.string.specific_days)
+        } else {
+            DueDays.toWeekdayList(pickedDays).toFormattedString(requireContext())
+        }
+    }
+
+    private fun showWeekdayChoice() {
+        val selected = DueDays.toWeekdayList(pickedDays).toArray()
+        AlertDialog.Builder(requireActivity())
+            .setTitle(R.string.select_weekdays)
+            .setMultiChoiceItems(
+                JavaLocalDateFormatter(Locale.getDefault()).longWeekdayNames(DayOfWeek.SATURDAY),
+                selected
+            ) { _, which, isChecked -> selected[which] = isChecked }
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                pickedDays = DueDays.fromWeekdayList(WeekdayList(selected))
+                updateFixedDaysText()
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
     /** Measurable habits: only the rows every day, every week and every month, without numbers. */
     private fun setUpMeasurableRows() {
         binding.everyXDaysContainer.visibility = View.GONE
@@ -178,6 +231,16 @@ class FrequencyPickerDialog(
     }
 
     private fun onSaveClicked() {
+        if (binding.fixedDaysRadioButton.isChecked && pickedDays != 0) {
+            onFixedDaysPicked(pickedDays)
+            dismiss()
+            return
+        }
+        onFixedDaysPicked(0)
+        saveFrequency()
+    }
+
+    private fun saveFrequency() {
         var numerator = 1
         var denominator = 1
         if (measurable) {
@@ -293,6 +356,10 @@ class FrequencyPickerDialog(
 
     private fun populateViews() {
         uncheckAll()
+        if (fixedWeekdays != 0 && !quit) {
+            binding.fixedDaysRadioButton.isChecked = true
+            return
+        }
         if (measurable) {
             when (freqDenominator) {
                 7 -> binding.xTimesPerWeekRadioButton.isChecked = true
@@ -338,5 +405,6 @@ class FrequencyPickerDialog(
         binding.xTimesPerWeekRadioButton.isChecked = false
         binding.xTimesPerMonthRadioButton.isChecked = false
         binding.xTimesPerYDaysRadioButton.isChecked = false
+        binding.fixedDaysRadioButton.isChecked = false
     }
 }
