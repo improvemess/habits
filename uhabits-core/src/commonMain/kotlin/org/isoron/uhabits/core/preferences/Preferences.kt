@@ -21,8 +21,11 @@ package org.isoron.uhabits.core.preferences
 import org.isoron.platform.time.DayOfWeek
 import org.isoron.platform.time.LocalDate
 import org.isoron.platform.time.getFirstWeekdayNumberAccordingToLocale
+import org.isoron.platform.time.getToday
 import org.isoron.platform.utils.StringUtils.Companion.joinLongs
 import org.isoron.platform.utils.StringUtils.Companion.splitLongs
+import org.isoron.uhabits.core.models.CheatDayHistory
+import org.isoron.uhabits.core.models.CheatDayLevel
 import org.isoron.uhabits.core.models.HabitList
 import org.isoron.uhabits.core.sharing.SharingServers
 import org.isoron.uhabits.core.ui.ThemeSwitcher
@@ -229,6 +232,20 @@ open class Preferences(private val storage: Storage) {
         get() = storage.getBoolean("pref_streak_flame", true)
         set(enabled) {
             storage.putBoolean("pref_streak_flame", enabled)
+        }
+
+    /** Global cheat days level as a history, so that a change never applies to the past (see #20). */
+    open var cheatDayHistory: CheatDayHistory
+        get() = CheatDayHistory.decode(storage.getString("pref_cheat_days_history", ""))
+        set(history) {
+            storage.putString("pref_cheat_days_history", history.encode())
+        }
+
+    /** The cheat days level now; changing it only takes effect from today on. */
+    open var cheatDayLevel: CheatDayLevel
+        get() = cheatDayHistory.current
+        set(level) {
+            cheatDayHistory = cheatDayHistory.changedFrom(getToday(), level)
         }
 
     /**

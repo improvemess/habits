@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Nur Debug-Builds: Name der App im Launcher, damit sie sich von der
+     Production-App unterscheidet (#126). -->
+<resources>
+    <string name="app_label_debug" translatable="false">Habits (Debug)</string>
+</resources>

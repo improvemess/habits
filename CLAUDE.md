@@ -20,6 +20,9 @@ Bei **jeder** Änderung am Datenmodell oder an Daten, die Nutzer:innen speichern
 - Änderungen nur im Fork `oliverlorenz/uhabits`, **nie** upstream (iSoron/uhabits).
 - Nie direkt auf `dev` committen: Feature-Branch von `dev`, aussagekräftige Commits, Pull Request im Fork.
 - `gh pr create` immer mit `--repo oliverlorenz/uhabits --base dev`.
+- Feature-PRs werden per **Squash** nach `dev` gemergt. Der PR-Titel (Conventional Commit) bestimmt die nächste Version, der PR-Text wird zum Commit-Text.
+- **Kein Skip-CI-Marker (`[skip ci]` u. ä.) wörtlich in PR-Texte schreiben**: Der Squash-Commit übernähme ihn, für ihn liefen keine Checks, und ein Release-PR mit diesem Commit oben bliebe blockiert.
+- Ein Merge nach `dev` erzeugt **kein** Release. Releases entstehen nur über einen Release-PR `dev → main` mit Titel `chore(release): dev → main`, gemergt als **Merge-Commit** (nie Squash). Danach führt der Release-Workflow `main` automatisch nach `dev` zurück. Release-PRs nur auf ausdrücklichen Wunsch anlegen oder mergen. Details: `docs/RELEASE.md`.
 
 ## Immer beachten: README mit Unterschieden zum Fork-Ursprung
 
