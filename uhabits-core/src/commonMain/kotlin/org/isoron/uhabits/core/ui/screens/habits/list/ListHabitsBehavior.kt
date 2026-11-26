@@ -132,6 +132,23 @@ open class ListHabitsBehavior(
         }
     }
 
+    /**
+     * Starts the two-step confirmation for deleting all data (#68). Nothing is deleted until the
+     * user has confirmed both dialogs.
+     */
+    open fun onDeleteAllData() {
+        screen.showDeleteAllDataIntro {
+            screen.showDeleteAllDataFinalConfirmation { deleteAllData() }
+        }
+    }
+
+    /** Irrevocably deletes all habits (with entries, notes, reminders, pauses) and all settings. */
+    open fun deleteAllData() {
+        habitList.removeAll()
+        prefs.clear()
+        screen.onAllDataDeleted()
+    }
+
     open fun onRepairDB() {
         taskRunner.execute(object : Task {
             override suspend fun doInBackground() {
@@ -187,6 +204,9 @@ open class ListHabitsBehavior(
 
     interface Screen {
         fun showCategoryInput(current: String, onConfirmed: (String) -> Unit)
+        fun showDeleteAllDataIntro(onContinue: () -> Unit)
+        fun showDeleteAllDataFinalConfirmation(onConfirmed: () -> Unit)
+        fun onAllDataDeleted()
         fun showHabitScreen(habitId: Long)
         fun showIntroScreen()
         fun showMessage(m: Message)

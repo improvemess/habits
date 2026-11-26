@@ -20,14 +20,18 @@
 package org.isoron.uhabits.activities.habits.list
 
 import android.app.Activity
+import android.app.NotificationManager
+import android.app.backup.BackupManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
 import me.tatarka.inject.annotations.Inject
 import org.isoron.platform.gui.toInt
 import org.isoron.platform.io.JavaUserFile
+import org.isoron.uhabits.HabitsApplication
 import org.isoron.uhabits.R
 import org.isoron.uhabits.activities.common.dialogs.CategoryDialog
 import org.isoron.uhabits.activities.common.dialogs.CheckmarkDialog
@@ -67,9 +71,12 @@ import org.isoron.uhabits.core.ui.screens.habits.list.ListHabitsMenuBehavior
 import org.isoron.uhabits.core.ui.screens.habits.list.ListHabitsPresenter
 import org.isoron.uhabits.core.ui.screens.habits.list.ListHabitsSelectionMenuBehavior
 import org.isoron.uhabits.core.utils.MidnightTimer
+import org.isoron.uhabits.homeassistant.HomeAssistantPreferences
 import org.isoron.uhabits.inject.ActivityContext
 import org.isoron.uhabits.inject.ActivityScope
 import org.isoron.uhabits.intents.IntentFactory
+import org.isoron.uhabits.sharing.SharedPreferencesDeviceIdStorage
+import org.isoron.uhabits.sharing.SharedPreferencesDeviceTokenStore
 import org.isoron.uhabits.tasks.ExportDBTaskFactory
 import org.isoron.uhabits.tasks.ImportDataTask
 import org.isoron.uhabits.tasks.ImportDataTaskFactory
@@ -90,6 +97,7 @@ const val RESULT_BUG_REPORT = 104
 const val RESULT_REPAIR_DB = 105
 const val REQUEST_OPEN_DOCUMENT = 106
 const val REQUEST_SETTINGS = 107
+const val RESULT_DELETE_ALL_DATA = 108
 
 @Inject
 @ActivityScope
@@ -187,6 +195,7 @@ class ListHabitsScreen(
             RESULT_EXPORT_DB -> onExportDB()
             RESULT_BUG_REPORT -> behavior.value.onSendBugReport()
             RESULT_REPAIR_DB -> behavior.value.onRepairDB()
+            RESULT_DELETE_ALL_DATA -> behavior.value.onDeleteAllData()
         }
     }
 
@@ -268,6 +277,41 @@ class ListHabitsScreen(
         val picker = colorPickerFactory.create(defaultColor, themeSwitcher.currentTheme!!)
         picker.setListener(callback)
         picker.dismissCurrentAndShow(activity.supportFragmentManager, "picker")
+    }
+
+    override fun showDeleteAllDataIntro(onContinue: () -> Unit) {
+        AlertDialog.Builder(activity)
+            .setTitle(R.string.delete_all_data_intro_title)
+            .setMessage(R.string.delete_all_data_intro_message)
+            .setPositiveButton(R.string.delete_all_data_continue) { _, _ -> onContinue() }
+            .setNeutralButton(R.string.delete_all_data_export_first) { _, _ -> onExportDB() }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
+    override fun showDeleteAllDataFinalConfirmation(onConfirmed: () -> Unit) {
+        AlertDialog.Builder(activity)
+            .setTitle(R.string.delete_all_data_final_title)
+            .setMessage(R.string.delete_all_data_final_message)
+            .setPositiveButton(R.string.delete_all_data_confirm) { _, _ -> onConfirmed() }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
+    override fun onAllDataDeleted() {
+        // Data kept outside of the default preferences: Home Assistant and sharing credentials.
+        listOf(
+            HomeAssistantPreferences.FILE_NAME,
+            SharedPreferencesDeviceIdStorage.FILE_NAME,
+            SharedPreferencesDeviceTokenStore.FILE_NAME
+        ).forEach { activity.getSharedPreferences(it, Context.MODE_PRIVATE).edit().clear().apply() }
+        // Reminder alarms of deleted habits are ignored by ReminderReceiver; remove shown notifications.
+        activity.getSystemService(NotificationManager::class.java)?.cancelAll()
+        (activity.applicationContext as? HabitsApplication)?.component?.widgetUpdater?.updateWidgets()
+        // Replaces the cloud backup with the now empty state (delayed, only with Google backup enabled).
+        BackupManager.dataChanged(activity.packageName)
+        // Preferences were reset, so the intro screen is shown again on startup.
+        activity.restartWithFade(ListHabitsActivity::class.java)
     }
 
     override fun showCategoryInput(current: String, onConfirmed: (String) -> Unit) {

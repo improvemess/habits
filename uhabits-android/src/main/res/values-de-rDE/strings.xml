@@ -234,6 +234,15 @@
     <string name="pref_view_privacy">Datenschutzrichtlinie anzeigen</string>
     <string name="view_all_contributors">Alle Mitwirkende anzeigen&#8230;</string>
     <string name="database">Datenbank</string>
+    <string name="delete_all_data">Alle Daten löschen</string>
+    <string name="delete_all_data_summary">Löscht alle Gewohnheiten und Einstellungen endgültig, auch aus dem Cloud-Backup</string>
+    <string name="delete_all_data_intro_title">Alle Daten löschen?</string>
+    <string name="delete_all_data_intro_message">Dies löscht alle Gewohnheiten, Einträge, Notizen, Erinnerungen und Einstellungen von diesem Gerät.\n\nWir empfehlen, vorher ein vollständiges Backup zu exportieren. Nur damit lassen sich die Daten danach wiederherstellen.</string>
+    <string name="delete_all_data_export_first">Zuerst exportieren</string>
+    <string name="delete_all_data_continue">Weiter</string>
+    <string name="delete_all_data_final_title">Wirklich alles löschen?</string>
+    <string name="delete_all_data_final_message">Alle Gewohnheiten, Einträge, Notizen, Erinnerungen und Einstellungen werden unwiderruflich gelöscht, einschließlich des Cloud-Backups.\n\nAndroid ersetzt das Cloud-Backup verzögert und nur, wenn das Google-Backup aktiviert ist; es verschwindet also nicht sofort. Danach lassen sich deine Daten nur noch aus einem zuvor erstellten Export wiederherstellen.</string>
+    <string name="delete_all_data_confirm">Alles endgültig löschen</string>
     <string name="widget_opacity_title">Widget Deckkraft</string>
     <string name="widget_opacity_description">Stellt die Durchsichtigkeit des Hintergrundes der Widgets auf dem Startbildschirm ein.</string>
     <string name="first_day_of_the_week">Erster Tag der Woche</string>
