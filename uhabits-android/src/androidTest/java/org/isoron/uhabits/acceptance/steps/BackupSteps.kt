@@ -33,7 +33,7 @@ import org.isoron.uhabits.acceptance.steps.ListHabitsSteps.clickMenu
 import org.junit.Assert.assertTrue
 import java.io.File
 
-const val BACKUP_FOLDER = "/sdcard/Android/data/org.isoron.uhabits/files/Backups/"
+const val BACKUP_FOLDER = "/sdcard/Android/data/com.improvemess.habits/files/Backups/"
 const val DOWNLOAD_FOLDER = "/sdcard/Download/"
 
 fun exportFullBackup() {
