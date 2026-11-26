@@ -15,6 +15,17 @@ Bei **jeder** Änderung am Datenmodell oder an Daten, die Nutzer:innen speichern
 3. **Tests:** Round-Trip-Test (Export → Import → Daten identisch) für neue Felder ergänzen oder erweitern.
 4. In der PR-Beschreibung kurz festhalten: „Export: ja/nein/n. a. – Import: ja/nein/n. a." mit Begründung.
 
+## Immer beachten: Öffentliches auf Englisch
+
+Alles, was öffentlich sichtbar ist, schreiben wir **auf Englisch**:
+
+- Issues: Titel, Text und Kommentare (auch beim Bearbeiten alter Issues).
+- Pull Requests: Titel, Text, Review-Kommentare.
+- Commit-Nachrichten: Der PR-Titel wird zum Squash-Commit, semantic-release erzeugt daraus Release-Notes und `CHANGELOG.md`. Ein deutscher Titel landet also in den Release-Notes.
+- Release-Notes und Changelog, README, `docs/`, Code-Kommentare und Store-Texte.
+
+Ausnahme: übersetzte App-Texte (`values-de` u. ä.) und lokalisierte Store-Texte (`de-DE`). Mit dem Nutzer sprechen wir weiter Deutsch.
+
 ## Workflow (Fork)
 
 - Änderungen nur im Fork `improvemess/habits`, **nie** upstream (iSoron/uhabits).
