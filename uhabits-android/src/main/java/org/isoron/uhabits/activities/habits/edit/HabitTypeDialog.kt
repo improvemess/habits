@@ -39,7 +39,9 @@ class HabitTypeDialog : AppCompatDialogFragment() {
     private val editLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) dismiss()
+        // The result arrives before the list activity is started again, i.e.
+        // after its state was saved; a plain dismiss() would throw there.
+        if (result.resultCode == Activity.RESULT_OK) dismissAllowingStateLoss()
     }
 
     override fun getTheme() = R.style.Translucent
