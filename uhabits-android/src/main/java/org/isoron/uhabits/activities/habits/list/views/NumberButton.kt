@@ -197,9 +197,33 @@ class NumberButtonView(
                 }
             }
 
+            // Marker at the upper right of the number: cross when a limit is exceeded,
+            // check mark when a goal is reached (so it is visible without color)
+            val isNumber = !isZz && state.value >= 0 && state.value != Entry.SKIP.toDouble() / 1000
+            val marker: String? = when {
+                !isNumber -> null
+                state.isNegative && !state.completed && state.value > 0.0 -> resources.getString(R.string.fa_times)
+                !state.isNegative && state.completed && state.value > 0.0 -> resources.getString(R.string.fa_check)
+                else -> null
+            }
+            val markerPaint = TextPaint(pNumber).apply {
+                this.typeface = getFontAwesome()
+                this.textSize = 0.75f * dim(R.dimen.smallerTextSize)
+                textAlign = Paint.Align.LEFT
+            }
+
             pNumber.textSize = textSize
-            pNumber.color = activeColor
             pNumber.typeface = typeface
+            // The number is centered, so it must fit into half the width together with the marker:
+            // shrink it instead of cutting it off
+            val markerSpace = if (marker != null) markerPaint.measureText(marker) + 0.15f * em else 0f
+            val maxHalfWidth = width * 0.5f - 0.1f * em
+            while (pNumber.textSize > 0.6f * textSize &&
+                pNumber.measureText(label) / 2f + markerSpace > maxHalfWidth
+            ) {
+                pNumber.textSize = pNumber.textSize * 0.95f
+            }
+            pNumber.color = activeColor
             pUnit.color = activeColor
 
             // A "zz" day shows only the "zz", centered and without the unit
@@ -223,19 +247,14 @@ class NumberButtonView(
                 canvas.drawText(trimmedUnits, rect.centerX(), rect.centerY(), pUnit)
             }
 
-            if (state.isNegative && !state.completed && state.value > 0.0) {
-                // Small cross at the upper right of the exceeded number
-                val crossPaint = TextPaint(pNumber).apply {
-                    this.typeface = getFontAwesome()
-                    this.textSize = 0.75f * dim(R.dimen.smallerTextSize)
-                    textAlign = Paint.Align.LEFT
-                }
+            if (marker != null) {
                 val numberWidth = pNumber.measureText(label)
+                markerPaint.color = activeColor
                 canvas.drawText(
-                    resources.getString(R.string.fa_times),
+                    marker,
                     width / 2f + numberWidth / 2f + 0.15f * em,
                     height / 2f - 0.55f * em,
-                    crossPaint
+                    markerPaint
                 )
             }
 
