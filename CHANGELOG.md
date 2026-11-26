@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.25.2](https://github.com/oliverlorenz/uhabits/compare/v2.25.1...v2.25.2) (2026-11-26)
+
+### Bug Fixes
+
+* style share screen buttons in the habit color ([#99](https://github.com/oliverlorenz/uhabits/issues/99)) ([84eb56e](https://github.com/oliverlorenz/uhabits/commit/84eb56eca0947b9ffda5be3a8818876913a85425)), closes [#96](https://github.com/oliverlorenz/uhabits/issues/96), references [#363636](https://github.com/oliverlorenz/uhabits/issues/363636)
+
 ## [2.25.1](https://github.com/oliverlorenz/uhabits/compare/v2.25.0...v2.25.1) (2026-11-26)
 
 * split instrumented tests across three emulators ([#90](https://github.com/oliverlorenz/uhabits/issues/90)) ([ebaabca](https://github.com/oliverlorenz/uhabits/commit/ebaabca2ac44140e7136be5ed1db83a7502b9171)), closes [#94](https://github.com/oliverlorenz/uhabits/issues/94)
