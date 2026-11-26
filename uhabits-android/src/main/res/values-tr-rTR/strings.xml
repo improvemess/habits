@@ -208,8 +208,6 @@
     <string name="decrement">Azalma</string>
     <string name="pref_skip_title">Gün atlama özelliğini etkinleştir</string>
     <string name="pref_skip_description">Gün atlamak için ikinci kez işaretleme yapın. Atlanmış günler puanınızı etkilemez ve serinizi bozmaz.</string>
-    <string name="pref_unknown_title">Eksik verileri soru işaretiyle göster</string>
-    <string name="pref_unknown_description">Eksik verilerle boş günleri ayırt etmenizde yardımcı olur. Boş gün girmek için iki kere işaretleme yapın.</string>
     <string name="you_are_now_a_developer">Artık bir geliştiricisin</string>
     <string name="activity_not_found">Bu işlemi gerçekleştirebilecek bir uygulama bulunamadı.</string>
     <string name="pref_midnight_delay_title">Yeni günü gece yarısından birkaç saat sonra başlat</string>

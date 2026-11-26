@@ -81,10 +81,14 @@ class NegativeHabitLimitTest : BaseUnitTest() {
     }
 
     @Test
-    fun testQuestionMarkOnlyBeforeTheCreationDay() {
+    fun testUnknownOnlyBeforeTheCreationDay() {
         val since = getToday().minus(5)
         val normal = modelFactory.buildHabit()
-        assertTrue(normal.isUnknownAllowedOn(getToday()))
+        assertFalse(normal.isUnknownAllowedOn(getToday()))
+        normal.createdOn = getToday().minus(5)
+        assertTrue(normal.isUnknownAllowedOn(getToday().minus(6)))
+        assertFalse(normal.isUnknownAllowedOn(getToday().minus(5)))
+        assertFalse(normal.isUnknownAllowedOn(getToday()))
         for (numerical in listOf(false, true)) {
             val h = modelFactory.buildHabit()
             if (numerical) h.type = HabitType.NUMERICAL
@@ -96,7 +100,7 @@ class NegativeHabitLimitTest : BaseUnitTest() {
     }
 
     @Test
-    fun testQuestionMarkBeforeTheCreationDayIsNeverDone() {
+    fun testUnknownBeforeTheCreationDayIsNeverDone() {
         val h = limitHabit(3.0, 1)
         h.negativeSince = getToday().minus(5)
         // A question mark set on days before the habit existed
@@ -278,7 +282,7 @@ class NegativeHabitLimitTest : BaseUnitTest() {
     @Test
     fun testTappingACrossOnAnAvoidedHabitAlwaysComesBackToTheCheck() {
         for (skipEnabled in listOf(false, true)) {
-            for (questionMarks in listOf(false, true)) {
+            for (beforeCreation in listOf(false)) {
                 val h = modelFactory.buildHabit()
                 h.negativeSince = getToday().minus(3)
                 h.recompute()
@@ -287,13 +291,13 @@ class NegativeHabitLimitTest : BaseUnitTest() {
                 var taps = 0
                 do {
                     val shown = h.computedEntries.get(day).value
-                    val next = Entry.nextToggleValue(shown, skipEnabled, questionMarks)
+                    val next = Entry.nextToggleValue(shown, skipEnabled, beforeCreation)
                     h.originalEntries.add(Entry(day, next))
                     h.recompute()
                     if (h.computedEntries.get(day).value == Entry.NO) seenCross = true
                     taps++
                 } while (h.computedEntries.get(day).value != Entry.YES_MANUAL && taps < 6)
-                assertTrue(seenCross, "skip=$skipEnabled questionMarks=$questionMarks")
+                assertTrue(seenCross, "skip=$skipEnabled beforeCreation=$beforeCreation")
                 assertEquals(Entry.YES_MANUAL, h.computedEntries.get(day).value)
                 assertTrue(h.isCompletedOn(day))
             }

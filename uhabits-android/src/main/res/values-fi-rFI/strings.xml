@@ -208,8 +208,6 @@
     <string name="decrement">Laske</string>
     <string name="pref_skip_title">Ota ohituspäivät käyttöön</string>
     <string name="pref_skip_description">Valitse kahdesti lisätäksesi ohituksen valinnan sijaan. Ohitukset pitävät pisteesi muuttumattomana eivätkä riko suoritusputkeasi.</string>
-    <string name="pref_unknown_title">Näytä kysymysmerkki puuttuvan tiedon kohdalla</string>
-    <string name="pref_unknown_description">Erota päivät ilman tietoja todellisista väliin jäämisistä. Lisätäksesi väliin jäämisen, valitse kahdesti.</string>
     <string name="you_are_now_a_developer">Olet nyt kehittäjä</string>
     <string name="activity_not_found">Tälle toiminnolle ei löytynyt yhtään sovellusta</string>
     <string name="pref_midnight_delay_title">Pidennä päivää muutama tunti keskiyön jälkeen</string>

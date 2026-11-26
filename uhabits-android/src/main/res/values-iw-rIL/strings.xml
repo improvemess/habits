@@ -220,8 +220,6 @@
     <string name="decrement">ירידה</string>
     <string name="pref_skip_title">לאפשר דילוג על ימים</string>
     <string name="pref_skip_description">סימון כפול כדי לדלג במקום לסמן. הדילוג שומר על הציון שלך ללא שינוי ואינו שובר את הרצף שלך.</string>
-    <string name="pref_unknown_title">הצגת סימני שאלה לנתונים חסרים</string>
-    <string name="pref_unknown_description">הפרדת הימים ללא הנתונים מהלולאות בפועל. כדי להיכנס ללולאה, יש לסמן פעמיים.</string>
     <string name="you_are_now_a_developer">מצב הפיתוח הופעל כעת</string>
     <string name="activity_not_found">לא נמצא יישום שתומך בפעולה זו</string>
     <string name="pref_midnight_delay_title">הארכת היום בכמה שעות לאחר החצות</string>

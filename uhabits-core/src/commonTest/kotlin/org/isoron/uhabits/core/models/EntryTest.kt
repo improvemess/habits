@@ -40,7 +40,7 @@ class EntryTest {
                 UNKNOWN to YES_MANUAL
             ),
             isSkipEnabled = true,
-            areQuestionMarksEnabled = true
+            isBeforeCreation = true
         )
         check(
             mapOf(
@@ -51,7 +51,7 @@ class EntryTest {
                 UNKNOWN to YES_MANUAL
             ),
             isSkipEnabled = false,
-            areQuestionMarksEnabled = true
+            isBeforeCreation = true
         )
         check(
             mapOf(
@@ -62,7 +62,7 @@ class EntryTest {
                 UNKNOWN to YES_MANUAL
             ),
             isSkipEnabled = true,
-            areQuestionMarksEnabled = false
+            isBeforeCreation = false
         )
         check(
             mapOf(
@@ -73,21 +73,21 @@ class EntryTest {
                 UNKNOWN to YES_MANUAL
             ),
             isSkipEnabled = false,
-            areQuestionMarksEnabled = false
+            isBeforeCreation = false
         )
     }
 
     private fun check(
         map: Map<Int, Int>,
         isSkipEnabled: Boolean,
-        areQuestionMarksEnabled: Boolean
+        isBeforeCreation: Boolean
     ) {
         for ((value, expected) in map) {
             assertEquals(
                 nextToggleValue(
                     value = value,
                     isSkipEnabled = isSkipEnabled,
-                    areQuestionMarksEnabled = areQuestionMarksEnabled
+                    isBeforeCreation = isBeforeCreation
                 ),
                 expected
             )

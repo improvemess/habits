@@ -380,6 +380,7 @@ class EditHabitActivity : AppCompatActivity() {
         }
         habit.type = habitType
         habit.negativeSince = if (isNegative) negativeSince ?: initialNegativeSince(original) else null
+        if (habitId < 0) habit.createdOn = getToday()
 
         val command = if (habitId >= 0) {
             EditHabitCommand(

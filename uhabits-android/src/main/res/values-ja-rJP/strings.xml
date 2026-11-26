@@ -202,8 +202,6 @@
     <string name="decrement">減少</string>
     <string name="pref_skip_title">スキップ日を有効にする</string>
     <string name="pref_skip_description">2回切り替えることで、チェックマークの代わりにスキップを追加できます。スキップはスコアに影響を与えず、連続記録を継続させたままにできます。</string>
-    <string name="pref_unknown_title">入力のない日に？マークを表示する</string>
-    <string name="pref_unknown_description">データが未入力である日と実行しなかった日とを区別します。実行しなかったことを記録するには、2回切り替えます。</string>
     <string name="you_are_now_a_developer">これで開発者になりました!</string>
     <string name="activity_not_found">この操作を行うアプリが見つかりませんでした。</string>
     <string name="pref_midnight_delay_title">一日の終わりを午前0時から数時間延長する</string>

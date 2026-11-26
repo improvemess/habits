@@ -135,6 +135,11 @@ object ListHabitsPresenter {
             } else {
                 emptyList()
             },
+            beforeCreation = if (habit.creationDay != null) {
+                entries.map { habit.isUnknownAllowedOn(it.date) }
+            } else {
+                emptyList()
+            },
             isShared = isShared
         )
     }
@@ -155,6 +160,8 @@ data class HabitCardState(
     val paused: List<Boolean> = emptyList(),
     /** Per day: skipped because the habit is not due on that weekday (see #19). */
     val restDay: List<Boolean> = emptyList(),
+    /** Per day: lies before the creation day of the habit; empty when it has none (see #70). */
+    val beforeCreation: List<Boolean> = emptyList(),
     val category: String,
     val streak: Int = 0,
     val streakUnit: StreakUnit = StreakUnit.DAYS,

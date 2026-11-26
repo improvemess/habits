@@ -95,7 +95,7 @@ class WidgetBehaviorTest : BaseUnitTest() {
             val nextValue: Int = nextToggleValue(
                 currentValue,
                 isSkipEnabled = skipEnabled,
-                areQuestionMarksEnabled = false
+                isBeforeCreation = false
             )
             habit.originalEntries.add(Entry(today, currentValue))
             behavior.onToggleRepetition(habit, today)

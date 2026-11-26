@@ -55,7 +55,7 @@ class WidgetBehavior(
         val newValue = nextToggleValue(
             value = currentValue,
             isSkipEnabled = preferences.isSkipEnabled,
-            areQuestionMarksEnabled = preferences.areQuestionMarksEnabled
+            isBeforeCreation = habit.isUnknownAllowedOn(date)
         )
         setValue(habit, date, newValue, entry.notes, source)
         notificationTray.cancel(habit)
