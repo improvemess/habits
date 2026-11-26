@@ -74,7 +74,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # Läuft auch ohne neues Release (z. B. nur chore/docs seit dem letzten),
-      # damit dev den Merge-Commit von main ebenfalls enthält.
+      # damit dev den Merge-Commit von main ebenfalls enthält. Der
+      # Rückführungs-Commit trägt bewusst keinen Skip-CI-Marker, siehe Skript.
       - name: Merge main back into dev
         env:
           GIT_AUTHOR_NAME: semantic-release-bot

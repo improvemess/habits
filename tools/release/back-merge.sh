@@ -8,8 +8,12 @@
 # auseinander, und der nächste Release-PR dev → main hätte Konflikte. Danach
 # gilt wieder: dev enthält main vollständig.
 #
-# Ist dev seit dem Release-PR nicht weitergelaufen, wird dev nur vorgespult;
-# sonst entsteht ein Merge-Commit "chore(release): merge main into dev [skip ci]".
+# Es entsteht immer ein Merge-Commit "chore(release): merge main into dev",
+# auch wenn dev nur vorgespult werden könnte, und zwar ohne Skip-CI-Marker
+# (#124): Für einen Commit mit Marker laufen keine pull_request-Workflows.
+# Wäre er der Kopf von dev, bekäme ein Release-PR dev → main nie den
+# Pflicht-Check "Quality gate" und bliebe blockiert. So laufen die Quality
+# Gates einmal auf dev; ein Release lösen sie dort nicht aus.
 #
 # Bei einem Konflikt bricht das Skript ab, ohne etwas zu pushen. Konflikte
 # entstehen nur, wenn auf dev dieselben Zeilen geändert wurden (versionCode,
@@ -38,7 +42,7 @@ for ((attempt = 1; attempt <= ATTEMPTS; attempt++)); do
     fi
 
     git checkout --quiet -B "$TARGET" "${REMOTE}/${TARGET}"
-    if ! git merge --no-edit -m "chore(release): merge ${SOURCE} into ${TARGET} [skip ci]" "${REMOTE}/${SOURCE}"; then
+    if ! git merge --no-ff --no-edit -m "chore(release): merge ${SOURCE} into ${TARGET}" "${REMOTE}/${SOURCE}"; then
         git merge --abort || true
         echo "::error::Konflikt beim Zurückführen von ${SOURCE} nach ${TARGET}. Anleitung im Kopf von $0." >&2
         exit 1
