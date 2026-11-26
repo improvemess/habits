@@ -118,6 +118,16 @@ class ShareHabitActivity : AppCompatActivity() {
         render()
     }
 
+    /**
+     * "Nach oben" führt zurück zur Habit-Ansicht, die noch darunter liegt. Ohne das
+     * startet AppCompat die Eltern-Activity neu, aber ohne die Habit-URI, und
+     * ShowHabitActivity stürzte ab.
+     */
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
+    }
+
     override fun onDestroy() {
         scope.cancel()
         super.onDestroy()
