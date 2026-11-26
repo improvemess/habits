@@ -103,16 +103,10 @@ android {
             // Eigene Paket-ID und eigener Name, damit Debug-APKs (CI-Artefakte,
             // lokale Builds) neben der Production-App installierbar sind und
             // sich von ihr unterscheiden lassen (#126).
-            //
-            // Übergang bis #127: Releases sind noch Debug-Builds.
-            // tools/release/prepare.sh baut sie mit -PreleaseAsDebug ohne
-            // Endung, damit sie weiter die installierte App aktualisieren.
-            if (!project.hasProperty("releaseAsDebug")) {
-                applicationIdSuffix = ".debug"
-                versionNameSuffix = "-debug"
-                resValue("string", "application_id", "${defaultConfig.applicationId}.debug")
-                manifestPlaceholders["appLabel"] = "@string/app_label_debug"
-            }
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
+            resValue("string", "application_id", "${defaultConfig.applicationId}.debug")
+            manifestPlaceholders["appLabel"] = "@string/app_label_debug"
         }
     }
 
