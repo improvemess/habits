@@ -1,5 +1,31 @@
 # Changelog
 
+## [3.0.0](https://github.com/improvemess/[secure]/compare/v2.27.0...v3.0.0) (2026-11-26)
+
+### ⚠ BREAKING CHANGES
+
+* Releases als signierter Release-Build mit eigenem Schlüssel ([#127](https://github.com/improvemess/[secure]/issues/127)) ([#143](https://github.com/improvemess/[secure]/issues/143))
+
+* Debug-Builds mit eigener Paket-ID com.improvemess.[secure].debug ([#126](https://github.com/improvemess/[secure]/issues/126)) ([#137](https://github.com/improvemess/[secure]/issues/137)) ([0b75d97](https://github.com/improvemess/[secure]/commit/0b75d97dbf7836e636fe7eb26ddadcee3e1146fb)), references [#127](https://github.com/improvemess/[secure]/issues/127)
+* Quality Gates auf main, Release-PR-Prüfung, Doku zum Release-Ablauf ([#134](https://github.com/improvemess/[secure]/issues/134)) ([b3c4035](https://github.com/improvemess/[secure]/commit/b3c4035bccdb3bc9c4c525cd745dbcc0e5cff1ea)), closes [#124](https://github.com/improvemess/[secure]/issues/124) [#125](https://github.com/improvemess/[secure]/issues/125), references [#124](https://github.com/improvemess/[secure]/issues/124) [#133](https://github.com/improvemess/[secure]/issues/133) [#125](https://github.com/improvemess/[secure]/issues/125)
+* Release-Build mit R8 lauffähig machen ([#108](https://github.com/improvemess/[secure]/issues/108)) ([#132](https://github.com/improvemess/[secure]/issues/132)) ([9d4ce8a](https://github.com/improvemess/[secure]/commit/9d4ce8aeb31f96a9bfb072be5b14cc1c34ab9b87)), closes [#138](https://github.com/improvemess/[secure]/issues/138)
+* **release:** dev → main ([#133](https://github.com/improvemess/[secure]/issues/133)) ([9931b41](https://github.com/improvemess/[secure]/commit/9931b41fb24063ed8a9814ff895d018d87749713))
+* **release:** dev → main (3.0.0) ([#146](https://github.com/improvemess/[secure]/issues/146)) ([fc370de](https://github.com/improvemess/[secure]/commit/fc370de80ac43c95058ba23a090caa1cc6bec856))
+* Releases von main statt dev, Release-Commit zurück nach dev ([#130](https://github.com/improvemess/[secure]/issues/130)) ([91a998d](https://github.com/improvemess/[secure]/commit/91a998d97b2b0695e6c2a53c44b49390e38f57c6)), closes [#122](https://github.com/improvemess/[secure]/issues/122) [#123](https://github.com/improvemess/[secure]/issues/123), references [#121](https://github.com/improvemess/[secure]/issues/121) [#102](https://github.com/improvemess/[secure]/issues/102) [#103](https://github.com/improvemess/[secure]/issues/103) [#119](https://github.com/improvemess/[secure]/issues/119) [#121](https://github.com/improvemess/[secure]/issues/121)
+* Sharing-Server in der README erwähnen ([#131](https://github.com/improvemess/[secure]/issues/131)) ([3447da9](https://github.com/improvemess/[secure]/commit/3447da94ec51d4bdf41e0c135ef9ff23e981287a))
+
+### Features
+
+* Cheat Days mit globalen Stufen ([#20](https://github.com/improvemess/[secure]/issues/20)) ([#135](https://github.com/improvemess/[secure]/issues/135)) ([918a739](https://github.com/improvemess/[secure]/commit/918a739e8585eca07b3bde8f6cf2a3aa5bd54dc6))
+* einheitliches „zz“ für alle Tage, die die Streak nicht beeinflussen ([#101](https://github.com/improvemess/[secure]/issues/101)) ([#140](https://github.com/improvemess/[secure]/issues/140)) ([19dbbfe](https://github.com/improvemess/[secure]/commit/19dbbfebcd77e36dd10ecbe41f12514bdff13f50))
+* fließendes seitliches Scrollen mit Rand-Fade in der Habit-Liste ([#80](https://github.com/improvemess/[secure]/issues/80)) ([#139](https://github.com/improvemess/[secure]/issues/139)) ([738485a](https://github.com/improvemess/[secure]/commit/738485ab57116ae709fed645413d18ca5c90c8c1))
+* Fragezeichen abschaffen, Tage vor dem Anlegen zurücksetzbar ([#70](https://github.com/improvemess/[secure]/issues/70)) ([#136](https://github.com/improvemess/[secure]/issues/136)) ([afa5323](https://github.com/improvemess/[secure]/commit/afa5323bea404ed958e807a29117a2ce9c5e7934))
+* Releases als signierter Release-Build mit eigenem Schlüssel ([#127](https://github.com/improvemess/[secure]/issues/127)) ([#143](https://github.com/improvemess/[secure]/issues/143)) ([a53ec54](https://github.com/improvemess/[secure]/commit/a53ec5445a41366a063d98aa592c55578541d694)), closes [#106](https://github.com/improvemess/[secure]/issues/106), references [#132](https://github.com/improvemess/[secure]/issues/132) [#106](https://github.com/improvemess/[secure]/issues/106) [#137](https://github.com/improvemess/[secure]/issues/137)
+
+### Bug Fixes
+
+* Absturz bei „Nach oben“ im Teilen-Bildschirm ([#138](https://github.com/improvemess/[secure]/issues/138)) ([058300c](https://github.com/improvemess/[secure]/commit/058300cdb921200aabf0e1fa9c0db0b2982ed1bd)), references [#132](https://github.com/improvemess/[secure]/issues/132)
+
 ## [2.27.0](https://github.com/improvemess/habits/compare/v2.26.0...v2.27.0) (2026-11-26)
 
 * APK nach Paket-ID und Version benennen ([#120](https://github.com/improvemess/habits/issues/120)) ([9bad1cc](https://github.com/improvemess/habits/commit/9bad1cca30b8b096ab771944260ecb72b5e6488a)), references [#104](https://github.com/improvemess/habits/issues/104)
