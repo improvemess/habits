@@ -120,6 +120,18 @@ class LoopDBImporterNegativeHabitTest : BaseUnitTest() {
         assertTrue(yearly[0].calendarPeriod)
     }
 
+    @Test
+    fun testBackupKeepsCountDays() = runTest {
+        importBackup("update Habits set count_days = 1 where id = (select min(id) from Habits)")
+        assertEquals(1, habitList.count { it.countDays })
+    }
+
+    @Test
+    fun testOlderBackupCountsNoDays() = runTest {
+        importBackup(null)
+        habitList.forEach { assertFalse(it.countDays) }
+    }
+
     private suspend fun importBackup(sql: String?) {
         val userFile: UserFile = copyResourceToTempFile("loop.db")
         val db = databaseOpener().open(userFile.pathString)

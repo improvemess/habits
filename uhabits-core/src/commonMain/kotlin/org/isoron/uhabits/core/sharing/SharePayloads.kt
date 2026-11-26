@@ -49,6 +49,7 @@ data class SharedHabitMetadata(
     val negativeSince: LocalDate? = null,
     /** Weekly goals count per calendar week instead of per rolling 7 days. */
     val calendarPeriod: Boolean = false,
+    val countDays: Boolean = false,
     /** Paused periods (without their private titles). */
     val pauses: List<PausePeriod> = emptyList()
 ) {
@@ -67,6 +68,7 @@ data class SharedHabitMetadata(
             historyStart = historyStart,
             negativeSince = snapshot.negativeSince,
             calendarPeriod = snapshot.calendarPeriod,
+            countDays = snapshot.countDays,
             pauses = snapshot.pauses
         )
     }
@@ -161,6 +163,7 @@ object SharePayloads {
             historyStart = metadata.historyStart.toCSVString(),
             negativeSince = metadata.negativeSince?.toCSVString(),
             calendarPeriod = if (metadata.calendarPeriod) true else null,
+            countDays = if (metadata.countDays) true else null,
             pauses = metadata.pauses.takeIf { it.isNotEmpty() }?.map {
                 PauseV1(it.start.toCSVString(), it.end.toCSVString())
             }
@@ -186,6 +189,7 @@ object SharePayloads {
             historyStart = parseDate(m.historyStart),
             negativeSince = m.negativeSince?.let { parseDate(it) },
             calendarPeriod = m.calendarPeriod == true,
+            countDays = m.countDays == true,
             pauses = m.pauses.orEmpty().map { pause ->
                 val start = parseDate(pause.start)
                 val end = parseDate(pause.end)
@@ -260,6 +264,7 @@ object SharePayloads {
         // Optional since the start of v1; omitted for normal habits.
         val negativeSince: String? = null,
         val calendarPeriod: Boolean? = null,
+        val countDays: Boolean? = null,
         val pauses: List<PauseV1>? = null
     )
 

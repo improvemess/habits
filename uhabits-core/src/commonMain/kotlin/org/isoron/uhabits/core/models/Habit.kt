@@ -20,6 +20,7 @@ package org.isoron.uhabits.core.models
 
 import org.isoron.platform.time.LocalDate
 import org.isoron.platform.time.getToday
+import kotlin.math.max
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -46,6 +47,11 @@ data class Habit(
     var createdOn: LocalDate? = null,
     /** Whether a weekly goal counts per calendar week instead of per rolling 7 days (see #23). */
     var calendarPeriod: Boolean = false,
+    /**
+     * Measurable habit: [targetValue] is a threshold per day and [frequency] says on how many days of
+     * the period it must be reached, instead of one sum per period (see #81).
+     */
+    var countDays: Boolean = false,
     /** Unit of the streak flame; null means automatic, derived from the frequency (see #15). */
     var streakUnit: StreakUnit? = null,
     /** Fixed weekdays on which the habit is due, as a history; empty for the plain frequency (see #19). */
@@ -100,13 +106,47 @@ data class Habit(
         return value != Entry.UNKNOWN
     }
 
+    /** Whether this measurable habit counts the days that reach its daily threshold (see #81). */
+    val countsDays: Boolean
+        get() = isNumerical && countDays && frequency.denominator > 1 && !dueDays.isEverFixed
+
+    /** Denominator of the period that [targetValue] refers to: one day if the target is per day. */
+    val valuePeriodDays: Int
+        get() = if (countsDays) 1 else effectiveFrequency.denominator
+
     fun recompute() {
+        val base = entriesWithAutoChecks(entriesWithRestDays(entriesWithPauses()))
+        // Days that reach the threshold count like the yes of a "X times per period" habit. The
+        // values stay in the computed entries; completion, score and streaks follow the days.
+
         computedEntries.recomputeFrom(
-            originalEntries = entriesWithAutoChecks(entriesWithRestDays(entriesWithPauses())),
+            originalEntries = base,
             frequency = effectiveFrequency,
             isNumerical = isNumerical,
             calendarPeriod = calendarPeriod
         )
+
+        if (countsDays) {
+            val days = EntryList()
+            days.recomputeFrom(computeDayEntries(base), frequency, false, calendarPeriod)
+            days.recomputeCompletion(frequency, false, targetType, targetValue, calendarPeriod)
+            for (entry in computedEntries.getKnown()) {
+                val completed = days.get(entry.date).completed
+                if (entry.completed != completed) computedEntries.add(entry.copy(completed = completed))
+            }
+            // Days of a fulfilled period before the first entry have no placeholder yet
+            val today = getToday()
+            for (entry in days.getKnown()) {
+                if (entry.completed && !entry.date.isNewerThan(today) && computedEntries.get(entry.date).value == Entry.UNKNOWN &&
+                    !computedEntries.get(entry.date).completed
+                ) {
+                    computedEntries.add(Entry(entry.date, Entry.UNKNOWN, completed = true))
+                }
+            }
+            recomputeScoresAndStreaks(days, false)
+            clearCompletionBeforeCreation()
+            return
+        }
 
         computedEntries.recomputeCompletion(
             frequency = effectiveFrequency,
@@ -117,29 +157,53 @@ data class Habit(
         )
 
         clearCompletionBeforeCreation()
+        recomputeScoresAndStreaks(computedEntries, isNumerical)
+    }
 
+    /** Turns every value of [source] into a yes or no for the daily threshold; skips and unknowns stay. */
+    private fun computeDayEntries(source: EntryList): EntryList {
+        val result = EntryList()
+        for (entry in source.getKnown()) {
+            val value = when {
+                entry.value == Entry.SKIP || entry.value == Entry.UNKNOWN -> entry.value
+                reachesThreshold(entry.value) -> Entry.YES_MANUAL
+                else -> Entry.NO
+            }
+            result.add(Entry(entry.date, value, entry.notes))
+        }
+        return result
+    }
+
+    private fun reachesThreshold(rawValue: Int): Boolean {
+        val value = max(0, rawValue) / 1000.0
+        return when (targetType) {
+            NumericalHabitType.AT_LEAST -> value >= targetValue
+            NumericalHabitType.AT_MOST -> value <= targetValue
+        }
+    }
+
+    private fun recomputeScoresAndStreaks(entries: EntryList, numerical: Boolean) {
         val today = getToday()
         val to = today.plus(30)
-        val entries = computedEntries.getKnown()
-        var from = entries.lastOrNull()?.date ?: today
+        var from = entries.getKnown().lastOrNull()?.date ?: today
         if (from.isNewerThan(to)) from = to
 
         scores.recompute(
             frequency = effectiveFrequency,
-            isNumerical = isNumerical,
+            isNumerical = numerical,
             numericalHabitType = targetType,
             calendarPeriod = calendarPeriod,
             targetValue = targetValue,
-            computedEntries = computedEntries,
+            computedEntries = entries,
             from = from,
             to = to
         )
 
         streaks.recompute(
-            computedEntries,
+            entries,
             from,
             to,
-            isNumerical,
+            numerical,
             targetValue,
             targetType
         )
@@ -264,6 +328,7 @@ data class Habit(
         this.negativeSince = other.negativeSince
         this.createdOn = other.createdOn
         this.calendarPeriod = other.calendarPeriod
+        this.countDays = other.countDays
         this.streakUnit = other.streakUnit
         this.dueDays = other.dueDays
     }
@@ -290,6 +355,7 @@ data class Habit(
         if (negativeSince != other.negativeSince) return false
         if (createdOn != other.createdOn) return false
         if (calendarPeriod != other.calendarPeriod) return false
+        if (countDays != other.countDays) return false
         if (streakUnit != other.streakUnit) return false
         if (dueDays != other.dueDays) return false
 
@@ -315,6 +381,7 @@ data class Habit(
         result = 31 * result + (negativeSince?.hashCode() ?: 0)
         result = 31 * result + (createdOn?.hashCode() ?: 0)
         result = 31 * result + calendarPeriod.hashCode()
+        result = 31 * result + countDays.hashCode()
         result = 31 * result + (streakUnit?.hashCode() ?: 0)
         result = 31 * result + dueDays.hashCode()
         return result

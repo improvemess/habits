@@ -66,6 +66,7 @@ object HabitEventFactory {
         targetType = if (habit.isNumerical) targetTypeOf(habit.targetType) else null,
         negativeSince = habit.negativeSince,
         calendarPeriod = habit.calendarPeriod,
+        countDays = habit.countDays,
         pauses = habit.pauses.getAll().map { PausePeriod(it.start, it.end) }
     )
 

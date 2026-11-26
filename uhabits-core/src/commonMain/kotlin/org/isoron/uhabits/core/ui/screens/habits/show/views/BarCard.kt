@@ -111,7 +111,7 @@ class BarCardPresenter(
 
         /** The limit that applies to one bucket (day, week, month, quarter or year) starting at [date]. */
         private fun limitFor(habit: Habit, field: TruncateField, date: LocalDate): Double {
-            val denominator = habit.effectiveFrequency.denominator
+            val denominator = habit.valuePeriodDays
             val daily = habit.targetValue / denominator
             return when {
                 field == TruncateField.DAY && denominator <= 1 -> habit.targetValue
