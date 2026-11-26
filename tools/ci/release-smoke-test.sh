@@ -46,13 +46,19 @@ fi
 # Muster passt (uiautomator dump). Rückgabe 1, wenn keine gefunden wurde.
 tap_view() {
     local pattern=$1 bounds
-    $ADB shell uiautomator dump /sdcard/ui.xml > /dev/null 2>&1 || return 1
-    bounds=$($ADB shell cat /sdcard/ui.xml | tr '>' '\n' |
+    $ADB shell uiautomator dump /sdcard/ui.xml > "$OUT/uiautomator.txt" 2>&1
+    $ADB pull /sdcard/ui.xml "$OUT/ui.xml" > /dev/null 2>&1 || return 1
+    bounds=$(tr '>' '\n' < "$OUT/ui.xml" |
         grep -E "(resource-id|text)=\"($pattern)\"" | head -1 |
         sed -n -E 's/.*bounds="\[([0-9]+),([0-9]+)\]\[([0-9]+),([0-9]+)\]".*/\1 \2 \3 \4/p')
     [ -n "$bounds" ] || return 1
     set -- $bounds
     $ADB shell input tap $((($1 + $3) / 2)) $((($2 + $4) / 2))
+}
+
+# Bildschirmfoto ins Ausgabeverzeichnis, zur Fehlersuche.
+screenshot() {
+    $ADB exec-out screencap -p > "$OUT/screen-$1.png" 2>/dev/null || true
 }
 
 # 2. Die Einführung beim ersten Start überspringen, sonst landen fast alle
@@ -63,6 +69,7 @@ else
     echo "::warning::Skip-Schaltfläche der Einführung nicht gefunden."
 fi
 sleep 2
+screenshot after-skip
 
 # 3. Zufällige Eingaben in der App (ohne Systemtasten, damit monkey die App
 #    nicht verlässt), in mehreren Runden mit verschiedenen Seeds.
@@ -73,6 +80,7 @@ for seed in $SEEDS; do
         --pct-appswitch 0 --ignore-timeouts -v "$EVENTS" > "$OUT/monkey-$seed.txt" 2>&1
     monkey_status=$?
     cat "$OUT/monkey-$seed.txt" >> "$OUT/monkey.txt"
+    screenshot "after-monkey-$seed"
     tail -n 5 "$OUT/monkey-$seed.txt"
     echo "::endgroup::"
     if [ $monkey_status -ne 0 ] || grep -q "// CRASH" "$OUT/monkey-$seed.txt"; then
