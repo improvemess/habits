@@ -1,16 +1,23 @@
 name: Quality Gates
 
-# Kein paths-ignore: "Quality gate" ist Pflicht-Check auf dev und muss daher
-# bei jedem PR laufen, sonst bliebe er dauerhaft ausstehend.
+# Kein paths-ignore: "Quality gate" ist Pflicht-Check auf dev und main und
+# muss daher bei jedem PR laufen, sonst bliebe er dauerhaft ausstehend.
 #
 # Der Lauf auf dev füllt die Caches für die PRs: GitHub-Caches gelten pro
 # Branch, PRs dürfen nur die von dev lesen. setup-gradle speichert den
 # Gradle-Build-Cache nur auf dev (in PRs nur lesend); ohne diesen Lauf fänden
 # PRs keine Debug-Kompilate im Cache.
+#
+# Der Lauf auf main prüft den Stand, aus dem das Release gebaut wird. Er liest
+# den Cache von dev nur (main ist nicht der Standard-Branch) und stellt die
+# Debug-APK des Release-Stands als Artefakt bereit.
+#
+# workflow_dispatch läuft auch für Commits mit Skip-CI-Marker; damit lässt sich
+# der Pflicht-Check für einen solchen Commit von Hand nachholen.
 on:
   pull_request:
   push:
-    branches: [dev]
+    branches: [dev, main]
   workflow_dispatch:
 
 concurrency:
