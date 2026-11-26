@@ -21,12 +21,15 @@ package org.isoron.uhabits.core.sharing
 import com.sun.net.httpserver.HttpServer
 import kotlinx.coroutines.test.runTest
 import org.isoron.platform.time.LocalDate
+import java.net.InetAddress
 import java.net.InetSocketAddress
+import java.net.ServerSocket
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -161,7 +164,47 @@ class HttpSharingApiTest {
     @Test
     fun testUnexpectedResponse() = runTest {
         response = "<html>proxy error</html>"
-        assertFailsWith<SharingApiException> { api.discover(url) }
+        val e = assertFailsWith<SharingApiException> { api.discover(url) }
+        assertEquals(SharingApiException.Kind.INVALID_RESPONSE, e.kind)
+        assertTrue(e.detail!!.startsWith("JsonDecodingException"), e.detail)
+    }
+
+    @Test
+    fun testUnexpectedResponseDetailHasNoToken() = runTest {
+        status = 201
+        response = "{\"deviceToken\":\"dt_secret\",\"x\":}"
+        val e = assertFailsWith<SharingApiException> { api.registerDevice(url, identity, "d") }
+        assertEquals(SharingApiException.Kind.INVALID_RESPONSE, e.kind)
+        assertFalse(e.detail!!.contains("secret"), e.detail)
+    }
+
+    @Test
+    fun testUnknownHost() = runTest {
+        val e = assertFailsWith<SharingApiException> { api.discover("https://uhabits.invalid") }
+        assertEquals(SharingApiException.Kind.DNS, e.kind)
+        assertTrue(e.isTemporary)
+        assertTrue(e.detail!!.startsWith("UnknownHostException"), e.detail)
+    }
+
+    @Test
+    fun testTlsFailure() = runTest {
+        // The test server speaks plain HTTP only.
+        val e = assertFailsWith<SharingApiException> { api.discover(url.replace("http://", "https://")) }
+        assertEquals(SharingApiException.Kind.TLS, e.kind)
+        assertTrue(e.detail!!.startsWith("SSL"), e.detail)
+    }
+
+    @Test
+    fun testTimeout() = runTest {
+        // Accepts connections (backlog) but never answers.
+        ServerSocket(0, 1, InetAddress.getByName("127.0.0.1")).use { silent ->
+            val slowApi = HttpSharingApi(connectTimeoutMillis = 1_000, readTimeoutMillis = 200)
+            val e = assertFailsWith<SharingApiException> {
+                slowApi.discover("http://127.0.0.1:${silent.localPort}")
+            }
+            assertEquals(SharingApiException.Kind.TIMEOUT, e.kind)
+            assertTrue(e.isTemporary)
+        }
     }
 
     @Test
@@ -176,6 +219,8 @@ class HttpSharingApiTest {
         response = "{\"error\":\"Share has ended\"}"
         val e = assertFailsWith<SharingApiException> { api.putMeta(url, "dt", "s1", "v1.X") }
         assertEquals(410, e.status)
+        assertEquals(SharingApiException.Kind.HTTP, e.kind)
+        assertNull(e.detail)
         assertTrue(e.isShareGone)
         assertTrue(e.message!!.contains("Share has ended"))
     }
@@ -186,11 +231,14 @@ class HttpSharingApiTest {
         val e = assertFailsWith<SharingApiException> { api.heartbeat(url, "dt") }
         assertNull(e.status)
         assertTrue(e.isTemporary)
+        assertEquals(SharingApiException.Kind.CONNECTION, e.kind)
+        assertTrue(e.detail!!.startsWith("ConnectException"), e.detail)
     }
 
     @Test
     fun testInvalidServerUrl() = runTest {
         val e = assertFailsWith<SharingApiException> { api.heartbeat("not a url", "dt") }
         assertNull(e.status)
+        assertEquals(SharingApiException.Kind.INVALID_URL, e.kind)
     }
 }

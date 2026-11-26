@@ -105,9 +105,51 @@ interface SharingApi {
 
 /**
  * @property status HTTP status, or null if the server could not be reached.
+ * @property kind What went wrong, so that the user sees more than "unreachable" (#97).
  */
-class SharingApiException(val status: Int?, message: String, cause: Throwable? = null) :
-    Exception(message, cause) {
+class SharingApiException(
+    val status: Int?,
+    message: String,
+    cause: Throwable? = null,
+    val kind: Kind = if (status != null) Kind.HTTP else Kind.CONNECTION
+) : Exception(message, cause) {
+
+    enum class Kind {
+        /** The server answered with an error status, see [status]. */
+        HTTP,
+
+        /** The host name could not be resolved (no network, VPN, Private DNS). */
+        DNS,
+
+        /** No secure connection: certificate, date and time, or a captive portal. */
+        TLS,
+
+        /** The server did not answer in time. */
+        TIMEOUT,
+
+        /** Any other failure to connect or to transfer the request. */
+        CONNECTION,
+
+        /** The server answered 2xx, but not with what API v1 describes. */
+        INVALID_RESPONSE,
+
+        /** The server URL cannot be turned into a request URL. */
+        INVALID_URL
+    }
+
+    /**
+     * The technical cause for the user, e.g. `UnknownHostException: Unable to
+     * resolve host "example.com"`, or null for [Kind.HTTP] errors. Never
+     * contains tokens: response excerpts are dropped and token-like words
+     * are shortened.
+     */
+    val detail: String?
+        get() {
+            val first = cause ?: return null
+            var root: Throwable = first
+            repeat(MAX_CAUSES) { root = root.cause ?: return@repeat }
+            return if (root === first) describe(first) else "${describe(first)} (caused by ${describe(root)})"
+        }
 
     /** Worth trying again later: no connection, server error or rate limit. */
     val isTemporary: Boolean get() = status == null || status >= 500 || status == 429 || status == 408
@@ -116,6 +158,23 @@ class SharingApiException(val status: Int?, message: String, cause: Throwable? =
 
     /** The share no longer exists on the server. */
     val isShareGone: Boolean get() = status == 404 || status == 410
+
+    private companion object {
+        const val MAX_CAUSES = 10
+        const val MAX_MESSAGE = 200
+        private val TOKEN = Regex("\\b(dt|rt)_[A-Za-z0-9_-]+")
+
+        fun describe(t: Throwable): String {
+            val name = t::class.simpleName ?: "Exception"
+            val message = t.message
+                // kotlinx.serialization appends an excerpt of the response, which may hold a token.
+                ?.substringBefore("JSON input:")
+                ?.replace(TOKEN, "$1_…")
+                ?.trim()
+                ?.take(MAX_MESSAGE)
+            return if (message.isNullOrEmpty()) name else "$name: $message"
+        }
+    }
 }
 
 /**

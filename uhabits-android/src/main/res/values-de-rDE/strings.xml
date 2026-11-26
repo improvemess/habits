@@ -290,10 +290,16 @@
     <string name="share_error_unreachable">Der Server ist nicht erreichbar. Prüfe deine Verbindung.</string>
     <string name="share_error_incompatible">%1$s ist kein passender Server zum Teilen.</string>
     <string name="share_error_failed">Das hat nicht geklappt: %1$s</string>
+    <string name="share_error_dns">Die Adresse %1$s lässt sich nicht auflösen. Prüfe deine Verbindung, ein VPN oder privates DNS.</string>
+    <string name="share_error_tls">Keine sichere Verbindung zu %1$s. Prüfe Datum und Uhrzeit des Geräts oder ob das Netz zuerst eine Anmeldung verlangt.</string>
+    <string name="share_error_timeout">%1$s hat nicht rechtzeitig geantwortet. Versuche es später noch einmal.</string>
+    <string name="share_error_invalid_response">%1$s hat unerwartet geantwortet.</string>
+    <string name="share_error_detail">Details: %1$s</string>
     <string name="pref_sharing_category">Mit Freunden teilen</string>
     <string name="pref_sharing_server">Server zum Teilen</string>
     <string name="pref_sharing_server_summary">%1$s\nGilt für neue Freigaben, bestehende behalten ihren Server.</string>
     <string name="pref_sharing_server_invalid">Das ist keine gültige Server-Adresse. Verwende https://, z. B. https://habits.example.com</string>
+    <string name="pref_sharing_server_ok">Der Server zum Teilen ist erreichbar (uhabits-server %1$s).</string>
     <string name="streak_unit">Streak-Einheit</string>
     <string name="streak_unit_auto">Automatisch (%s)</string>
     <string name="streak_unit_days">Tage</string>

@@ -33,19 +33,20 @@ class FakeSharingApi : SharingApi {
     val sinceRequests = mutableListOf<Long>()
     val left = mutableListOf<String>()
     private var inviteCount = 0
-    private val failures = ArrayDeque<Pair<String, Int?>>()
+    private val failures = ArrayDeque<Pair<String, SharingApiException>>()
 
-    /** The next call named [call] fails with [status] (null: no connection). */
-    fun failNext(call: String, status: Int?) {
-        failures.addLast(call to status)
+    /** The next call named [call] fails with [status] (null: no connection, or [kind]). */
+    fun failNext(call: String, status: Int?, kind: SharingApiException.Kind? = null) {
+        val e = SharingApiException(status, "fake failure")
+        failures.addLast(call to if (kind == null) e else SharingApiException(status, "fake failure", kind = kind))
     }
 
     private fun record(call: String) {
         val failure = failures.firstOrNull { it.first == call }
         if (failure != null) {
             failures.remove(failure)
-            calls.add("$call!${failure.second}")
-            throw SharingApiException(failure.second, "fake failure")
+            calls.add("$call!${failure.second.status}")
+            throw failure.second
         }
         calls.add(call)
     }

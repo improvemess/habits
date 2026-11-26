@@ -318,10 +318,16 @@
     <string name="share_error_unreachable">The sharing server cannot be reached. Check your connection.</string>
     <string name="share_error_incompatible">%1$s is not a compatible sharing server.</string>
     <string name="share_error_failed">That did not work: %1$s</string>
+    <string name="share_error_dns">The address %1$s cannot be resolved. Check your connection, a VPN or Private DNS.</string>
+    <string name="share_error_tls">No secure connection to %1$s. Check the date and time of the device, or whether the network needs a login first.</string>
+    <string name="share_error_timeout">%1$s did not answer in time. Try again later.</string>
+    <string name="share_error_invalid_response">%1$s sent an unexpected answer.</string>
+    <string name="share_error_detail">Details: %1$s</string>
     <string name="pref_sharing_category">Sharing with friends</string>
     <string name="pref_sharing_server">Sharing server</string>
     <string name="pref_sharing_server_summary">%1$s\nUsed for new shares; existing shares keep their server.</string>
     <string name="pref_sharing_server_invalid">This is not a valid server address. Use https://, e.g. https://habits.example.com</string>
+    <string name="pref_sharing_server_ok">The sharing server is reachable (uhabits-server %1$s).</string>
     <string name="friends">Friends</string>
     <string name="friends_empty">No friend shares a habit with you yet. When someone sends you an invite link, open it, or copy it and choose \"Accept invite\" here.</string>
     <string name="friends_loading">Loading a habit from %1$s…</string>
