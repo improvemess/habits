@@ -43,6 +43,17 @@ abstract class ScrollableChart : View, GestureDetector.OnGestureListener, Animat
     private lateinit var scrollController: ScrollController
     private var maxDataOffset = 12 * 200
 
+    /**
+     * Fraction (0 until 1) of a bucket by which the content is scrolled beyond [dataOffset]. Lets
+     * subclasses draw a smooth, pixel-wise scroll instead of jumping from bucket to bucket.
+     */
+    var scrollFraction = 0f
+        private set
+
+    /** If true, the scroll position settles on a whole bucket after the user lets go. */
+    var snapToBucket = false
+    private var userScrolling = false
+
     constructor(context: Context?) : super(context) {
         init(context)
     }
@@ -55,9 +66,39 @@ abstract class ScrollableChart : View, GestureDetector.OnGestureListener, Animat
         if (!scroller.isFinished) {
             scroller.computeScrollOffset()
             updateDataOffset()
+        } else if (!userScrolling && snapIfNeeded()) {
+            // Fling finished between two buckets: settle on the nearest one.
         } else {
             scrollAnimator.cancel()
         }
+    }
+
+    /**
+     * Called when the finger leaves the screen. If [snapToBucket] is set and no fling is running,
+     * animates to the nearest whole bucket.
+     */
+    fun settle() {
+        userScrolling = false
+        if (scroller.isFinished) snapIfNeeded()
+    }
+
+    private fun snapIfNeeded(): Boolean {
+        if (!snapToBucket || scrollerBucketSize <= 0) return false
+        val rest = scroller.currX % scrollerBucketSize
+        if (rest == 0) return false
+        val target = if (rest * 2 >= scrollerBucketSize) {
+            scroller.currX + scrollerBucketSize - rest
+        } else {
+            scroller.currX - rest
+        }
+        val clamped = min(max(target, 0), maxX)
+        scroller.forceFinished(true)
+        scroller.startScroll(scroller.currX, scroller.currY, clamped - scroller.currX, 0, SNAP_DURATION_MS)
+        scrollAnimator.cancel()
+        scrollAnimator.duration = SNAP_DURATION_MS.toLong()
+        scrollAnimator.start()
+        invalidate()
+        return true
     }
 
     override fun onDown(e: MotionEvent): Boolean {
@@ -70,6 +111,7 @@ abstract class ScrollableChart : View, GestureDetector.OnGestureListener, Animat
         velocityX: Float,
         velocityY: Float
     ): Boolean {
+        userScrolling = false
         scroller.fling(
             scroller.currX,
             scroller.currY,
@@ -123,6 +165,7 @@ abstract class ScrollableChart : View, GestureDetector.OnGestureListener, Animat
             val parent = parent
             parent?.requestDisallowInterceptTouchEvent(true)
         }
+        userScrolling = true
         dx *= -direction
         dx = min(dx, (maxX - scroller.currX).toFloat())
         scroller.startScroll(
@@ -143,7 +186,11 @@ abstract class ScrollableChart : View, GestureDetector.OnGestureListener, Animat
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        return detector.onTouchEvent(event)
+        val handled = detector.onTouchEvent(event)
+        if (event.actionMasked == MotionEvent.ACTION_UP || event.actionMasked == MotionEvent.ACTION_CANCEL) {
+            settle()
+        }
+        return handled
     }
 
     fun setScrollDirection(direction: Int) {
@@ -197,6 +244,16 @@ abstract class ScrollableChart : View, GestureDetector.OnGestureListener, Animat
         var newDataOffset = scroller.currX / scrollerBucketSize
         newDataOffset = max(0, newDataOffset)
         newDataOffset = min(maxDataOffset, newDataOffset)
+        val newFraction = if (!snapToBucket || newDataOffset >= maxDataOffset) {
+            0f
+        } else {
+            (scroller.currX % scrollerBucketSize).toFloat() / scrollerBucketSize
+        }
+        if (newFraction != scrollFraction) {
+            scrollFraction = newFraction
+            scrollController.onScrollFractionChanged(newFraction)
+            postInvalidate()
+        }
         if (newDataOffset != dataOffset) {
             dataOffset = newDataOffset
             scrollController.onDataOffsetChanged(dataOffset)
@@ -206,5 +263,12 @@ abstract class ScrollableChart : View, GestureDetector.OnGestureListener, Animat
 
     interface ScrollController {
         fun onDataOffsetChanged(newDataOffset: Int) {}
+
+        /** Pixel-wise remainder (0 until 1 bucket) on top of the data offset. */
+        fun onScrollFractionChanged(fraction: Float) {}
+    }
+
+    private companion object {
+        const val SNAP_DURATION_MS = 150
     }
 }

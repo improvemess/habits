@@ -124,6 +124,10 @@ class ListHabitsRootView(
                     listView.setDataOffset(newDataOffset)
                     loadMoreDaysIfNeeded(newDataOffset)
                 }
+
+                override fun onScrollFractionChanged(fraction: Float) {
+                    listView.setScrollFraction(fraction)
+                }
             }
         )
     }
