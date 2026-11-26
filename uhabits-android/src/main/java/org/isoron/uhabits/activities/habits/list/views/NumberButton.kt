@@ -199,7 +199,8 @@ class NumberButtonView(
             pNumber.typeface = typeface
             pUnit.color = activeColor
 
-            if (state.units.isBlank()) {
+            // A rest day shows only the "zz", centered and without the unit
+            if (state.units.isBlank() || label == "zz" && state.restDay) {
                 // Draw number without units
                 rect.set(0f, 0f, width.toFloat(), height.toFloat())
                 rect.offset(0f, 0.5f * em)
