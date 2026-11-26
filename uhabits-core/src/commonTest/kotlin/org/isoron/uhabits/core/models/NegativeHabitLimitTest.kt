@@ -281,7 +281,7 @@ class NegativeHabitLimitTest : BaseUnitTest() {
 
     @Test
     fun testTappingACrossOnAnAvoidedHabitAlwaysComesBackToTheCheck() {
-        for (skipEnabled in listOf(false, true)) {
+        run {
             for (beforeCreation in listOf(false)) {
                 val h = modelFactory.buildHabit()
                 h.negativeSince = getToday().minus(3)
@@ -291,13 +291,13 @@ class NegativeHabitLimitTest : BaseUnitTest() {
                 var taps = 0
                 do {
                     val shown = h.computedEntries.get(day).value
-                    val next = Entry.nextToggleValue(shown, skipEnabled, beforeCreation)
+                    val next = Entry.nextToggleValue(shown, beforeCreation)
                     h.originalEntries.add(Entry(day, next))
                     h.recompute()
                     if (h.computedEntries.get(day).value == Entry.NO) seenCross = true
                     taps++
                 } while (h.computedEntries.get(day).value != Entry.YES_MANUAL && taps < 6)
-                assertTrue(seenCross, "skip=$skipEnabled beforeCreation=$beforeCreation")
+                assertTrue(seenCross, "beforeCreation=$beforeCreation")
                 assertEquals(Entry.YES_MANUAL, h.computedEntries.get(day).value)
                 assertTrue(h.isCompletedOn(day))
             }

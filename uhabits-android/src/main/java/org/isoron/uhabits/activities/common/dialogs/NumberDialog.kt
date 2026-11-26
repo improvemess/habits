@@ -47,7 +47,6 @@ class NumberDialog : AppCompatDialogFragment() {
         arrayOf(view.yesBtn, view.noBtn, view.unknownBtnNumber).forEach {
             it.typeface = InterfaceUtils.getFontAwesome(requireContext())
         }
-        if (!prefs.isSkipEnabled) view.skipBtnNumber.visibility = View.GONE
         if (!requireArguments().getBoolean("allowUnknown", true)) {
             view.unknownBtnNumber.visibility = View.GONE
         }
@@ -70,10 +69,6 @@ class NumberDialog : AppCompatDialogFragment() {
             return@setOnKeyListener false
         }
         view.saveBtn.setOnClickListener {
-            save()
-        }
-        view.skipBtnNumber.setOnClickListener {
-            view.value.setText(DecimalFormat("#.###").format((Entry.SKIP.toDouble() / 1000)))
             save()
         }
 

@@ -204,11 +204,6 @@ open class Preferences(private val storage: Storage) {
         set(value) {
             storage.putString("pref_widget_opacity", value.toString())
         }
-    open var isSkipEnabled: Boolean
-        get() = storage.getBoolean("pref_skip_enabled", false)
-        set(value) {
-            storage.putBoolean("pref_skip_enabled", value)
-        }
 
     /** Server for new shares; existing shares keep theirs (see [org.isoron.uhabits.core.sharing.Share]). */
     open var sharingServerUrl: String
