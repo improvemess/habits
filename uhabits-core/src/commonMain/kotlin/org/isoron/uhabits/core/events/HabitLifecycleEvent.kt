@@ -64,6 +64,8 @@ data class HabitSnapshot(
     val negativeSince: LocalDate? = null,
     /** Weekly goals count per calendar week instead of per rolling 7 days. */
     val calendarPeriod: Boolean = false,
+    /** Measurable goals count the days that reach the target per day instead of one sum per period. */
+    val countDays: Boolean = false,
     /** Paused periods; their titles are private and left out. */
     val pauses: List<PausePeriod> = emptyList()
 )

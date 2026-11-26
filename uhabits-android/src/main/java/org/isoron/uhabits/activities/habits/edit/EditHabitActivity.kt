@@ -105,6 +105,7 @@ class EditHabitActivity : AppCompatActivity() {
     var freqNum = 1
     var freqDen = 1
     var calendarPeriod = false
+    var countDays = false
     var streakUnit: StreakUnit? = null
     var fixedWeekdays = 0
 
@@ -139,6 +140,7 @@ class EditHabitActivity : AppCompatActivity() {
             freqNum = habit.frequency.numerator
             freqDen = habit.frequency.denominator
             calendarPeriod = habit.calendarPeriod
+            countDays = habit.countDays
             streakUnit = habit.streakUnit
             fixedWeekdays = habit.dueDays.current ?: 0
             targetType = habit.targetType
@@ -168,6 +170,7 @@ class EditHabitActivity : AppCompatActivity() {
             freqNum = state.getInt("freqNum")
             freqDen = state.getInt("freqDen")
             calendarPeriod = state.getBoolean("calendarPeriod")
+            countDays = state.getBoolean("countDays")
             streakUnit = StreakUnit.fromId(state.getInt("streakUnit", StreakUnit.AUTO_ID))
             fixedWeekdays = state.getInt("fixedWeekdays")
             timesPerDay = state.getInt("timesPerDay", 1)
@@ -280,11 +283,15 @@ class EditHabitActivity : AppCompatActivity() {
                 calendarPeriod,
                 measurable = true,
                 quit = isNegative,
-                fixedWeekdays = fixedWeekdays
+                fixedWeekdays = fixedWeekdays,
+                countDays = countDays
             )
             picker.onFixedDaysPicked = { days ->
                 fixedWeekdays = days
                 populateFrequency()
+            }
+            picker.onCountDaysPicked = { days ->
+                countDays = days
             }
             picker.onFrequencyPicked = { num, den, period ->
                 freqNum = num
@@ -370,6 +377,7 @@ class EditHabitActivity : AppCompatActivity() {
 
         habit.frequency = Frequency(freqNum, freqDen)
         habit.calendarPeriod = calendarPeriod && (freqDen == 7 || freqDen >= 30)
+        habit.countDays = countDays && habitType == HabitType.NUMERICAL && freqDen > 1 && fixedWeekdays == 0
         habit.streakUnit = streakUnit
         // A change of the fixed weekdays only counts from today on, a new habit has them from the start
         val dueSince = if (habitId >= 0) getToday() else LocalDate(0)
@@ -478,11 +486,14 @@ class EditHabitActivity : AppCompatActivity() {
     }
 
     private fun populateFrequency() {
+        populateFrequencyLabel()
         populateStreakUnit()
         val fixedText = fixedWeekdays.takeIf { it != 0 && !isNegative }?.let { DueDays.toWeekdayList(it).toFormattedString(this) }
         val timesText = if (timesPerDay > 1 && freqDen == 1) getString(R.string.x_times_per_day, timesPerDay) else null
         binding.booleanFrequencyPicker.text = fixedText ?: timesText ?: formatFrequency(freqNum, freqDen, resources, calendarPeriod)
-        binding.numericalFrequencyPicker.text = fixedText ?: periodText(freqDen) ?: "$freqNum/$freqDen"
+        binding.numericalFrequencyPicker.text = fixedText
+            ?: daysText()
+            ?: periodText(freqDen) ?: "$freqNum/$freqDen"
     }
 
     /** Day, week, month or year period of a measurable habit; "per ..." wording for limits. */
@@ -507,6 +518,28 @@ class EditHabitActivity : AppCompatActivity() {
             }
         )
         else -> null
+    }
+
+    /** "3 days per rolling week" for a measurable habit that counts the days that reach its target (see #81). */
+    private fun daysText(): String? {
+        if (!countDays || freqDen <= 1) return null
+        val res = when {
+            freqDen == 7 -> if (calendarPeriod) R.string.days_per_calendar_week else R.string.days_per_rolling_week
+            freqDen == Frequency.YEAR_DAYS -> if (calendarPeriod) R.string.days_per_calendar_year else R.string.days_per_rolling_year
+            freqDen >= 30 -> if (calendarPeriod) R.string.days_per_calendar_month else R.string.days_per_rolling_month
+            else -> return null
+        }
+        return "$freqNum ${getString(res)}"
+    }
+
+    private fun populateFrequencyLabel() {
+        binding.numericalFrequencyLabel.text = getString(
+            when {
+                countDays -> R.string.count_days_frequency
+                isNegative -> R.string.quit_period
+                else -> R.string.frequency
+            }
+        )
     }
 
     private fun populateTargetType() {
@@ -540,6 +573,7 @@ class EditHabitActivity : AppCompatActivity() {
             putInt("freqNum", freqNum)
             putInt("freqDen", freqDen)
             putBoolean("calendarPeriod", calendarPeriod)
+            putBoolean("countDays", countDays)
             putInt("streakUnit", streakUnit?.id ?: StreakUnit.AUTO_ID)
             putInt("fixedWeekdays", fixedWeekdays)
             putInt("timesPerDay", timesPerDay)

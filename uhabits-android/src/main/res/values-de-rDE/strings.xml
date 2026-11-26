@@ -234,6 +234,13 @@
     <string name="target_type">Zieltyp</string>
     <string name="target_type_at_least">Mindestens</string>
     <string name="target_type_at_most">Höchstens</string>
+    <string name="count_days_frequency">In welchem Zeitraum</string>
+    <string name="days_per_rolling_week">Tage pro rollierender Woche</string>
+    <string name="days_per_calendar_week">Tage pro Kalenderwoche</string>
+    <string name="days_per_rolling_month">Tage pro rollierendem Monat</string>
+    <string name="days_per_calendar_month">Tage pro Kalendermonat</string>
+    <string name="days_per_rolling_year">Tage pro rollierendem Jahr</string>
+    <string name="days_per_calendar_year">Tage pro Kalenderjahr</string>
     <string name="target">Ziel</string>
     <string name="yes">Ja</string>
     <string name="no">Nein</string>

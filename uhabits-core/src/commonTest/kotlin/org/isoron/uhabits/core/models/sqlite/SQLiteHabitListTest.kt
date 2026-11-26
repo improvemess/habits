@@ -37,6 +37,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class SQLiteHabitListTest : BaseUnitTest() {
     private lateinit var repository: HabitRepository
@@ -298,5 +299,17 @@ class SQLiteHabitListTest : BaseUnitTest() {
         habit.createdOn = null
         habitList.update(habit)
         assertNull(repository.findAll().first { it.id == habit.id }.createdOn)
+    }
+
+    @Test
+    fun testCountDays_isPersistedAndRestored() = dbTest {
+        val habit = habitsArray[2]
+        habit.countDays = true
+        habitList.update(habit)
+        val data = repository.findAll().first { it.id == habit.id }
+        assertEquals(1, data.countDays)
+        val restored = modelFactory.buildHabit()
+        SQLiteHabitList.copyTo(data, restored)
+        assertTrue(restored.countDays)
     }
 }

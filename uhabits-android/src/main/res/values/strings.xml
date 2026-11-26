@@ -252,6 +252,13 @@
     <string name="target_type">Target Type</string>
     <string name="target_type_at_least">At least</string>
     <string name="target_type_at_most">At most</string>
+    <string name="count_days_frequency">In which period</string>
+    <string name="days_per_rolling_week">days per rolling week</string>
+    <string name="days_per_calendar_week">days per calendar week</string>
+    <string name="days_per_rolling_month">days per rolling month</string>
+    <string name="days_per_calendar_month">days per calendar month</string>
+    <string name="days_per_rolling_year">days per rolling year</string>
+    <string name="days_per_calendar_year">days per calendar year</string>
     <string name="target">Target</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>

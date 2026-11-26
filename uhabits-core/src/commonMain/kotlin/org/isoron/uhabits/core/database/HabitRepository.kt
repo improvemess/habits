@@ -31,7 +31,8 @@ data class HabitData(
     var calendarPeriod: Int = 0,
     var streakUnit: Int = StreakUnit.AUTO_ID,
     var dueDays: String = "",
-    var createdOn: Long? = null
+    var createdOn: Long? = null,
+    var countDays: Int = 0
 )
 
 class HabitRepository(private val db: Database) {
@@ -39,7 +40,7 @@ class HabitRepository(private val db: Database) {
         db.prepareStatement(
             """SELECT id, name, description, freq_num, freq_den, color,
                position, reminder_hour, reminder_min, reminder_days, highlight,
-               archived, type, target_value, target_type, unit, uuid, category, step_size, negative_since, calendar_period, streak_unit, due_days, created_on
+               archived, type, target_value, target_type, unit, uuid, category, step_size, negative_since, calendar_period, streak_unit, due_days, created_on, count_days
                FROM Habits ORDER BY position"""
         )
     }
@@ -48,8 +49,8 @@ class HabitRepository(private val db: Database) {
         db.prepareStatement(
             """INSERT INTO Habits(name, description, freq_num, freq_den,
                color, position, reminder_hour, reminder_min, reminder_days,
-               highlight, archived, type, target_value, target_type, unit, uuid, category, step_size, negative_since, calendar_period, streak_unit, due_days, created_on)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+               highlight, archived, type, target_value, target_type, unit, uuid, category, step_size, negative_since, calendar_period, streak_unit, due_days, created_on, count_days)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
         )
     }
 
@@ -57,8 +58,8 @@ class HabitRepository(private val db: Database) {
         db.prepareStatement(
             """INSERT INTO Habits(id, name, description, freq_num, freq_den,
                color, position, reminder_hour, reminder_min, reminder_days,
-               highlight, archived, type, target_value, target_type, unit, uuid, category, step_size, negative_since, calendar_period, streak_unit, due_days, created_on)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+               highlight, archived, type, target_value, target_type, unit, uuid, category, step_size, negative_since, calendar_period, streak_unit, due_days, created_on, count_days)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
         )
     }
 
@@ -67,7 +68,7 @@ class HabitRepository(private val db: Database) {
             """UPDATE Habits SET name=?, description=?, freq_num=?,
                freq_den=?, color=?, position=?, reminder_hour=?, reminder_min=?,
                reminder_days=?, highlight=?, archived=?, type=?, target_value=?,
-               target_type=?, unit=?, uuid=?, category=?, step_size=?, negative_since=?, calendar_period=?, streak_unit=?, due_days=?, created_on=? WHERE id=?"""
+               target_type=?, unit=?, uuid=?, category=?, step_size=?, negative_since=?, calendar_period=?, streak_unit=?, due_days=?, created_on=?, count_days=? WHERE id=?"""
         )
     }
 
@@ -101,7 +102,7 @@ class HabitRepository(private val db: Database) {
     fun update(data: HabitData) {
         updateStmt.reset()
         bindForInsert(updateStmt, data)
-        updateStmt.bindLong(24, data.id!!)
+        updateStmt.bindLong(25, data.id!!)
         updateStmt.step()
     }
 
@@ -140,6 +141,7 @@ class HabitRepository(private val db: Database) {
         stmt.bindInt(21 + o, data.streakUnit)
         stmt.bindText(22 + o, data.dueDays)
         if (data.createdOn != null) stmt.bindLong(23 + o, data.createdOn!!) else stmt.bindNull(23 + o)
+        stmt.bindInt(24 + o, data.countDays)
     }
 
     private fun readRow(stmt: PreparedStatement): HabitData {
@@ -167,7 +169,8 @@ class HabitRepository(private val db: Database) {
             calendarPeriod = stmt.getInt(20),
             streakUnit = stmt.getInt(21),
             dueDays = stmt.getTextOrNull(22) ?: "",
-            createdOn = stmt.getLongOrNull(23)
+            createdOn = stmt.getLongOrNull(23),
+            countDays = stmt.getIntOrNull(24) ?: 0
         )
     }
 }

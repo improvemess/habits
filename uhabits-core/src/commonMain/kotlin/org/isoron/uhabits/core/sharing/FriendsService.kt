@@ -173,6 +173,7 @@ class FriendsService(
         }
         habit.negativeSince = meta.negativeSince
         habit.calendarPeriod = meta.calendarPeriod
+        habit.countDays = meta.countDays
         for (pause in meta.pauses) habit.pauses.add(Pause(pause.start, pause.end))
         for ((date, value) in store.entries(friendShare.id)) {
             if (date >= meta.historyStart) habit.originalEntries.add(Entry(date, value))

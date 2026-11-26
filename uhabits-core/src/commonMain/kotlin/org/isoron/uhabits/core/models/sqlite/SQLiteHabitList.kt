@@ -280,7 +280,8 @@ class SQLiteHabitList(private val modelFactory: ModelFactory) : HabitList() {
                 calendarPeriod = if (habit.calendarPeriod) 1 else 0,
                 streakUnit = habit.streakUnit?.id ?: StreakUnit.AUTO_ID,
                 dueDays = habit.dueDays.encode(),
-                createdOn = habit.createdOn?.unixTime
+                createdOn = habit.createdOn?.unixTime,
+                countDays = if (habit.countDays) 1 else 0
             )
         }
 
@@ -301,6 +302,7 @@ class SQLiteHabitList(private val modelFactory: ModelFactory) : HabitList() {
             habit.stepSize = data.stepSize
             habit.negativeSince = data.negativeSince?.let { LocalDate.fromUnixTime(it) }
             habit.calendarPeriod = data.calendarPeriod != 0
+            habit.countDays = data.countDays != 0
             habit.streakUnit = StreakUnit.fromId(data.streakUnit)
             habit.dueDays = DueDays.decode(data.dueDays)
             habit.createdOn = data.createdOn?.let { LocalDate.fromUnixTime(it) }

@@ -107,8 +107,8 @@ class TargetCardPresenter {
             val monthsInQuarter = 3
             val monthsInYear = 12
 
-            val denominator = habit.effectiveFrequency.denominator
-            val dailyTarget = habit.targetValue / habit.effectiveFrequency.denominator
+            val denominator = habit.valuePeriodDays
+            val dailyTarget = habit.targetValue / denominator
 
             var targetToday = dailyTarget
             var targetThisWeek = when (denominator) {
