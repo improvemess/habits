@@ -24,6 +24,7 @@ import kotlinx.coroutines.test.runTest
 import org.isoron.platform.time.LocalDate
 import org.isoron.uhabits.core.BaseUnitTest
 import org.isoron.uhabits.core.database.HabitRepository
+import org.isoron.uhabits.core.models.DueDays
 import org.isoron.uhabits.core.models.Habit
 import org.isoron.uhabits.core.models.HabitList
 import org.isoron.uhabits.core.models.HabitMatcher
@@ -114,6 +115,18 @@ class SQLiteHabitListTest : BaseUnitTest() {
         habit.streakUnit = null
         habitList.update(listOf(habit))
         assertEquals(StreakUnit.AUTO_ID, repository.findAll().single { it.id == habit.id }.streakUnit)
+    }
+
+    @Test
+    fun testDueDaysAreStored() = dbTest {
+        val habit = modelFactory.buildHabit()
+        habit.name = "Fixed"
+        habit.dueDays = DueDays().changedFrom(LocalDate(5000), 0b0101010)
+        habitList.add(habit)
+        assertEquals("5000:42", repository.findAll().single { it.id == habit.id }.dueDays)
+        habit.dueDays = habit.dueDays.changedFrom(LocalDate(5100), 0)
+        habitList.update(listOf(habit))
+        assertEquals("5000:42,5100:0", repository.findAll().single { it.id == habit.id }.dueDays)
     }
 
     @Test

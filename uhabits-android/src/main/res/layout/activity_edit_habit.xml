@@ -140,6 +140,21 @@
                 </LinearLayout>
             </FrameLayout>
 
+            <!-- Fixed weekdays (alternative to the frequency) -->
+            <FrameLayout
+                android:id="@+id/fixedDaysOuterBox"
+                style="@style/FormOuterBox">
+                <LinearLayout style="@style/FormInnerBox">
+                    <TextView
+                        style="@style/FormLabel"
+                        android:text="@string/fixed_days" />
+                    <TextView
+                        style="@style/FormDropdown"
+                        android:id="@+id/fixedDaysPicker"
+                        android:text="@string/fixed_days_off" />
+                </LinearLayout>
+            </FrameLayout>
+
             <!-- Target value, unit and frequency -->
             <FrameLayout
                 android:id="@+id/unitOuterBox"

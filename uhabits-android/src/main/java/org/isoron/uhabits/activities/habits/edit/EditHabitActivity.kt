@@ -47,6 +47,7 @@ import org.isoron.uhabits.activities.common.views.nameRes
 import org.isoron.uhabits.core.commands.CommandRunner
 import org.isoron.uhabits.core.commands.CreateHabitCommand
 import org.isoron.uhabits.core.commands.EditHabitCommand
+import org.isoron.uhabits.core.models.DueDays
 import org.isoron.uhabits.core.models.Frequency
 import org.isoron.uhabits.core.models.Habit
 import org.isoron.uhabits.core.models.HabitType
@@ -98,6 +99,7 @@ class EditHabitActivity : AppCompatActivity() {
     var freqDen = 1
     var calendarPeriod = false
     var streakUnit: StreakUnit? = null
+    var fixedWeekdays = 0
     var reminderHour = -1
     var reminderMin = -1
     var reminderDays: WeekdayList = WeekdayList.EVERY_DAY
@@ -128,6 +130,7 @@ class EditHabitActivity : AppCompatActivity() {
             freqDen = habit.frequency.denominator
             calendarPeriod = habit.calendarPeriod
             streakUnit = habit.streakUnit
+            fixedWeekdays = habit.dueDays.current ?: 0
             targetType = habit.targetType
             negativeSince = habit.negativeSince
             isNegative = habit.isNegative
@@ -156,6 +159,7 @@ class EditHabitActivity : AppCompatActivity() {
             freqDen = state.getInt("freqDen")
             calendarPeriod = state.getBoolean("calendarPeriod")
             streakUnit = StreakUnit.fromId(state.getInt("streakUnit", StreakUnit.AUTO_ID))
+            fixedWeekdays = state.getInt("fixedWeekdays")
             reminderHour = state.getInt("reminderHour")
             reminderMin = state.getInt("reminderMin")
             reminderDays = WeekdayList(state.getInt("reminderDays"))
@@ -210,6 +214,19 @@ class EditHabitActivity : AppCompatActivity() {
                 populateFrequency()
             }
             picker.dismissCurrentAndShow(supportFragmentManager, "frequencyPicker")
+        }
+
+        populateFixedDays()
+        binding.fixedDaysPicker.setOnClickListener {
+            val dialog = WeekdayPickerDialog()
+            dialog.setListener { days: WeekdayList ->
+                // No day selected means: not fixed, the frequency applies
+                fixedWeekdays = DueDays.fromWeekdayList(days)
+                populateFixedDays()
+                updateFrequencyVisibility()
+            }
+            dialog.setSelectedDays(DueDays.toWeekdayList(fixedWeekdays))
+            dialog.dismissCurrentAndShow(supportFragmentManager, "fixedDaysPicker")
         }
 
         binding.streakUnitPicker.setOnClickListener {
@@ -332,6 +349,9 @@ class EditHabitActivity : AppCompatActivity() {
         habit.frequency = Frequency(freqNum, freqDen)
         habit.calendarPeriod = calendarPeriod && (freqDen == 7 || freqDen >= 30)
         habit.streakUnit = streakUnit
+        // A change of the fixed weekdays only counts from today on, a new habit has them from the start
+        val dueSince = if (habitId >= 0) getToday() else LocalDate(0)
+        habit.dueDays = habit.dueDays.changedFrom(dueSince, if (habitType == HabitType.YES_NO && !isNegative) fixedWeekdays else 0)
         if (habitType == HabitType.NUMERICAL) {
             habit.targetValue = binding.targetInput.text.toString().toDouble()
             habit.targetType = targetType
@@ -384,7 +404,8 @@ class EditHabitActivity : AppCompatActivity() {
 
     private fun updateFrequencyVisibility() {
         val hidden = habitType == HabitType.NUMERICAL || isNegative
-        binding.frequencyOuterBox.visibility = if (hidden) View.GONE else View.VISIBLE
+        binding.frequencyOuterBox.visibility = if (hidden || fixedWeekdays != 0) View.GONE else View.VISIBLE
+        binding.fixedDaysOuterBox.visibility = if (hidden) View.GONE else View.VISIBLE
     }
 
     private fun validate(): Boolean {
@@ -400,6 +421,14 @@ class EditHabitActivity : AppCompatActivity() {
             }
         }
         return isValid
+    }
+
+    private fun populateFixedDays() {
+        binding.fixedDaysPicker.text = if (fixedWeekdays == 0) {
+            getString(R.string.fixed_days_off)
+        } else {
+            DueDays.toWeekdayList(fixedWeekdays).toFormattedString(this)
+        }
     }
 
     private fun populateReminder() {
@@ -484,6 +513,7 @@ class EditHabitActivity : AppCompatActivity() {
             putInt("freqDen", freqDen)
             putBoolean("calendarPeriod", calendarPeriod)
             putInt("streakUnit", streakUnit?.id ?: StreakUnit.AUTO_ID)
+            putInt("fixedWeekdays", fixedWeekdays)
             putInt("reminderHour", reminderHour)
             putInt("reminderMin", reminderMin)
             putInt("reminderDays", reminderDays.toInteger())

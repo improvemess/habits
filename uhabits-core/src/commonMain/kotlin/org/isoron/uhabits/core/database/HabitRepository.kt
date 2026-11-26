@@ -29,7 +29,8 @@ data class HabitData(
     var stepSize: Double = 1.0,
     var negativeSince: Long? = null,
     var calendarPeriod: Int = 0,
-    var streakUnit: Int = StreakUnit.AUTO_ID
+    var streakUnit: Int = StreakUnit.AUTO_ID,
+    var dueDays: String = ""
 )
 
 class HabitRepository(private val db: Database) {
@@ -37,7 +38,7 @@ class HabitRepository(private val db: Database) {
         db.prepareStatement(
             """SELECT id, name, description, freq_num, freq_den, color,
                position, reminder_hour, reminder_min, reminder_days, highlight,
-               archived, type, target_value, target_type, unit, uuid, category, step_size, negative_since, calendar_period, streak_unit
+               archived, type, target_value, target_type, unit, uuid, category, step_size, negative_since, calendar_period, streak_unit, due_days
                FROM Habits ORDER BY position"""
         )
     }
@@ -46,8 +47,8 @@ class HabitRepository(private val db: Database) {
         db.prepareStatement(
             """INSERT INTO Habits(name, description, freq_num, freq_den,
                color, position, reminder_hour, reminder_min, reminder_days,
-               highlight, archived, type, target_value, target_type, unit, uuid, category, step_size, negative_since, calendar_period, streak_unit)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+               highlight, archived, type, target_value, target_type, unit, uuid, category, step_size, negative_since, calendar_period, streak_unit, due_days)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
         )
     }
 
@@ -55,8 +56,8 @@ class HabitRepository(private val db: Database) {
         db.prepareStatement(
             """INSERT INTO Habits(id, name, description, freq_num, freq_den,
                color, position, reminder_hour, reminder_min, reminder_days,
-               highlight, archived, type, target_value, target_type, unit, uuid, category, step_size, negative_since, calendar_period, streak_unit)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+               highlight, archived, type, target_value, target_type, unit, uuid, category, step_size, negative_since, calendar_period, streak_unit, due_days)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
         )
     }
 
@@ -65,7 +66,7 @@ class HabitRepository(private val db: Database) {
             """UPDATE Habits SET name=?, description=?, freq_num=?,
                freq_den=?, color=?, position=?, reminder_hour=?, reminder_min=?,
                reminder_days=?, highlight=?, archived=?, type=?, target_value=?,
-               target_type=?, unit=?, uuid=?, category=?, step_size=?, negative_since=?, calendar_period=?, streak_unit=? WHERE id=?"""
+               target_type=?, unit=?, uuid=?, category=?, step_size=?, negative_since=?, calendar_period=?, streak_unit=?, due_days=? WHERE id=?"""
         )
     }
 
@@ -99,7 +100,7 @@ class HabitRepository(private val db: Database) {
     fun update(data: HabitData) {
         updateStmt.reset()
         bindForInsert(updateStmt, data)
-        updateStmt.bindLong(22, data.id!!)
+        updateStmt.bindLong(23, data.id!!)
         updateStmt.step()
     }
 
@@ -136,6 +137,7 @@ class HabitRepository(private val db: Database) {
         if (data.negativeSince != null) stmt.bindLong(19 + o, data.negativeSince!!) else stmt.bindNull(19 + o)
         stmt.bindInt(20 + o, data.calendarPeriod)
         stmt.bindInt(21 + o, data.streakUnit)
+        stmt.bindText(22 + o, data.dueDays)
     }
 
     private fun readRow(stmt: PreparedStatement): HabitData {
@@ -161,7 +163,8 @@ class HabitRepository(private val db: Database) {
             stepSize = stmt.getReal(18),
             negativeSince = stmt.getLongOrNull(19),
             calendarPeriod = stmt.getInt(20),
-            streakUnit = stmt.getInt(21)
+            streakUnit = stmt.getInt(21),
+            dueDays = stmt.getTextOrNull(22) ?: ""
         )
     }
 }

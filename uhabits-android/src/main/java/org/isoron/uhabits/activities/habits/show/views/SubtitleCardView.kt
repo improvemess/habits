@@ -27,11 +27,13 @@ import android.widget.LinearLayout
 import org.isoron.uhabits.R
 import org.isoron.uhabits.activities.habits.edit.formatFrequency
 import org.isoron.uhabits.activities.habits.list.views.toShortString
+import org.isoron.uhabits.core.models.DueDays
 import org.isoron.uhabits.core.models.NumericalHabitType
 import org.isoron.uhabits.core.ui.screens.habits.show.views.SubtitleCardState
 import org.isoron.uhabits.databinding.ShowHabitSubtitleBinding
 import org.isoron.uhabits.utils.InterfaceUtils
 import org.isoron.uhabits.utils.formatTime
+import org.isoron.uhabits.utils.toFormattedString
 
 class SubtitleCardView(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
 
@@ -48,11 +50,12 @@ class SubtitleCardView(context: Context, attrs: AttributeSet) : LinearLayout(con
     @SuppressLint("SetTextI18n")
     fun setState(state: SubtitleCardState) {
         val reminder = state.reminder
-        binding.frequencyLabel.text = formatFrequency(
-            state.frequency.numerator,
-            state.frequency.denominator,
-            resources
-        )
+        val fixed = state.fixedWeekdays
+        binding.frequencyLabel.text = if (fixed != null) {
+            DueDays.toWeekdayList(fixed).toFormattedString(context)
+        } else {
+            formatFrequency(state.frequency.numerator, state.frequency.denominator, resources)
+        }
         binding.reminderLabel.text = if (reminder != null) {
             formatTime(context, reminder.hour, reminder.minute)
         } else {

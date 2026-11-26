@@ -33,7 +33,8 @@ data class CheckmarkPanelState(
     val notes: List<String>,
     val buttonCount: Int,
     val paused: List<Boolean> = emptyList(),
-    val isNegative: Boolean = false
+    val isNegative: Boolean = false,
+    val restDay: List<Boolean> = emptyList()
 )
 
 class CheckmarkPanelView(
@@ -92,7 +93,8 @@ class CheckmarkPanelView(
                         else -> ""
                     },
                     state.paused.getOrElse(index + dataOffset) { false },
-                    state.isNegative
+                    state.isNegative,
+                    state.restDay.getOrElse(index + dataOffset) { false }
                 )
             )
             button.onToggle = { value, notes -> onToggle(date, value, notes) }
