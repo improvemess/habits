@@ -126,10 +126,11 @@ jobs:
       - name: Name debug APK
         id: apk
         run: |
-          VERSION=$(grep versionName uhabits-android/build.gradle.kts | sed -e 's/.*"\([^"]*\)".*/\1/')
+          VERSION=$(sed -n -E 's/^ *versionName = "([^"]+)".*/\1/p' uhabits-android/build.gradle.kts)
           SHORT_SHA=$(echo "${{ github.event.pull_request.head.sha || github.sha }}" | cut -c1-7)
           APP_ID=$(sed -n -E 's/^ *applicationId = "([^"]+)".*/\1/p' uhabits-android/build.gradle.kts)
-          NAME="${APP_ID}.${VERSION}-debug-${SHORT_SHA}.apk"
+          # Paket-ID des Debug-Builds (Endung .debug, #126) und Version
+          NAME="${APP_ID}.debug.${VERSION}-${SHORT_SHA}.apk"
           mkdir -p dist
           cp uhabits-android/build/outputs/apk/debug/uhabits-android-debug.apk "dist/${NAME}"
           echo "name=${NAME}" >> "$GITHUB_OUTPUT"
