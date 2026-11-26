@@ -70,10 +70,10 @@ class CheckmarkWidgetTest : BaseViewTest() {
         // possible to capture intents sent to BroadcastReceivers.
         button.performClick()
         sleep(1000)
-        assertThat(entries.get(today).value, equalTo(Entry.SKIP))
+        assertThat(entries.get(today).value, equalTo(Entry.NO))
         button.performClick()
         sleep(1000)
-        assertThat(entries.get(today).value, equalTo(Entry.NO))
+        assertThat(entries.get(today).value, equalTo(Entry.YES_MANUAL))
     }
 
     @Test
