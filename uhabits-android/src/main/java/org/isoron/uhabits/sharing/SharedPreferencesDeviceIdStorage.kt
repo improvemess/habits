@@ -41,7 +41,7 @@ class SharedPreferencesDeviceIdStorage(
         prefs.edit().putString(KEY_DEVICE_ID, deviceId).apply()
     }
 
-    private companion object {
+    companion object {
         const val FILE_NAME = "device_identity"
         const val KEY_DEVICE_ID = "deviceId"
     }

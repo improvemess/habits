@@ -45,7 +45,7 @@ class SharedPreferencesDeviceTokenStore(
         prefs.edit().remove(serverUrl).apply()
     }
 
-    private companion object {
+    companion object {
         const val FILE_NAME = "sharing_device_tokens"
     }
 }

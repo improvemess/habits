@@ -260,6 +260,15 @@
     <string name="pref_view_privacy">View privacy policy</string>
     <string name="view_all_contributors">View all contributors…</string>
     <string name="database">Database</string>
+    <string name="delete_all_data">Delete all data</string>
+    <string name="delete_all_data_summary">Permanently deletes all habits and settings, also from the cloud backup</string>
+    <string name="delete_all_data_intro_title">Delete all data?</string>
+    <string name="delete_all_data_intro_message">This deletes all habits, entries, notes, reminders and settings from this device.\n\nWe recommend exporting a full backup first. It is the only way to restore your data afterwards.</string>
+    <string name="delete_all_data_export_first">Export first</string>
+    <string name="delete_all_data_continue">Continue</string>
+    <string name="delete_all_data_final_title">Really delete everything?</string>
+    <string name="delete_all_data_final_message">All habits, entries, notes, reminders and settings will be deleted irrevocably, including the cloud backup.\n\nAndroid replaces the cloud backup with a delay and only if Google backup is enabled, so it is not removed immediately. Afterwards your data can only be restored from an export you made beforehand.</string>
+    <string name="delete_all_data_confirm">Delete everything permanently</string>
     <string name="widget_opacity_title">Widget opacity</string>
     <string name="widget_opacity_description">Makes widgets more transparent or more opaque in your home screen.</string>
     <string name="first_day_of_the_week">First day of the week</string>

@@ -40,6 +40,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import dev.mokkery.verify.VerifyMode.Companion.not as notCalled
 
 class ListHabitsBehaviorTest : BaseUnitTest() {
     private val dirFinder: ListHabitsBehavior.DirFinder = mock()
@@ -201,6 +202,44 @@ class ListHabitsBehaviorTest : BaseUnitTest() {
         behavior.onRenameCategory("Old")
         callback!!.invoke("New")
         assertEquals("New", habit1.category)
+    }
+
+    @Test
+    fun testOnDeleteAllData_deletesNothingBeforeBothConfirmations() {
+        var introContinue: (() -> Unit)? = null
+        var finalConfirm: (() -> Unit)? = null
+        every { screen.showDeleteAllDataIntro(any()) } calls { args ->
+            introContinue = args.arg<() -> Unit>(0)
+            Unit
+        }
+        every { screen.showDeleteAllDataFinalConfirmation(any()) } calls { args ->
+            finalConfirm = args.arg<() -> Unit>(0)
+            Unit
+        }
+        every { screen.onAllDataDeleted() } returns Unit
+        every { prefs.clear() } returns Unit
+
+        behavior.onDeleteAllData()
+        assertEquals(2, habitList.size())
+        assertTrue(finalConfirm == null)
+
+        introContinue!!.invoke()
+        assertEquals(2, habitList.size())
+        verify(notCalled) { prefs.clear() }
+
+        finalConfirm!!.invoke()
+        assertEquals(0, habitList.size())
+        verify { prefs.clear() }
+        verify { screen.onAllDataDeleted() }
+    }
+
+    @Test
+    fun testDeleteAllData_removesEntriesAndPauses() {
+        every { screen.onAllDataDeleted() } returns Unit
+        every { prefs.clear() } returns Unit
+        assertFalse(habit1.originalEntries.getKnown().isEmpty())
+        behavior.deleteAllData()
+        assertTrue(habitList.isEmpty)
     }
 
     @Test

@@ -24,9 +24,11 @@ import org.isoron.uhabits.BaseUserInterfaceTest
 import org.isoron.uhabits.acceptance.steps.CommonSteps.clickText
 import org.isoron.uhabits.acceptance.steps.CommonSteps.launchApp
 import org.isoron.uhabits.acceptance.steps.CommonSteps.longClickText
+import org.isoron.uhabits.acceptance.steps.CommonSteps.scrollToText
 import org.isoron.uhabits.acceptance.steps.CommonSteps.verifyDisplaysText
 import org.isoron.uhabits.acceptance.steps.CommonSteps.verifyDoesNotDisplayText
 import org.isoron.uhabits.acceptance.steps.ListHabitsSteps.MenuItem.DELETE
+import org.isoron.uhabits.acceptance.steps.ListHabitsSteps.MenuItem.SETTINGS
 import org.isoron.uhabits.acceptance.steps.ListHabitsSteps.clickMenu
 import org.isoron.uhabits.acceptance.steps.clearBackupFolder
 import org.isoron.uhabits.acceptance.steps.clearDownloadFolder
@@ -53,6 +55,28 @@ class BackupTest : BaseUserInterfaceTest() {
         verifyDoesNotDisplayText("Wake up early")
         importBackupFromDownloadFolder()
         verifyDisplaysText("Wake up early")
+    }
+
+    @Test
+    fun shouldKeepDataWhenDeleteAllDataIsCancelled() {
+        launchApp()
+        clickMenu(SETTINGS)
+        scrollToText("Delete all data")
+        clickText("Delete all data")
+        clickText("Continue")
+        clickText("Cancel")
+        verifyDisplaysText("Wake up early")
+    }
+
+    @Test
+    fun shouldDeleteAllDataAfterTwoConfirmations() {
+        launchApp()
+        clickMenu(SETTINGS)
+        scrollToText("Delete all data")
+        clickText("Delete all data")
+        clickText("Continue")
+        clickText("Delete everything permanently")
+        verifyDoesNotDisplayText("Wake up early")
     }
 
     @Test
