@@ -1,20 +1,46 @@
 # Changelog
 
-## [2.27.0](https://github.com/improvemess/habits/compare/v2.26.0...v2.27.0) (2026-11-26)
+## [3.0.0](https://github.com/improvemess/habits/compare/v2.27.0...v3.0.0) (2026-11-26)
 
-* APK nach Paket-ID und Version benennen ([#120](https://github.com/improvemess/habits/issues/120)) ([9bad1cc](https://github.com/improvemess/habits/commit/9bad1cca30b8b096ab771944260ecb72b5e6488a)), references [#104](https://github.com/improvemess/habits/issues/104)
+### ⚠ BREAKING CHANGES
+
+* releases as a signed release build with our own key ([#127](https://github.com/improvemess/habits/issues/127)) ([#143](https://github.com/improvemess/habits/issues/143))
+
+* debug builds with their own package ID com.improvemess.habits.debug ([#126](https://github.com/improvemess/habits/issues/126)) ([#137](https://github.com/improvemess/habits/issues/137)) ([0b75d97](https://github.com/improvemess/habits/commit/0b75d97dbf7836e636fe7eb26ddadcee3e1146fb)), references [#127](https://github.com/improvemess/habits/issues/127)
+* quality gates on main, release PR check, release process docs ([#134](https://github.com/improvemess/habits/issues/134)) ([b3c4035](https://github.com/improvemess/habits/commit/b3c4035bccdb3bc9c4c525cd745dbcc0e5cff1ea)), closes [#124](https://github.com/improvemess/habits/issues/124) [#125](https://github.com/improvemess/habits/issues/125), references [#124](https://github.com/improvemess/habits/issues/124) [#133](https://github.com/improvemess/habits/issues/133) [#125](https://github.com/improvemess/habits/issues/125)
+* make the release build work with R8 ([#108](https://github.com/improvemess/habits/issues/108)) ([#132](https://github.com/improvemess/habits/issues/132)) ([9d4ce8a](https://github.com/improvemess/habits/commit/9d4ce8aeb31f96a9bfb072be5b14cc1c34ab9b87)), closes [#138](https://github.com/improvemess/habits/issues/138)
+* **release:** dev → main ([#133](https://github.com/improvemess/habits/issues/133)) ([9931b41](https://github.com/improvemess/habits/commit/9931b41fb24063ed8a9814ff895d018d87749713))
+* **release:** dev → main (3.0.0) ([#146](https://github.com/improvemess/habits/issues/146)) ([fc370de](https://github.com/improvemess/habits/commit/fc370de80ac43c95058ba23a090caa1cc6bec856))
+* releases from main instead of dev, release commit merged back into dev ([#130](https://github.com/improvemess/habits/issues/130)) ([91a998d](https://github.com/improvemess/habits/commit/91a998d97b2b0695e6c2a53c44b49390e38f57c6)), closes [#122](https://github.com/improvemess/habits/issues/122) [#123](https://github.com/improvemess/habits/issues/123), references [#121](https://github.com/improvemess/habits/issues/121) [#102](https://github.com/improvemess/habits/issues/102) [#103](https://github.com/improvemess/habits/issues/103) [#119](https://github.com/improvemess/habits/issues/119) [#121](https://github.com/improvemess/habits/issues/121)
+* mention the sharing server in the README ([#131](https://github.com/improvemess/habits/issues/131)) ([3447da9](https://github.com/improvemess/habits/commit/3447da94ec51d4bdf41e0c135ef9ff23e981287a))
 
 ### Features
 
-* eigene Paket-ID com.improvemess.habits ([#104](https://github.com/improvemess/habits/issues/104)) ([#119](https://github.com/improvemess/habits/issues/119)) ([9b6463b](https://github.com/improvemess/habits/commit/9b6463b8af755a09a0e13e84a36f5fa9ad8cf7aa)), references [#107](https://github.com/improvemess/habits/issues/107) [#107](https://github.com/improvemess/habits/issues/107)
-* einheitliche Gesten für alle Gewohnheitsarten ([#76](https://github.com/improvemess/habits/issues/76)) ([#103](https://github.com/improvemess/habits/issues/103)) ([d5a8e7d](https://github.com/improvemess/habits/commit/d5a8e7d67ba795e52e010504b9973d16df6920e6))
-* mehrfach pro Tag über das Häufigkeits-Feld ([#43](https://github.com/improvemess/habits/issues/43)) ([#102](https://github.com/improvemess/habits/issues/102)) ([35298e9](https://github.com/improvemess/habits/commit/35298e9a2c77f095c5784bf4863906fe0ed27b6c))
+* cheat days with global levels ([#20](https://github.com/improvemess/habits/issues/20)) ([#135](https://github.com/improvemess/habits/issues/135)) ([918a739](https://github.com/improvemess/habits/commit/918a739e8585eca07b3bde8f6cf2a3aa5bd54dc6))
+* consistent "zz" for all days that do not affect the streak ([#101](https://github.com/improvemess/habits/issues/101)) ([#140](https://github.com/improvemess/habits/issues/140)) ([19dbbfe](https://github.com/improvemess/habits/commit/19dbbfebcd77e36dd10ecbe41f12514bdff13f50))
+* smooth horizontal scrolling with edge fade in the habit list ([#80](https://github.com/improvemess/habits/issues/80)) ([#139](https://github.com/improvemess/habits/issues/139)) ([738485a](https://github.com/improvemess/habits/commit/738485ab57116ae709fed645413d18ca5c90c8c1))
+* remove question marks, days before creation can be reset ([#70](https://github.com/improvemess/habits/issues/70)) ([#136](https://github.com/improvemess/habits/issues/136)) ([afa5323](https://github.com/improvemess/habits/commit/afa5323bea404ed958e807a29117a2ce9c5e7934))
+* releases as a signed release build with our own key ([#127](https://github.com/improvemess/habits/issues/127)) ([#143](https://github.com/improvemess/habits/issues/143)) ([a53ec54](https://github.com/improvemess/habits/commit/a53ec5445a41366a063d98aa592c55578541d694)), closes [#106](https://github.com/improvemess/habits/issues/106), references [#132](https://github.com/improvemess/habits/issues/132) [#106](https://github.com/improvemess/habits/issues/106) [#137](https://github.com/improvemess/habits/issues/137)
+
+### Bug Fixes
+
+* crash when pressing "Up" on the share screen ([#138](https://github.com/improvemess/habits/issues/138)) ([058300c](https://github.com/improvemess/habits/commit/058300cdb921200aabf0e1fa9c0db0b2982ed1bd)), references [#132](https://github.com/improvemess/habits/issues/132)
+
+## [2.27.0](https://github.com/improvemess/habits/compare/v2.26.0...v2.27.0) (2026-11-26)
+
+* name the APK after package ID and version ([#120](https://github.com/improvemess/habits/issues/120)) ([9bad1cc](https://github.com/improvemess/habits/commit/9bad1cca30b8b096ab771944260ecb72b5e6488a)), references [#104](https://github.com/improvemess/habits/issues/104)
+
+### Features
+
+* own package ID com.improvemess.habits ([#104](https://github.com/improvemess/habits/issues/104)) ([#119](https://github.com/improvemess/habits/issues/119)) ([9b6463b](https://github.com/improvemess/habits/commit/9b6463b8af755a09a0e13e84a36f5fa9ad8cf7aa)), references [#107](https://github.com/improvemess/habits/issues/107) [#107](https://github.com/improvemess/habits/issues/107)
+* consistent gestures for all habit types ([#76](https://github.com/improvemess/habits/issues/76)) ([#103](https://github.com/improvemess/habits/issues/103)) ([d5a8e7d](https://github.com/improvemess/habits/commit/d5a8e7d67ba795e52e010504b9973d16df6920e6))
+* multiple times per day via the frequency field ([#43](https://github.com/improvemess/habits/issues/43)) ([#102](https://github.com/improvemess/habits/issues/102)) ([35298e9](https://github.com/improvemess/habits/commit/35298e9a2c77f095c5784bf4863906fe0ed27b6c))
 
 ## [2.26.0](https://github.com/oliverlorenz/uhabits/compare/v2.25.2...v2.26.0) (2026-11-26)
 
 ### Features
 
-* feste Wochentage für Gewohnheiten ([#19](https://github.com/oliverlorenz/uhabits/issues/19)) ([#100](https://github.com/oliverlorenz/uhabits/issues/100)) ([70a5839](https://github.com/oliverlorenz/uhabits/commit/70a5839727011e50d36164eee7a1c80f811135de)), closes [#95](https://github.com/oliverlorenz/uhabits/issues/95)
+* fixed weekdays for habits ([#19](https://github.com/oliverlorenz/uhabits/issues/19)) ([#100](https://github.com/oliverlorenz/uhabits/issues/100)) ([70a5839](https://github.com/oliverlorenz/uhabits/commit/70a5839727011e50d36164eee7a1c80f811135de)), closes [#95](https://github.com/oliverlorenz/uhabits/issues/95)
 
 ## [2.25.2](https://github.com/oliverlorenz/uhabits/compare/v2.25.1...v2.25.2) (2026-11-26)
 
@@ -42,7 +68,7 @@
 
 ### Features
 
-* Streak-Einheit wählbar (Tage, Wochen, Monate) ([#15](https://github.com/oliverlorenz/uhabits/issues/15)) ([#83](https://github.com/oliverlorenz/uhabits/issues/83)) ([fa46dca](https://github.com/oliverlorenz/uhabits/commit/fa46dca2fbe9ccf0869f123c83ed4cf0d0befbd0)), references [#20](https://github.com/oliverlorenz/uhabits/issues/20)
+* selectable streak unit (days, weeks, months) ([#15](https://github.com/oliverlorenz/uhabits/issues/15)) ([#83](https://github.com/oliverlorenz/uhabits/issues/83)) ([fa46dca](https://github.com/oliverlorenz/uhabits/commit/fa46dca2fbe9ccf0869f123c83ed4cf0d0befbd0)), references [#20](https://github.com/oliverlorenz/uhabits/issues/20)
 
 ## [2.23.0](https://github.com/oliverlorenz/uhabits/compare/v2.22.0...v2.23.0) (2026-11-25)
 
@@ -69,56 +95,56 @@
 
 ### Features
 
-* Wochen- und Monatsziel rollierend oder pro Kalenderzeitraum ([#23](https://github.com/oliverlorenz/uhabits/issues/23)) ([#82](https://github.com/oliverlorenz/uhabits/issues/82)) ([249f292](https://github.com/oliverlorenz/uhabits/commit/249f292b1409c8c87e6533f4e8c37cd531d61c9a)), references [#81](https://github.com/oliverlorenz/uhabits/issues/81)
+* weekly and monthly targets rolling or per calendar period ([#23](https://github.com/oliverlorenz/uhabits/issues/23)) ([#82](https://github.com/oliverlorenz/uhabits/issues/82)) ([249f292](https://github.com/oliverlorenz/uhabits/commit/249f292b1409c8c87e6533f4e8c37cd531d61c9a)), references [#81](https://github.com/oliverlorenz/uhabits/issues/81)
 
 ## [2.21.0](https://github.com/oliverlorenz/uhabits/compare/v2.20.0...v2.21.0) (2026-11-25)
 
 ### Features
 
-* Wochen- und Monatsziel rollierend oder pro Kalenderzeitraum ([#23](https://github.com/oliverlorenz/uhabits/issues/23)) ([#82](https://github.com/oliverlorenz/uhabits/issues/82)) ([249f292](https://github.com/oliverlorenz/uhabits/commit/249f292b1409c8c87e6533f4e8c37cd531d61c9a)), references [#81](https://github.com/oliverlorenz/uhabits/issues/81)
+* weekly and monthly targets rolling or per calendar period ([#23](https://github.com/oliverlorenz/uhabits/issues/23)) ([#82](https://github.com/oliverlorenz/uhabits/issues/82)) ([249f292](https://github.com/oliverlorenz/uhabits/commit/249f292b1409c8c87e6533f4e8c37cd531d61c9a)), references [#81](https://github.com/oliverlorenz/uhabits/issues/81)
 
 ## [2.20.0](https://github.com/oliverlorenz/uhabits/compare/v2.19.0...v2.20.0) (2026-11-25)
 
 ### Features
 
-* Standardansicht lädt 14 Tage, Lazy Loading, Monat und Heute-Chip im Kopf ([#21](https://github.com/oliverlorenz/uhabits/issues/21)) ([#77](https://github.com/oliverlorenz/uhabits/issues/77)) ([0a9c62b](https://github.com/oliverlorenz/uhabits/commit/0a9c62b9a18d81085e6377fc1fffb18a5574046c))
+* default view loads 14 days, lazy loading, month and today chip in the header ([#21](https://github.com/oliverlorenz/uhabits/issues/21)) ([#77](https://github.com/oliverlorenz/uhabits/issues/77)) ([0a9c62b](https://github.com/oliverlorenz/uhabits/commit/0a9c62b9a18d81085e6377fc1fffb18a5574046c))
 
 ## [2.19.0](https://github.com/oliverlorenz/uhabits/compare/v2.18.1...v2.19.0) (2026-11-25)
 
 ### Features
 
-* Streak-Flamme standardmäßig an ([#48](https://github.com/oliverlorenz/uhabits/issues/48)) ([#75](https://github.com/oliverlorenz/uhabits/issues/75)) ([fbc4def](https://github.com/oliverlorenz/uhabits/commit/fbc4def588fa70c3691f380b6f046fe9a8fd7247)), references [#70](https://github.com/oliverlorenz/uhabits/issues/70)
+* streak flame on by default ([#48](https://github.com/oliverlorenz/uhabits/issues/48)) ([#75](https://github.com/oliverlorenz/uhabits/issues/75)) ([fbc4def](https://github.com/oliverlorenz/uhabits/commit/fbc4def588fa70c3691f380b6f046fe9a8fd7247)), references [#70](https://github.com/oliverlorenz/uhabits/issues/70)
 
 ## [2.18.1](https://github.com/oliverlorenz/uhabits/compare/v2.18.0...v2.18.1) (2026-11-25)
 
 ### Bug Fixes
 
-* Tastatur im Zahlen-Dialog sofort öffnen ([#66](https://github.com/oliverlorenz/uhabits/issues/66)) ([#74](https://github.com/oliverlorenz/uhabits/issues/74)) ([02cb2e8](https://github.com/oliverlorenz/uhabits/commit/02cb2e85d7e0f5f95e6ded6745eac417836a630e))
+* open the keyboard in the number dialog right away ([#66](https://github.com/oliverlorenz/uhabits/issues/66)) ([#74](https://github.com/oliverlorenz/uhabits/issues/74)) ([02cb2e8](https://github.com/oliverlorenz/uhabits/commit/02cb2e85d7e0f5f95e6ded6745eac417836a630e))
 
 ## [2.18.0](https://github.com/oliverlorenz/uhabits/compare/v2.17.0...v2.18.0) (2026-11-25)
 
 ### Features
 
-* Feld „mindestens/maximal“ beim Angewöhnen entfernt ([#63](https://github.com/oliverlorenz/uhabits/issues/63)) ([#73](https://github.com/oliverlorenz/uhabits/issues/73)) ([14ff92d](https://github.com/oliverlorenz/uhabits/commit/14ff92d982620e09ea1efa411bb2a6f8456d431f))
+* removed the "at least/at most" field when creating a habit ([#63](https://github.com/oliverlorenz/uhabits/issues/63)) ([#73](https://github.com/oliverlorenz/uhabits/issues/73)) ([14ff92d](https://github.com/oliverlorenz/uhabits/commit/14ff92d982620e09ea1efa411bb2a6f8456d431f))
 
 ## [2.17.0](https://github.com/oliverlorenz/uhabits/compare/v2.16.0...v2.17.0) (2026-11-25)
 
 ### Features
 
-* Frage-Feld entfernen, Habit-Titel statt Frage ([#49](https://github.com/oliverlorenz/uhabits/issues/49)) ([#72](https://github.com/oliverlorenz/uhabits/issues/72)) ([759caae](https://github.com/oliverlorenz/uhabits/commit/759caae76cbe851b3197d7bca6c50568f0a3c554))
+* remove the question field, use the habit title instead ([#49](https://github.com/oliverlorenz/uhabits/issues/49)) ([#72](https://github.com/oliverlorenz/uhabits/issues/72)) ([759caae](https://github.com/oliverlorenz/uhabits/commit/759caae76cbe851b3197d7bca6c50568f0a3c554))
 
 ## [2.16.0](https://github.com/oliverlorenz/uhabits/compare/v2.15.1...v2.16.0) (2026-11-25)
 
 ### Features
 
-* Konfetti-Animation entfernt ([#61](https://github.com/oliverlorenz/uhabits/issues/61)) ([#71](https://github.com/oliverlorenz/uhabits/issues/71)) ([07d954c](https://github.com/oliverlorenz/uhabits/commit/07d954c96d46f94bd15bd025a8aad9b638d234a5))
+* removed the confetti animation ([#61](https://github.com/oliverlorenz/uhabits/issues/61)) ([#71](https://github.com/oliverlorenz/uhabits/issues/71)) ([07d954c](https://github.com/oliverlorenz/uhabits/commit/07d954c96d46f94bd15bd025a8aad9b638d234a5))
 
 ## [2.15.1](https://github.com/oliverlorenz/uhabits/compare/v2.15.0...v2.15.1) (2026-11-25)
 
 ### Bug Fixes
 
-* Fragezeichen vor dem Anlegetag einer Negativ-Gewohnheit nicht mehr blau ([#64](https://github.com/oliverlorenz/uhabits/issues/64)) ([#69](https://github.com/oliverlorenz/uhabits/issues/69)) ([ae3d283](https://github.com/oliverlorenz/uhabits/commit/ae3d283b615ceb438c70a0c38a887b63fbce7e86)), references [#65](https://github.com/oliverlorenz/uhabits/issues/65) [#67](https://github.com/oliverlorenz/uhabits/issues/67)
-* messbarer Eintrag auf 0 zurückgesetzt sieht aus wie ein leerer Tag ([#62](https://github.com/oliverlorenz/uhabits/issues/62)) ([#67](https://github.com/oliverlorenz/uhabits/issues/67)) ([ee10e08](https://github.com/oliverlorenz/uhabits/commit/ee10e0814f308276f11d2b4a1d837c179f48417e))
+* question marks before the creation day of a negative habit are no longer blue ([#64](https://github.com/oliverlorenz/uhabits/issues/64)) ([#69](https://github.com/oliverlorenz/uhabits/issues/69)) ([ae3d283](https://github.com/oliverlorenz/uhabits/commit/ae3d283b615ceb438c70a0c38a887b63fbce7e86)), references [#65](https://github.com/oliverlorenz/uhabits/issues/65) [#67](https://github.com/oliverlorenz/uhabits/issues/67)
+* a measurable entry reset to 0 looks like an empty day ([#62](https://github.com/oliverlorenz/uhabits/issues/62)) ([#67](https://github.com/oliverlorenz/uhabits/issues/67)) ([ee10e08](https://github.com/oliverlorenz/uhabits/commit/ee10e0814f308276f11d2b4a1d837c179f48417e))
 
 ## [2.15.0](https://github.com/oliverlorenz/uhabits/compare/v2.14.0...v2.15.0) (2026-11-25)
 
@@ -126,7 +152,7 @@
 
 ### Features
 
-* messbare Negativ-Gewohnheiten zeigen 0 statt Fragezeichen ([#64](https://github.com/oliverlorenz/uhabits/issues/64)) ([#65](https://github.com/oliverlorenz/uhabits/issues/65)) ([a0f6717](https://github.com/oliverlorenz/uhabits/commit/a0f6717629da57d9826918d6918778f12b8f8f9a))
+* measurable negative habits show 0 instead of a question mark ([#64](https://github.com/oliverlorenz/uhabits/issues/64)) ([#65](https://github.com/oliverlorenz/uhabits/issues/65)) ([a0f6717](https://github.com/oliverlorenz/uhabits/commit/a0f6717629da57d9826918d6918778f12b8f8f9a))
 
 ## [2.14.0](https://github.com/oliverlorenz/uhabits/compare/v2.13.0...v2.14.0) (2026-11-24)
 
@@ -146,13 +172,13 @@
 
 ### Features
 
-* negative Gewohnheiten (abgewöhnen) mit Auto-Haken und Kreuz bei Rückfall ([#16](https://github.com/oliverlorenz/uhabits/issues/16)) ([#52](https://github.com/oliverlorenz/uhabits/issues/52)) ([d06c7dd](https://github.com/oliverlorenz/uhabits/commit/d06c7ddc8b590f0fc86ad18ac5651fa442e25b9d))
+* negative habits (breaking a habit) with automatic checkmark and a cross on relapse ([#16](https://github.com/oliverlorenz/uhabits/issues/16)) ([#52](https://github.com/oliverlorenz/uhabits/issues/52)) ([d06c7dd](https://github.com/oliverlorenz/uhabits/commit/d06c7ddc8b590f0fc86ad18ac5651fa442e25b9d))
 
 ## [2.11.0](https://github.com/oliverlorenz/uhabits/compare/v2.10.0...v2.11.0) (2026-11-24)
 
 ### Features
 
-* Zähler mit wählbarer Schrittweite für messbare Gewohnheiten ([#13](https://github.com/oliverlorenz/uhabits/issues/13)) ([#50](https://github.com/oliverlorenz/uhabits/issues/50)) ([83c36b6](https://github.com/oliverlorenz/uhabits/commit/83c36b6c582b98994bd0445793e7b6f1cd5787ca)), references [#43](https://github.com/oliverlorenz/uhabits/issues/43) [#14](https://github.com/oliverlorenz/uhabits/issues/14)
+* counter with selectable step size for measurable habits ([#13](https://github.com/oliverlorenz/uhabits/issues/13)) ([#50](https://github.com/oliverlorenz/uhabits/issues/50)) ([83c36b6](https://github.com/oliverlorenz/uhabits/commit/83c36b6c582b98994bd0445793e7b6f1cd5787ca)), references [#43](https://github.com/oliverlorenz/uhabits/issues/43) [#14](https://github.com/oliverlorenz/uhabits/issues/14)
 
 ## [2.10.0](https://github.com/oliverlorenz/uhabits/compare/v2.9.0...v2.10.0) (2026-11-24)
 
@@ -182,7 +208,7 @@
 
 ### Features
 
-* Gewohnheiten pausieren: Zeiträume, nur ab heute ([#22](https://github.com/oliverlorenz/uhabits/issues/22)) ([#25](https://github.com/oliverlorenz/uhabits/issues/25)) ([94705ee](https://github.com/oliverlorenz/uhabits/commit/94705eeccca8439f2bd705a636a92a2ecbf365be))
+* pause habits: periods, starting today at the earliest ([#22](https://github.com/oliverlorenz/uhabits/issues/22)) ([#25](https://github.com/oliverlorenz/uhabits/issues/25)) ([94705ee](https://github.com/oliverlorenz/uhabits/commit/94705eeccca8439f2bd705a636a92a2ecbf365be))
 
 ## [2.6.0](https://github.com/oliverlorenz/uhabits/compare/v2.5.0...v2.6.0) (2026-11-24)
 

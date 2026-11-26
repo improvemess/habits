@@ -1,7 +1,13 @@
 name: Quality Gates
 
-# Kein paths-ignore: "Quality gate" ist Pflicht-Check auf dev und main und
-# muss daher bei jedem PR laufen, sonst bliebe er dauerhaft ausstehend.
+# No paths-ignore: "Quality gate" is a required check on dev and main, so the
+# workflow has to run for every pull request, otherwise the check would stay
+# pending forever. Instead the job "Changes" (tools/ci/changes.sh) decides from
+# the changed files which jobs are needed, and the others are skipped: a pull
+# request that only changes documentation runs none of them, one that only
+# changes uhabits-android skips the core job. "Quality gate" accepts a skipped
+# job only if "Changes" did not ask for it. Pushes to main, release pull
+# requests into main and manual runs always run every job.
 #
 # Der Lauf auf dev füllt die Caches für die PRs: GitHub-Caches gelten pro
 # Branch, PRs dürfen nur die von dev lesen. setup-gradle speichert den
@@ -30,15 +36,65 @@ permissions:
 # Unabhängige Prüfungen laufen parallel; "Quality gate" sammelt die Ergebnisse
 # und stellt nur bei Erfolg die Debug-APK bereit:
 #
-#   ktlint ──────────────────────────────┐
-#   core ────────────────────────────────┤
-#   unit-tests ──────────────────────────┼──> quality-gate (+ APK)
-#   lint ────────────────────────────────┤
-#   assemble ──┬─────────────────────────┤
-#              └──> instrumented ×3 ─────┘   (Shards, je ein Emulator)
+#             ┌──> ktlint ──────────────────────────────┐
+#             ├──> core ────────────────────────────────┤
+#   changes ──┼──> unit-tests ──────────────────────────┼──> quality-gate (+ APK)
+#             ├──> lint ────────────────────────────────┤
+#             ├──> release ─────────────────────────────┤
+#             └──> assemble ──┬─────────────────────────┤
+#                             └──> instrumented ×3 ─────┘   (shards, one emulator each)
 jobs:
+  changes:
+    name: Changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      ktlint: ${{ steps.filter.outputs.ktlint }}
+      core: ${{ steps.filter.outputs.core }}
+      android: ${{ steps.filter.outputs.android }}
+      assemble: ${{ steps.filter.outputs.assemble }}
+      instrumented: ${{ steps.filter.outputs.instrumented }}
+      release: ${{ steps.filter.outputs.release }}
+    steps:
+      # Full history without file contents: enough for git diff --name-only.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          filter: blob:none
+
+      - name: Decide which jobs are needed
+        id: filter
+        env:
+          EVENT: ${{ github.event_name }}
+          REF: ${{ github.ref }}
+          PR_BASE_REF: ${{ github.event.pull_request.base.ref }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PUSH_BEFORE: ${{ github.event.before }}
+          PUSH_AFTER: ${{ github.sha }}
+        run: |
+          if [[ $EVENT == pull_request && $PR_BASE_REF != main ]]; then
+            ARGS=("$PR_BASE_SHA" "$PR_HEAD_SHA")
+          elif [[ $EVENT == push && $REF != refs/heads/main ]]; then
+            ARGS=("$PUSH_BEFORE" "$PUSH_AFTER")
+          else
+            # main, release pull requests and manual runs: everything.
+            ARGS=(--all)
+          fi
+          FLAGS=$(tools/ci/changes.sh "${ARGS[@]}")
+          echo "$FLAGS" | tee -a "$GITHUB_OUTPUT"
+          {
+            echo "### Jobs needed"
+            echo
+            echo '```'
+            echo "$FLAGS"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
   ktlint:
     name: Code style (ktlint)
+    needs: [changes]
+    if: needs.changes.outputs.ktlint == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -63,6 +119,8 @@ jobs:
 
   core:
     name: Core (build & tests)
+    needs: [changes]
+    if: needs.changes.outputs.core == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -91,6 +149,8 @@ jobs:
   # Unit-Tests und Lint laufen in eigenen Jobs parallel dazu.
   assemble:
     name: Android (assemble)
+    needs: [changes]
+    if: needs.changes.outputs.assemble == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     outputs:
@@ -165,6 +225,8 @@ jobs:
 
   unit-tests:
     name: Android (unit tests)
+    needs: [changes]
+    if: needs.changes.outputs.android == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -192,6 +254,8 @@ jobs:
 
   lint:
     name: Android (lint)
+    needs: [changes]
+    if: needs.changes.outputs.android == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -221,7 +285,8 @@ jobs:
   # zweiten Versuch; was nur so grün wird, erscheint als Warnung.
   instrumented:
     name: Android (instrumented tests, shard ${{ matrix.shard }})
-    needs: [assemble]
+    needs: [changes, assemble]
+    if: needs.changes.outputs.instrumented == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     # Die Tests werden per AndroidJUnitRunner-Sharding auf mehrere Emulatoren
@@ -276,26 +341,99 @@ jobs:
           path: instrumented-output/
           if-no-files-found: ignore
 
+  # Release-Variante mit R8 (Minify), wie F-Droid sie baut: unsigniert, ohne
+  # LOOP_KEY_*. Baut sie und prüft sie auf dem Emulator mit einem Smoke-Test
+  # (Start + monkey), da die Instrumentation-Tests nur die Debug-Variante
+  # abdecken (#108). Läuft parallel zu den übrigen Jobs.
+  release:
+    name: Android (release build + smoke test)
+    needs: [changes]
+    if: needs.changes.outputs.release == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Assemble release (R8)
+        run: ./gradlew --stacktrace :uhabits-android:assembleRelease
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Smoke test release APK
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          profile: Nexus 4
+          force-avd-creation: true
+          disable-animations: true
+          emulator-options: -no-window -no-audio -gpu swiftshader_indirect -no-boot-anim -no-snapshot
+          script: >-
+            tools/ci/release-smoke-test.sh
+            uhabits-android/build/outputs/apk/release/uhabits-android-release-unsigned.apk
+            release-smoke-output
+
+      - name: Upload results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-smoke-results
+          path: |
+            release-smoke-output/
+            !release-smoke-output/*.keystore
+            uhabits-android/build/outputs/mapping/release/
+          if-no-files-found: ignore
+
   quality-gate:
     name: Quality gate
     if: always()
-    needs: [ktlint, core, assemble, unit-tests, lint, instrumented]
+    needs: [changes, ktlint, core, assemble, unit-tests, lint, instrumented, release]
     runs-on: ubuntu-latest
     steps:
+      # A job that "Changes" asked for must have succeeded; any other job must
+      # have been skipped. "Changes" itself must always succeed.
       - name: Check results
+        env:
+          NEEDS: ${{ toJSON(needs) }}
         run: |
-          echo "ktlint:  ${{ needs.ktlint.result }}"
-          echo "core:    ${{ needs.core.result }}"
-          echo "assemble: ${{ needs.assemble.result }}"
-          echo "unit-tests: ${{ needs.unit-tests.result }}"
-          echo "lint: ${{ needs.lint.result }}"
-          echo "instrumented: ${{ needs.instrumented.result }}"
-          if [[ "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped') }}" == "true" ]]; then
-            echo "::error::Mindestens ein Quality Gate ist fehlgeschlagen."
+          check() { # <job> <needed: true|false>
+            local result
+            result=$(jq -r --arg job "$1" '.[$job].result' <<<"$NEEDS")
+            echo "$1: $result (needed: $2)"
+            if [[ $2 == true && $result != success ]] \
+              || [[ $2 != true && $result != skipped && $result != success ]]; then
+              FAILED=true
+            fi
+          }
+          FAILED=false
+          check changes true
+          check ktlint "${{ needs.changes.outputs.ktlint }}"
+          check core "${{ needs.changes.outputs.core }}"
+          check assemble "${{ needs.changes.outputs.assemble }}"
+          check unit-tests "${{ needs.changes.outputs.android }}"
+          check lint "${{ needs.changes.outputs.android }}"
+          check instrumented "${{ needs.changes.outputs.instrumented }}"
+          check release "${{ needs.changes.outputs.release }}"
+          if [[ $FAILED == true ]]; then
+            echo "::error::At least one quality gate failed."
             exit 1
           fi
 
+      # Only when the debug APK was built (not for e.g. documentation only).
       - name: Fetch debug APK
+        if: needs.assemble.result == 'success'
         uses: actions/download-artifact@v8
         with:
           name: debug-apk-unverified
@@ -304,6 +442,7 @@ jobs:
       # archive: false lädt die APK direkt hoch statt als ZIP. Nur eine einzelne
       # Datei ist erlaubt; ihr Dateiname wird zum Artifact-Namen.
       - name: Publish debug APK
+        if: needs.assemble.result == 'success'
         uses: actions/upload-artifact@v7
         with:
           path: dist/${{ needs.assemble.outputs.apk-name }}
