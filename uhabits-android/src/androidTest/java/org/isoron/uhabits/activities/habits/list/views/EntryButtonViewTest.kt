@@ -70,29 +70,14 @@ class EntryButtonViewTest : BaseViewTest() {
     }
 
     @Test
-    fun testClick_withShortToggleDisabled() {
-        prefs.isShortToggleEnabled = false
-        view.performClick()
-        assertTrue(!toggled and edited)
-    }
-
-    @Test
-    fun testClick_withShortToggleEnabled() {
-        prefs.isShortToggleEnabled = true
+    fun testClick_togglesWithoutEditing() {
+        // performClick() is the main action; EntryButtonGestures decides which gesture triggers it
         view.performClick()
         assertTrue(toggled and !edited)
     }
 
     @Test
-    fun testLongClick_withShortToggleDisabled() {
-        prefs.isShortToggleEnabled = false
-        view.performLongClick()
-        assertTrue(toggled and !edited)
-    }
-
-    @Test
-    fun testLongClick_withShortToggleEnabled() {
-        prefs.isShortToggleEnabled = true
+    fun testLongClick_opensDialogWithoutToggling() {
         view.performLongClick()
         assertTrue(!toggled and edited)
     }
