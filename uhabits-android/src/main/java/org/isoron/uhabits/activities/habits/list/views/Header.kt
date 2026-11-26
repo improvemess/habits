@@ -199,6 +199,10 @@ class HeaderView(
             color = sres.getColor(R.attr.contrast60)
         }
 
+        private val edgePaint = Paint().apply {
+            color = sres.getColor(R.attr.contrast40)
+        }
+
         private fun drawMonth(canvas: Canvas, count: Int, width: Float) {
             if (count <= 0) return
             val today = getToday()
@@ -278,7 +282,6 @@ class HeaderView(
                 canvas.clipRect(clipLeft, 0f, right, height)
             }
             val baseAlpha = paint.alpha
-
             for (index in 0..count) {
                 rect.set(0f, 0f, width, height)
                 rect.offset(right, 0f)
@@ -300,8 +303,8 @@ class HeaderView(
 
                 paint.alpha = (
                     baseAlpha * when (index) {
-                        0 -> 1f - fraction
-                        count -> fraction
+                        0 -> fadeAlpha(1f - fraction)
+                        count -> fadeAlpha(fraction)
                         else -> 1f
                     }
                     ).toInt()
@@ -316,6 +319,14 @@ class HeaderView(
             }
             paint.alpha = baseAlpha
             canvas.restore()
+
+            // Clear edge between the name area and the day columns, same as in the rows.
+            val edgeWidth = dp(2.0f)
+            if (rtl) {
+                canvas.drawRect(canvas.width - clipLeft, 0f, canvas.width - clipLeft + edgeWidth, height, edgePaint)
+            } else {
+                canvas.drawRect(clipLeft - edgeWidth, 0f, clipLeft, height, edgePaint)
+            }
         }
     }
 }

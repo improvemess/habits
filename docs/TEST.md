@@ -37,3 +37,13 @@ Pull requests run the medium and large instrumented tests on emulators (jobs "An
 Failed tests are retried once. Tests that only pass on the retry show up as warnings, and should be fixed. If tests still fail, the job uploads the `am instrument` output, `logcat` and the test screenshots as the artifact `instrumented-results-N` of its shard.
 
 To run a single shard locally, set `NUM_SHARDS` and `SHARD_INDEX` (counted from 0), for example `NUM_SHARDS=3 SHARD_INDEX=1`.
+
+## Tests in CI
+
+The workflow *Quality Gates* runs the checks of a pull request as parallel jobs. Its first job, *Changes*, uses `tools/ci/changes.sh` to decide from the changed files which jobs are needed; the others are skipped, and the required check *Quality gate* accepts a skipped job only if it was not needed:
+
+- Documentation only (Markdown files in the top level, `docs/`, `screenshots/`, license and translator lists) and the release tooling (`tools/release/`, `.releaserc.json`, the release and PR title workflows): no job runs.
+- Only `uhabits-android/`: every job except the core build and tests.
+- `uhabits-core/`, the build configuration, the workflow itself or any other path: every job.
+
+Pushes to `main`, pull requests into `main` and manual runs (`gh workflow run quality-gates.yml`) always run every job. To see what a branch would run, call `tools/ci/changes.sh origin/dev HEAD`.
