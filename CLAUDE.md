@@ -1,53 +1,64 @@
 # CLAUDE.md
 
-Projektgedächtnis für Claude Code in diesem Fork (`improvemess/habits`). Hier steht, was uns wichtig ist. Bitte bei jeder Änderung beachten und bei neuen Erkenntnissen ergänzen.
+Project memory for Claude Code in this fork (`improvemess/habits`). It lists what matters to us. Follow it for every change and extend it when you learn something new.
 
-## Immer beachten: Export & Import
+## Always: export & import
 
-Bei **jeder** Änderung am Datenmodell oder an Daten, die Nutzer:innen speichern (neue Felder, neue Tabellen, neue Einstellungen, neue Habit-Eigenschaften wie z. B. Pausen), prüfen wir:
+For **every** change to the data model or to data that users store (new fields, new tables, new settings, new habit properties such as pauses), we check:
 
-1. **Export:** Werden die Änderungen sinnvoll im Export mitgegeben?
-   - Loop-Datenbank-Backup (SQLite, `ExportDBTask`) enthält neue Spalten/Tabellen automatisch – Migration und Schema prüfen.
-   - CSV-Export (`HabitsCSVExporter`) – prüfen, ob die neuen Daten dort sinnvoll abgebildet werden oder bewusst nicht (dann begründen).
-2. **Import:** Können die exportierten Daten auch wieder importiert werden (Round-Trip)?
-   - `LoopDBImporter` (und ggf. `GenericImporter`, `HabitBullCSVImporter`, `RewireDBImporter`, `TickmateDBImporter`) anpassen, wenn neue Felder dazukommen.
-   - Ältere Exporte ohne die neuen Felder müssen weiterhin importierbar sein (Abwärtskompatibilität, sinnvolle Defaults).
-3. **Tests:** Round-Trip-Test (Export → Import → Daten identisch) für neue Felder ergänzen oder erweitern.
-4. In der PR-Beschreibung kurz festhalten: „Export: ja/nein/n. a. – Import: ja/nein/n. a." mit Begründung.
+1. **Export:** are the changes included in the export where it makes sense?
+   - The Loop database backup (SQLite, `ExportDBTask`) contains new columns/tables automatically – check migration and schema.
+   - CSV export (`HabitsCSVExporter`) – check whether the new data is represented there sensibly, or deliberately not (then give a reason).
+2. **Import:** can the exported data be imported again (round trip)?
+   - Adjust `LoopDBImporter` (and, if needed, `GenericImporter`, `HabitBullCSVImporter`, `RewireDBImporter`, `TickmateDBImporter`) when new fields are added.
+   - Older exports without the new fields must stay importable (backward compatibility, sensible defaults).
+3. **Tests:** add or extend a round-trip test (export → import → identical data) for new fields.
+4. State it briefly in the PR description: "Export: yes/no/n/a – Import: yes/no/n/a" with a reason.
 
-## Workflow (Fork)
+## Always: public texts in English
 
-- Änderungen nur im Fork `improvemess/habits`, **nie** upstream (iSoron/uhabits).
-- Nie direkt auf `dev` committen: Feature-Branch von `dev`, aussagekräftige Commits, Pull Request im Fork.
-- `gh pr create` immer mit `--repo improvemess/habits --base dev`.
-- Feature-PRs werden per **Squash** nach `dev` gemergt. Der PR-Titel (Conventional Commit) bestimmt die nächste Version, der PR-Text wird zum Commit-Text.
-- **Kein Skip-CI-Marker (`[skip ci]` u. ä.) wörtlich in PR-Texte schreiben**: Der Squash-Commit übernähme ihn, für ihn liefen keine Checks, und ein Release-PR mit diesem Commit oben bliebe blockiert.
-- Ein Merge nach `dev` erzeugt **kein** Release. Releases entstehen nur über einen Release-PR `dev → main` mit Titel `chore(release): dev → main`, gemergt als **Merge-Commit** (nie Squash). Danach führt der Release-Workflow `main` automatisch nach `dev` zurück. Release-PRs nur auf ausdrücklichen Wunsch anlegen oder mergen. Details: `docs/RELEASE.md`.
+Everything that is publicly visible is written **in English**:
 
-## Immer beachten: README mit Unterschieden zum Fork-Ursprung
+- Issues: title, body and comments (also when editing old issues).
+- Pull requests: title, body, review comments.
+- Commit messages: the PR title becomes the squash commit, and semantic-release turns it into the release notes and `CHANGELOG.md`. A German title therefore ends up in the release notes.
+- Release notes and changelog, README, `docs/`, code comments, store texts and this file.
 
-Bei **jeder** Änderung (Feature, Fix, Änderung am Verhalten, an Berechtigungen, Abhängigkeiten oder am Build/Release) ergänzen wir im selben PR den Abschnitt „Differences from upstream“ in `README.md`:
+Exceptions: translated app strings (`values-de` and similar) and localized store texts (`de-DE`). Talk to the user in the language they use.
 
-- Neuer Punkt oder bestehenden Punkt erweitern, mit PR-Nummer, kurz und aus Nutzersicht (Englisch, wie die README).
-- Wichtige Eigenheiten nennen: Standardwerte (z. B. „off by default“), neue Berechtigungen, was bewusst nicht enthalten ist.
-- Reine interne Refactorings ohne sichtbare Wirkung brauchen keinen Eintrag.
-- In der PR-Beschreibung festhalten: „README: ergänzt / n. a.“.
+## Workflow (fork)
 
-## Qualitätssicherung vor jedem Push
+- Changes only in the fork `improvemess/habits`, **never** upstream (iSoron/uhabits).
+- Never commit directly to `dev`: feature branch off `dev`, meaningful commits, pull request in the fork.
+- Always run `gh pr create` with `--repo improvemess/habits --base dev`.
+- Feature PRs are merged into `dev` by **squash**. The PR title (Conventional Commit) decides the next version; the PR body becomes the commit message.
+- **Never write a skip CI marker (`[skip ci]` and similar) literally in PR bodies**: the squash commit would carry it, no checks would run for it, and a release PR with this commit on top would stay blocked.
+- A merge into `dev` does **not** create a release. Releases only come from a release PR `dev → main` titled `chore(release): dev → main`, merged as a **merge commit** (never squash). Afterwards the release workflow merges `main` back into `dev` automatically. Only open or merge release PRs when explicitly asked to. Details: `docs/RELEASE.md`.
 
-- `./gradlew ktlintCheck` (alle Module) und die betroffenen Tests ausführen; CI „Quality Gates" schlägt bei ktlint-Verstößen fehl (z. B. Import-Reihenfolge).
-- Bekannte, bereits vorhandene Testfehler lokal unter Windows (nicht von uns): `StringsTest.testFormat`, `HabitsCSVExporterTest.testExportCSV`, `HabitListTest.testWriteCSV`. Vor Annahme einer Regression die CI prüfen.
-- **Instrumented Tests laufen lokal nicht** (kein Emulator) und werden hier nur kompiliert. Bei Änderungen an UI-Abläufen (Dialoge, Activities, Navigation, Back-Verhalten) deshalb vor dem Push: `uhabits-android/src/androidTest` nach betroffenen Schritten durchsuchen (`CommonSteps.createHabit`, `HabitsTest` u. a.), sie mitziehen und einen Acceptance-Test für das neue Verhalten ergänzen. Ergebnisse von `registerForActivityResult` treffen vor `onStart` ein, also nach `onSaveInstanceState`: im Callback `dismissAllowingStateLoss()` statt `dismiss()` und keine Fragment-Transaktionen mit `commit()`.
-- **Nach jedem Push die CI prüfen** (`gh pr checks <nr> --repo improvemess/habits`, bei Fehlern `gh run view <id> --log-failed`) und Fehler beheben, bevor der PR als fertig gemeldet wird.
+## Always: README with the differences from upstream
 
-## Lokale Build-Umgebung (Windows)
+For **every** change (feature, fix, change of behavior, permissions, dependencies or build/release) we update the "Differences from upstream" section in `README.md` in the same PR:
 
-- Gradle braucht JDK 17: `JAVA_HOME="/c/Program Files/Microsoft/jdk-17.0.21.102-hotspot"` pro Befehl setzen.
-- Android SDK: `C:\Android\Sdk` (`local.properties` enthält `sdk.dir`, gitignored).
-- Nützliche Tasks: `:uhabits-core:jvmTest`, `ktlintCheck`, `:uhabits-android:assembleDebug`, `:uhabits-android:testDebugUnitTest`.
-- Kein Python verfügbar; Edit-Tool oder sed/awk nutzen. Kein Emulator: Instrumented Tests werden nur kompiliert.
+- Add a new item or extend an existing one, with the PR number, short and from the user's point of view.
+- Mention important details: defaults (e.g. "off by default"), new permissions, what is deliberately not included.
+- Purely internal refactorings without a visible effect need no entry.
+- State it in the PR description: "README: updated / n/a".
 
-## Projektstruktur (Kurzüberblick)
+## Quality checks before every push
 
-- `uhabits-core`: Kotlin Multiplatform, Fachlogik, Modelle, Import/Export (`core/io`).
-- `uhabits-android`: Android-App (UI, DB-Zugriff, `tasks/ExportDBTask`, Sharing, Homeassistant, Widgets).
+- Run `./gradlew ktlintCheck` (all modules) and the affected tests; the CI "Quality Gates" fail on ktlint violations (e.g. import order).
+- Known, pre-existing local test failures on Windows (not caused by us): `StringsTest.testFormat`, `HabitsCSVExporterTest.testExportCSV`, `HabitListTest.testWriteCSV`. Check CI before assuming a regression.
+- **Instrumented tests do not run locally** (no emulator); they are only compiled here. For changes to UI flows (dialogs, activities, navigation, back behavior), search `uhabits-android/src/androidTest` for affected steps before pushing (`CommonSteps.createHabit`, `HabitsTest` and others), update them and add an acceptance test for the new behavior. Results of `registerForActivityResult` arrive before `onStart`, i.e. after `onSaveInstanceState`: in the callback use `dismissAllowingStateLoss()` instead of `dismiss()`, and no fragment transactions with `commit()`.
+- **Check CI after every push** (`gh pr checks <nr> --repo improvemess/habits`, on failures `gh run view <id> --log-failed`) and fix failures before reporting the PR as done.
+
+## Local build environment (Windows)
+
+- Gradle needs JDK 17: set `JAVA_HOME="/c/Program Files/Microsoft/jdk-17.0.21.102-hotspot"` per command.
+- Android SDK: `C:\Android\Sdk` (`local.properties` contains `sdk.dir`, gitignored).
+- Useful tasks: `:uhabits-core:jvmTest`, `ktlintCheck`, `:uhabits-android:assembleDebug`, `:uhabits-android:testDebugUnitTest`.
+- No Python available; use the Edit tool or sed/awk. No emulator: instrumented tests are only compiled.
+
+## Project structure (overview)
+
+- `uhabits-core`: Kotlin Multiplatform, domain logic, models, import/export (`core/io`).
+- `uhabits-android`: Android app (UI, DB access, `tasks/ExportDBTask`, sharing, Home Assistant, widgets).
