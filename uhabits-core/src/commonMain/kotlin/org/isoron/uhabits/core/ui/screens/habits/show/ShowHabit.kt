@@ -28,6 +28,8 @@ import org.isoron.uhabits.core.models.Pause
 import org.isoron.uhabits.core.preferences.Preferences
 import org.isoron.uhabits.core.ui.screens.habits.show.views.BarCardPresenter
 import org.isoron.uhabits.core.ui.screens.habits.show.views.BarCardState
+import org.isoron.uhabits.core.ui.screens.habits.show.views.CheatDaysCardPresenter
+import org.isoron.uhabits.core.ui.screens.habits.show.views.CheatDaysCardState
 import org.isoron.uhabits.core.ui.screens.habits.show.views.FrequencyCardPresenter
 import org.isoron.uhabits.core.ui.screens.habits.show.views.FrequencyCardState
 import org.isoron.uhabits.core.ui.screens.habits.show.views.HistoryCardPresenter
@@ -50,6 +52,7 @@ data class ShowHabitState(
     val title: String = "",
     val isNumerical: Boolean = false,
     val color: PaletteColor = PaletteColor(1),
+    val cheatDays: CheatDaysCardState,
     val subtitle: SubtitleCardState,
     val overview: OverviewCardState,
     val notes: NotesCardState,
@@ -100,6 +103,12 @@ class ShowHabitPresenter(
                 isNumerical = habit.isNumerical,
                 theme = theme,
                 pauses = habit.pauses.getAll().filter { !it.end.isOlderThan(getToday()) },
+                cheatDays = CheatDaysCardPresenter.buildState(
+                    habit = habit,
+                    history = preferences.cheatDayHistory,
+                    firstWeekday = preferences.firstWeekday,
+                    theme = theme
+                ),
                 subtitle = SubtitleCardPresenter.buildState(
                     habit = habit,
                     theme = theme

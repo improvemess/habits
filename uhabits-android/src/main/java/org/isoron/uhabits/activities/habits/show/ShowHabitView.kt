@@ -59,6 +59,7 @@ class ShowHabitView(context: Context) : FrameLayout(context) {
             color = data.color,
             theme = data.theme
         )
+        binding.cheatDaysCard.setState(data.cheatDays)
         binding.subtitleCard.setState(data.subtitle)
         binding.overviewCard.setState(data.overview)
         binding.notesCard.setState(data.notes)
