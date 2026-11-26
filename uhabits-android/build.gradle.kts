@@ -51,8 +51,8 @@ android {
     }
 
     defaultConfig {
-        versionCode = 22700
-        versionName = "2.27.0"
+        versionCode = 30000
+        versionName = "3.0.0"
         minSdk = 28
         targetSdk = 36
         // Eigene ID statt upstream org.isoron.uhabits, damit der Fork in F-Droid
