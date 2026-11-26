@@ -220,8 +220,6 @@
     <string name="decrement">Zmanjšaj</string>
     <string name="pref_skip_title">Omogoči preskok dni</string>
     <string name="pref_skip_description">Dvakrat preklopite, da dodate preskok namesto kljukice. Preskoki ohranjajo vaš rezultat nespremenjen in ne prekinejo vašega niza.</string>
-    <string name="pref_unknown_title">Pokaži vprašaj za manjkajoče podatke</string>
-    <string name="pref_unknown_description">Razlikujte dneve brez podatkov od dejanskih zamud. Če želite vnesti presledek, dvakrat preklopite.</string>
     <string name="you_are_now_a_developer">Zdaj ste razvijalec</string>
     <string name="activity_not_found">Najdena ni bila nobena aplikacija, ki bi podpirala to dejanje</string>
     <string name="pref_midnight_delay_title">Podaljšajte dan nekaj ur čez polnoč</string>

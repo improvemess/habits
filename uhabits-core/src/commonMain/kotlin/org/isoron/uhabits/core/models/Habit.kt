@@ -42,6 +42,8 @@ data class Habit(
     var uuid: String? = null,
     /** First day on which an avoided ("negative") habit counts as done; null for normal habits. */
     var negativeSince: LocalDate? = null,
+    /** Day on which the habit was created; null for habits from before it was recorded (see #70). */
+    var createdOn: LocalDate? = null,
     /** Whether a weekly goal counts per calendar week instead of per rolling 7 days (see #23). */
     var calendarPeriod: Boolean = false,
     /** Unit of the streak flame; null means automatic, derived from the frequency (see #15). */
@@ -63,6 +65,10 @@ data class Habit(
     val isNegative: Boolean
         get() = negativeSince != null
 
+    /** First day that belongs to the habit: the start of an avoided habit, otherwise [createdOn]. */
+    val creationDay: LocalDate?
+        get() = negativeSince ?: createdOn
+
     val isNumerical: Boolean
         get() = type == HabitType.NUMERICAL
 
@@ -72,11 +78,11 @@ data class Habit(
     fun hasReminder(): Boolean = reminder != null
 
     /**
-     * Whether "unknown" (a question mark) can be chosen for the given day. Avoided habits count
-     * every day since [negativeSince] as done, so there it would just show the default again.
+     * Whether the given day lies before the habit was created. Only there "unknown" (no entry) is a
+     * state of its own and can be set again; from the creation day on, a day is done or not (see #70).
      */
     fun isUnknownAllowedOn(date: LocalDate): Boolean {
-        val since = negativeSince ?: return true
+        val since = creationDay ?: return false
         return since.isNewerThan(date)
     }
 
@@ -256,6 +262,7 @@ data class Habit(
         this.unit = other.unit
         this.uuid = other.uuid
         this.negativeSince = other.negativeSince
+        this.createdOn = other.createdOn
         this.calendarPeriod = other.calendarPeriod
         this.streakUnit = other.streakUnit
         this.dueDays = other.dueDays
@@ -281,6 +288,7 @@ data class Habit(
         if (unit != other.unit) return false
         if (uuid != other.uuid) return false
         if (negativeSince != other.negativeSince) return false
+        if (createdOn != other.createdOn) return false
         if (calendarPeriod != other.calendarPeriod) return false
         if (streakUnit != other.streakUnit) return false
         if (dueDays != other.dueDays) return false
@@ -305,6 +313,7 @@ data class Habit(
         result = 31 * result + unit.hashCode()
         result = 31 * result + (uuid?.hashCode() ?: 0)
         result = 31 * result + (negativeSince?.hashCode() ?: 0)
+        result = 31 * result + (createdOn?.hashCode() ?: 0)
         result = 31 * result + calendarPeriod.hashCode()
         result = 31 * result + (streakUnit?.hashCode() ?: 0)
         result = 31 * result + dueDays.hashCode()

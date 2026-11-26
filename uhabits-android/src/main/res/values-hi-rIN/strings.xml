@@ -237,8 +237,6 @@
     <string name="decrement">घटौंती</string>
     <string name="pref_skip_title">दिन छोड़ना सक्षम करें</string>
     <string name="pref_skip_description">चेकमार्क के बजाय स्किप जोड़ने के लिए दो बार टॉगल करें। स्किप आपके स्कोर को जारी रखते हैं और आपकी स्ट्रीक को नहीं तोड़ते हैं।</string>
-    <string name="pref_unknown_title">खोयी जानकारी के लिए प्रश्न चिह्न दिखाएं</string>
-    <string name="pref_unknown_description">वास्तविक चूकों और बिना जानकारीवाले दिनों में अंतर करें। चूक दर्ज करने के लिए, दो बार टॉगल करें।</string>
     <string name="you_are_now_a_developer">अब आप एक विकसक हैं</string>
     <string name="activity_not_found">इस कार्रवाई को संभालने के लिए कोई ऐप नहीं मिला</string>
     <string name="pref_midnight_delay_title">मध्यरात्रि से कुछ घंटे बाद तक दिन बढ़ाएँ</string>

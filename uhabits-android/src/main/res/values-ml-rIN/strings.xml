@@ -208,8 +208,6 @@
     <string name="decrement">കുറയ്ക്കൽ</string>
     <string name="pref_skip_title">ദിവസങ്ങൾ ഒഴിവാക്കുന്നത് പ്രവർത്തനക്ഷമമാക്കുക</string>
     <string name="pref_skip_description">ഒരു ചെക്ക്മാർക്കിന് പകരം ഒരു ഒഴിവാക്കൽ ചേർക്കാൻ രണ്ടുതവണ ടോഗിൾ ചെയ്യുക.  സ്കിപ്പുകൾ നിങ്ങളുടെ സ്കോർ മാറ്റമില്ലാതെ നിലനിർത്തുകയും നിങ്ങളുടെ സ്ട്രീക്ക് തകർക്കുകയുമില്ല</string>
-    <string name="pref_unknown_title">നഷ്ടപ്പെട്ട ഡാറ്റയ്ക്കുള്ള ചോദ്യചിഹ്നങ്ങൾ കാണിക്കുക</string>
-    <string name="pref_unknown_description">യഥാർത്ഥ വീഴ്ചകളിൽ നിന്ന് ഡാറ്റ ഇല്ലാതെ ദിവസങ്ങൾ വേർതിരിക്കുക.  ഒരു ലാപ്‌സ് നൽകുന്നതിന്, രണ്ടുതവണ ടോഗിൾ ചെയ്യുക.</string>
     <string name="you_are_now_a_developer">നിങ്ങൾ ഇപ്പോൾ ഒരു ഡെവലപ്പറാണ്</string>
     <string name="activity_not_found">ഈ പ്രവർത്തനത്തെ പിന്തുണയ്ക്കുന്ന ഒരു ആപ്പും കണ്ടെത്തിയില്ല</string>
     <string name="pref_midnight_delay_title">അർദ്ധരാത്രി കഴിഞ്ഞ് കുറച്ച് മണിക്കൂറുകൾ പകൽ നീട്ടുക</string>

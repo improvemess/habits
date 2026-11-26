@@ -213,8 +213,6 @@
     <string name="decrement">Csökkentés</string>
     <string name="pref_skip_title">Napok kihagyásának engedélyezése</string>
     <string name="pref_skip_description">Váltás kétszer, ha kihagyást szeretne hozzáadni a pipa helyett. A kihagyások változatlanul tartják a pontszámot, és nem szakítják meg a sorozatot.</string>
-    <string name="pref_unknown_title">Kérdőjelek megjelenítése a hiányzó adatoknál</string>
-    <string name="pref_unknown_description">Az adatok nélküli napok megkülönböztetése a tényleges kihagyásoktól. Kihagyás megadásához váltson kétszer.</string>
     <string name="you_are_now_a_developer">Ön mostantól már fejlesztő!</string>
     <string name="activity_not_found">Ezen művelet elvégzéséhez nem található alkalmazás.</string>
     <string name="pref_midnight_delay_title">A nap meghosszabbítása éjfél után néhány órával</string>

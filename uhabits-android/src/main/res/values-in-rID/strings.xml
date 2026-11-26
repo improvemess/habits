@@ -211,8 +211,6 @@
     <string name="decrement">Pengurangan</string>
     <string name="pref_skip_title">Aktifkan lewati hari</string>
     <string name="pref_skip_description">Alihkan dua kali untuk menambahkan sebuah skip, bukannya tanda centang. Skip membuat skormu tidak berubah dan tidak merusak rentetanmu.</string>
-    <string name="pref_unknown_title">Tampilkan tanda tanya untuk data yang hilang</string>
-    <string name="pref_unknown_description">Membedakan hari tanpa data dari selang waktu yang aktual. Untuk memasukkan selang waktu, alihkan dua kali.</string>
     <string name="you_are_now_a_developer">Kamu sekarang adalah seorang developer</string>
     <string name="activity_not_found">Aplikasi untuk mendukung tindakan ini tidak ditemukan</string>
     <string name="pref_midnight_delay_title">Perpanjang hari beberapa jam setelah tengah malam</string>

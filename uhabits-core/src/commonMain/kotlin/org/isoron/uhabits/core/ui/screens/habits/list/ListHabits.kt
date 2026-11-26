@@ -126,6 +126,11 @@ object ListHabitsPresenter {
             streak = streak,
             streakUnit = streakUnit,
             streakDoneToday = streakDoneToday,
+            beforeCreation = if (habit.creationDay != null) {
+                entries.map { habit.isUnknownAllowedOn(it.date) }
+            } else {
+                emptyList()
+            },
             isShared = isShared
         )
     }
@@ -145,6 +150,8 @@ data class HabitCardState(
     val notes: List<String>,
     /** Per day: whether it is shown as "zz" (see [ZzState]); empty if no day is. */
     val zz: List<ZzState> = emptyList(),
+    /** Per day: lies before the creation day of the habit; empty when it has none (see #70). */
+    val beforeCreation: List<Boolean> = emptyList(),
     val category: String,
     val streak: Int = 0,
     val streakUnit: StreakUnit = StreakUnit.DAYS,

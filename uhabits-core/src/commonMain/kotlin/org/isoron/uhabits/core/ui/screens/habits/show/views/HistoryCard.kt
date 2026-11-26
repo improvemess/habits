@@ -122,7 +122,7 @@ class HistoryCardPresenter(
             Entry.nextToggleValue(
                 value = entry.value,
                 isSkipEnabled = preferences.isSkipEnabled,
-                areQuestionMarksEnabled = preferences.areQuestionMarksEnabled
+                isBeforeCreation = habit.isUnknownAllowedOn(date)
             )
         }
         commandRunner.run(

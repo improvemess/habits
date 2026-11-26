@@ -52,7 +52,9 @@ data class CheckmarkButtonState(
     val value: Int,
     val notes: String,
     val isNegative: Boolean = false,
-    val zz: ZzState = ZzState.NONE
+    val zz: ZzState = ZzState.NONE,
+    /** The day lies before the habit was created; only there a tap can reset the day (see #70). */
+    val beforeCreation: Boolean = false
 )
 
 /**
@@ -99,7 +101,7 @@ class CheckmarkButtonView(
             Entry.nextToggleValue(
                 value = state.value,
                 isSkipEnabled = preferences.isSkipEnabled,
-                areQuestionMarksEnabled = preferences.areQuestionMarksEnabled
+                isBeforeCreation = state.beforeCreation
             )
         }
         state = state.copy(value = v)
@@ -160,7 +162,7 @@ class CheckmarkButtonView(
                     NO -> {
                         if (state.isNegative) {
                             NEGATIVE_RED
-                        } else if (preferences.areQuestionMarksEnabled) {
+                        } else if (state.beforeCreation) {
                             mediumContrastColor
                         } else {
                             lowContrastColor
@@ -172,18 +174,11 @@ class CheckmarkButtonView(
             val id = when (state.value) {
                 SKIP -> R.string.fa_skipped
                 NO -> R.string.fa_times
-                UNKNOWN -> {
-                    if (preferences.areQuestionMarksEnabled) {
-                        R.string.fa_question
-                    } else {
-                        R.string.fa_times
-                    }
-                }
+                UNKNOWN -> R.string.fa_times
                 else -> R.string.fa_check
             }
             paint.typeface = if (isZz) Typeface.DEFAULT_BOLD else getFontAwesome()
             paint.textSize = when {
-                id == R.string.fa_question -> sp(12.0f)
                 state.value == YES_AUTO && !isZz -> sp(13.0f)
                 else -> sp(14.0f)
             }

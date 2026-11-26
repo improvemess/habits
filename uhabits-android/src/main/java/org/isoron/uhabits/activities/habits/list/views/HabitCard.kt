@@ -112,7 +112,7 @@ class HabitCardView(
             true -> View.VISIBLE
             false -> View.GONE
         }
-        checkmarkPanel.setState(CheckmarkPanelState(r.checkmarks, c, r.notes, newState.buttonCount, r.isNegative, r.zz))
+        checkmarkPanel.setState(CheckmarkPanelState(r.checkmarks, c, r.notes, newState.buttonCount, r.isNegative, r.zz, r.beforeCreation))
         numberPanel.setState(
             NumberPanelState(
                 r.checkmarks.map { it / 1000.0 },
@@ -132,6 +132,11 @@ class HabitCardView(
         dataOffset = offset
         checkmarkPanel.setDataOffset(offset)
         numberPanel.setDataOffset(offset)
+    }
+
+    fun setScrollFraction(fraction: Float) {
+        checkmarkPanel.setScrollFraction(fraction)
+        numberPanel.setScrollFraction(fraction)
     }
 
     private fun getActiveColor(record: HabitCardState): Int {

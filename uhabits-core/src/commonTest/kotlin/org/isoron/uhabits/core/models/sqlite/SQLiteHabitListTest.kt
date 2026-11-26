@@ -283,4 +283,20 @@ class SQLiteHabitListTest : BaseUnitTest() {
         habitList.update(habit)
         assertNull(repository.findAll().first { it.id == habit.id }.negativeSince)
     }
+
+    @Test
+    fun testCreatedOn_isPersistedAndRestored() = dbTest {
+        val habit = habitsArray[2]
+        habit.createdOn = LocalDate(2015, 1, 10)
+        habitList.update(habit)
+        val data = repository.findAll().first { it.id == habit.id }
+        assertEquals(LocalDate(2015, 1, 10).unixTime, data.createdOn)
+        val restored = modelFactory.buildHabit()
+        SQLiteHabitList.copyTo(data, restored)
+        assertEquals(LocalDate(2015, 1, 10), restored.createdOn)
+
+        habit.createdOn = null
+        habitList.update(habit)
+        assertNull(repository.findAll().first { it.id == habit.id }.createdOn)
+    }
 }

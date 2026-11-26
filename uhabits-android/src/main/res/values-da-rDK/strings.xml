@@ -211,8 +211,6 @@
     <string name="decrement">Formindskelse</string>
     <string name="pref_skip_title">Slå overspring af dage til</string>
     <string name="pref_skip_description">Skift to gange for at tilføje et overspring i stedet for et flueben. Spring over holder din score uændret og bryder ikke din række.</string>
-    <string name="pref_unknown_title">Vis spørgsmålstegn for manglende data</string>
-    <string name="pref_unknown_description">Differentiér dage uden data fra faktiske udeladelser. For at indtaste en udeladelse, skiftes to gange.</string>
     <string name="you_are_now_a_developer">Du er nu udvikler</string>
     <string name="activity_not_found">Ingen app fundet til at understøtte denne handling</string>
     <string name="pref_midnight_delay_title">Forlæng dagen et par timer efter midnat</string>

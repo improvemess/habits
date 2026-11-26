@@ -90,7 +90,14 @@ class ShowHabitActivity : AppCompatActivity(), CommandRunner.Listener {
 
         val appComponent = (applicationContext as HabitsApplication).component
         val habitList = appComponent.habitList
-        habit = habitList.getById(ContentUris.parseId(intent.data!!))!!
+        // Ohne gültige Habit-URI (z. B. gelöschte Gewohnheit, oder neu erzeugt durch
+        // "Nach oben" aus einer Kind-Activity) schließen statt abzustürzen.
+        val found = intent.data?.let { habitList.getById(ContentUris.parseId(it)) }
+        if (found == null) {
+            finish()
+            return
+        }
+        habit = found
         preferences = appComponent.preferences
         commandRunner = appComponent.commandRunner
         widgetUpdater = appComponent.widgetUpdater

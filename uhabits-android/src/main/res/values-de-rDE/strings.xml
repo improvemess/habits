@@ -261,8 +261,6 @@
     <string name="decrement">Verringern</string>
     <string name="pref_skip_title">Tage überspringen aktivieren</string>
     <string name="pref_skip_description">Zwei mal markieren, um eine Lücke einzutragen statt abzuhaken. Lücken lassen deine Wertung unverändert und beenden deine Serie nicht.</string>
-    <string name="pref_unknown_title">Fragezeichen für fehlende Daten anzeigen</string>
-    <string name="pref_unknown_description">Tage ohne Daten von tatsächlichen Lücken unterscheiden. Um eine Lücke einzutragen zweimal markieren.</string>
     <string name="you_are_now_a_developer">Du bist nun ein Entwickler</string>
     <string name="activity_not_found">Für diese Aktion wurde keine App gefunden.</string>
     <string name="pref_midnight_delay_title">Verlängere den Tag um ein paar Stunden nach Mitternacht</string>

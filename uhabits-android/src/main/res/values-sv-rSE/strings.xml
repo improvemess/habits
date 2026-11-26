@@ -217,8 +217,6 @@
     <string name="decrement">Minska</string>
     <string name="pref_skip_title">Aktivera överhoppning av dagar</string>
     <string name="pref_skip_description">Växla två gånger för att hoppa över istället för att bocka för. Att hoppa över behåller dina poäng oförändrade och bryter inte din serie.</string>
-    <string name="pref_unknown_title">Visa frågetecken för data som saknas</string>
-    <string name="pref_unknown_description">Skilj dagar utan data från faktiska misslyckanden. För att ange ett misslyckanden, växla två gånger.</string>
     <string name="you_are_now_a_developer">Du är nu en utvecklare</string>
     <string name="activity_not_found">Ingen app som stödjer åtgärden hittades.</string>
     <string name="pref_midnight_delay_title">Förläng dagen några timmar efter midnatt</string>

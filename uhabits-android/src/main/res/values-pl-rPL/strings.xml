@@ -220,8 +220,6 @@
     <string name="decrement">Zmniejsz</string>
     <string name="pref_skip_title">Włącz pomijanie dni</string>
     <string name="pref_skip_description">Przełącz dwukrotnie, aby dodać pominięcie zamiast znacznika wyboru. Pomijanie utrzymuje niezmieniony wynik i nie przerywa passy.</string>
-    <string name="pref_unknown_title">Pokaż znaki zapytania dla brakujących danych</string>
-    <string name="pref_unknown_description">Odróżnij dni bez danych od faktycznych przerw. Aby wprowadzić przerwę, przełącz dwukrotnie.</string>
     <string name="you_are_now_a_developer">Jesteś teraz programistą</string>
     <string name="activity_not_found">Nie znaleziono aplikacji obsługującej to działanie</string>
     <string name="pref_midnight_delay_title">Przedłuż dzień o kilka godzin po północy</string>

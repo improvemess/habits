@@ -220,8 +220,6 @@
     <string name="decrement">Snížit</string>
     <string name="pref_skip_title">Umožnit přeskakování dnů</string>
     <string name="pref_skip_description">Klikněte dvakrát pro přeskočení namísto zaškrtnutí. Pomlčka nezmění vaše skóre, ani nepřeruší vaši sérii. </string>
-    <string name="pref_unknown_title">Zobrazit otazník pro chybějící data</string>
-    <string name="pref_unknown_description">Odlište dny bez údajů od nesplněného návyku. Pro zadání \"nesplněno\", klikněte dvakrát. </string>
     <string name="you_are_now_a_developer">Nyní jste vývojář</string>
     <string name="activity_not_found">Nenalezen program podporující tento krok</string>
     <string name="pref_midnight_delay_title">Prodloužit den o pár hodin po půlnoci</string>

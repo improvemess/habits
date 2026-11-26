@@ -207,8 +207,6 @@
     <string name="decrement">umanjenje</string>
     <string name="pref_skip_title">Omogući preskakanje dana</string>
     <string name="pref_skip_description">Dvaput promenite da biste preskočili umesto otkačinjanja. Preskakanje zadržava rezultat nepromenjenim i ne prekida niz.</string>
-    <string name="pref_unknown_title">Prikaz upitnika gde nema podataka</string>
-    <string name="pref_unknown_description">Razlikuje dane bez podataka sa stvarnim propuštanjem. Za preskok, potvrdite dva puta.</string>
     <string name="you_are_now_a_developer">Postali ste programer</string>
     <string name="activity_not_found">Nema aplikacije koja podržava ovu radnju</string>
     <string name="pref_midnight_delay_title">Produžite dan nekoliko sati iza ponoći</string>

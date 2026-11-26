@@ -222,8 +222,6 @@
     <string name="decrement">Уменьшить</string>
     <string name="pref_skip_title">Включить пропуск дней</string>
     <string name="pref_skip_description">Переключите дважды, чтобы добавить пропуск вместо галочки. Пропуски сохраняют ваш результат неизменным и не прерывают серию.</string>
-    <string name="pref_unknown_title">Показывать вопросительные знаки при отсутствии данных</string>
-    <string name="pref_unknown_description">Отличать дни без данных от фактических пропусков. Чтобы ввести пропуск, переключите дважды.</string>
     <string name="you_are_now_a_developer">Теперь вы разработчик</string>
     <string name="activity_not_found">Не найдено приложения для обработки данного действия</string>
     <string name="pref_midnight_delay_title">Продлить день на несколько часов после полуночи</string>
