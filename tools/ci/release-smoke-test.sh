@@ -30,6 +30,10 @@ keytool -genkeypair -keystore "$KEYSTORE" -storepass android -keypass android \
     --out "$SIGNED_APK" "$OUT/aligned.apk" || exit 1
 
 $ADB install -r "$SIGNED_APK" || exit 1
+
+# Systemhinweis "Viewing full screen" (Einführung läuft im Vollbild) als gesehen
+# markieren, sonst verdeckt er die App.
+$ADB shell settings put secure immersive_mode_confirmations confirmed
 $ADB logcat -c
 
 status=0
@@ -74,6 +78,11 @@ screenshot after-skip
 # 3. Zufällige Eingaben in der App (ohne Systemtasten, damit monkey die App
 #    nicht verlässt), in mehreren Runden mit verschiedenen Seeds.
 : > "$OUT/monkey.txt"
+# monkey zieht mit Wischgesten vom oberen Rand die Schnelleinstellungen herunter
+# und tippt dann nur noch dort. Eine Schleife klappt sie während der Läufe zu.
+( while true; do $ADB shell cmd statusbar collapse > /dev/null 2>&1; sleep 2; done ) &
+collapser=$!
+trap 'kill $collapser 2> /dev/null' EXIT
 for seed in $SEEDS; do
     echo "::group::monkey ($EVENTS Ereignisse, Seed $seed)"
     $ADB shell monkey -p "$PACKAGE" -s "$seed" --throttle 50 --pct-syskeys 0 \
@@ -88,6 +97,7 @@ for seed in $SEEDS; do
         status=1
     fi
 done
+kill $collapser 2> /dev/null
 
 # 4. Crash-Puffer: jede FATAL EXCEPTION der App ist ein Fehler.
 $ADB logcat -d -b crash > "$OUT/crash.txt"
