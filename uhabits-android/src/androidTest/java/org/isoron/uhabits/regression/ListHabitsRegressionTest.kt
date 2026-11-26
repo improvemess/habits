@@ -43,7 +43,7 @@ import org.isoron.uhabits.acceptance.steps.ListHabitsSteps.MenuItem.ADD
 import org.isoron.uhabits.acceptance.steps.ListHabitsSteps.MenuItem.DELETE
 import org.isoron.uhabits.acceptance.steps.ListHabitsSteps.changeSort
 import org.isoron.uhabits.acceptance.steps.ListHabitsSteps.clickMenu
-import org.isoron.uhabits.acceptance.steps.ListHabitsSteps.longPressCheckmarks
+import org.isoron.uhabits.acceptance.steps.ListHabitsSteps.toggleCheckmarks
 import org.isoron.uhabits.core.models.Entry.Companion.NO
 import org.isoron.uhabits.core.models.Entry.Companion.UNKNOWN
 import org.isoron.uhabits.core.models.Entry.Companion.YES_AUTO
@@ -70,7 +70,7 @@ class ListHabitsRegressionTest : BaseUserInterfaceTest() {
         typeName("Hello world")
         clickSave()
         verifyDisplaysText("Hello world")
-        longPressCheckmarks("Hello world", count = 3)
+        toggleCheckmarks("Hello world", count = 3)
     }
 
     /**
@@ -81,7 +81,7 @@ class ListHabitsRegressionTest : BaseUserInterfaceTest() {
     fun should_update_out_of_screen_checkmarks_when_scrolling_horizontally() {
         launchApp()
         verifyShowsScreen(LIST_HABITS)
-        longPressCheckmarks("Wake up early", count = 1)
+        toggleCheckmarks("Wake up early", count = 1)
         verifyShowsScreen(LIST_HABITS)
         verifyDisplaysCheckmarks("Wake up early", listOf(YES_MANUAL, UNKNOWN, UNKNOWN, UNKNOWN))
         for (i in 1..10) createHabit("Habit $i")
@@ -101,10 +101,10 @@ class ListHabitsRegressionTest : BaseUserInterfaceTest() {
         verifyShowsScreen(LIST_HABITS)
         changeSort("By score")
         changeSort("By status")
-        longPressCheckmarks("Meditate", count = 1)
+        toggleCheckmarks("Meditate", count = 1)
         changeFrequencyToMonthly("Read books")
-        longPressCheckmarks("Read books", count = 2)
-        longPressCheckmarks("Read books", count = 1)
+        toggleCheckmarks("Read books", count = 2)
+        toggleCheckmarks("Read books", count = 1)
         verifyDisplaysCheckmarks("Meditate", listOf(YES_AUTO, YES_MANUAL, YES_AUTO, YES_MANUAL))
         CommonSteps.verifyDisplaysTextInSequence(
             "Wake up early",
