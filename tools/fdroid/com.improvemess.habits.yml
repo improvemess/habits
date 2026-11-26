@@ -1,0 +1,25 @@
+Categories:
+  - Habit Tracker
+  - Sports & Health
+License: GPL-3.0-or-later
+SourceCode: https://github.com/improvemess/habits
+IssueTracker: https://github.com/improvemess/habits/issues
+Changelog: https://github.com/improvemess/habits/blob/main/CHANGELOG.md
+
+RepoType: git
+Repo: https://github.com/improvemess/habits.git
+
+Builds:
+  - versionName: @VERSION_NAME@
+    versionCode: @VERSION_CODE@
+    commit: @COMMIT@
+    subdir: uhabits-android
+    gradle:
+      - yes
+    prebuild: sed -i -e 's/jvmToolchain(17)/jvmToolchain(21)/' ../uhabits-core/build.gradle.kts
+      build.gradle.kts
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags ^v[0-9.]+$
+CurrentVersion: @VERSION_NAME@
+CurrentVersionCode: @VERSION_CODE@
