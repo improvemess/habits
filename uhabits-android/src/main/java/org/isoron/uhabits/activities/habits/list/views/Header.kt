@@ -72,6 +72,7 @@ class HeaderView(
 
     init {
         setScrollerBucketSize(dim(R.dimen.checkmarkWidth).toInt())
+        snapToBucket = true
         setBackgroundColor(sres.getColor(R.attr.headerBackgroundColor))
         elevation = dp(2.0f)
     }
@@ -259,18 +260,36 @@ class HeaderView(
             drawMonth(canvas, state?.buttonCount ?: 0, width)
 
             val em = paint.measureText("m")
+            val count = state?.buttonCount ?: 0
+            if (count <= 0) return
 
-            repeat(state?.buttonCount ?: 0) { index ->
+            // While scrolling between two days, the columns move pixel-wise towards the newest day.
+            // One extra column is drawn just outside the oldest one; the outermost columns are
+            // clipped to the columns area and fade with the part of them that is still visible.
+            val fraction = scrollFraction
+            val shift = fraction * width
+            val right = canvas.width.toFloat() - dp(3.0f)
+            val rtl = isRTL()
+            val clipLeft = right - count * width
+            canvas.save()
+            if (rtl) {
+                canvas.clipRect(canvas.width - right, 0f, canvas.width - clipLeft, height)
+            } else {
+                canvas.clipRect(clipLeft, 0f, right, height)
+            }
+            val baseAlpha = paint.alpha
+
+            for (index in 0..count) {
                 rect.set(0f, 0f, width, height)
-                rect.offset(canvas.width.toFloat() - dp(3.0f), 0f)
+                rect.offset(right, 0f)
 
                 if (isReversed) {
-                    rect.offset(-(index + 1) * width, 0f)
+                    rect.offset(-(index + 1) * width + shift, 0f)
                 } else {
-                    rect.offset((index - (state?.buttonCount ?: 0)) * width, 0f)
+                    rect.offset((index - count) * width - shift, 0f)
                 }
 
-                if (isRTL()) {
+                if (rtl) {
                     rect.set(
                         canvas.width - rect.right,
                         rect.top,
@@ -278,6 +297,14 @@ class HeaderView(
                         rect.bottom
                     )
                 }
+
+                paint.alpha = (
+                    baseAlpha * when (index) {
+                        0 -> 1f - fraction
+                        count -> fraction
+                        else -> 1f
+                    }
+                    ).toInt()
 
                 val date = today.minus(index + dataOffset)
                 val dayOfWeek = dateFormatter.shortWeekdayName(date).uppercase()
@@ -287,6 +314,8 @@ class HeaderView(
                 canvas.drawText(dayOfWeek, rect.centerX(), y1.toFloat(), paint)
                 canvas.drawText(dayOfMonth, rect.centerX(), y2.toFloat(), paint)
             }
+            paint.alpha = baseAlpha
+            canvas.restore()
         }
     }
 }

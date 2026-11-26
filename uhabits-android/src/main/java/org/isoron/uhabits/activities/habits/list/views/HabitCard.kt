@@ -134,6 +134,11 @@ class HabitCardView(
         numberPanel.setDataOffset(offset)
     }
 
+    fun setScrollFraction(fraction: Float) {
+        checkmarkPanel.setScrollFraction(fraction)
+        numberPanel.setScrollFraction(fraction)
+    }
+
     private fun getActiveColor(record: HabitCardState): Int {
         return when (record.archived) {
             true -> sres.getColor(R.attr.contrast60)
