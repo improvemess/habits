@@ -121,20 +121,11 @@ object ListHabitsPresenter {
             checkmarks = entries.map { it.value },
             completed = entries.map { it.completed },
             notes = entries.map { it.notes },
-            paused = if (habit.pauses.isEmpty()) {
-                emptyList()
-            } else {
-                entries.map { it.value == Entry.SKIP && habit.pauses.isPaused(it.date) }
-            },
+            zz = zzStates(habit, dateFrom, today),
             category = habit.category,
             streak = streak,
             streakUnit = streakUnit,
             streakDoneToday = streakDoneToday,
-            restDay = if (habit.dueDays.isEverFixed) {
-                entries.map { it.value == Entry.SKIP && habit.isRestDay(it.date) && !habit.pauses.isPaused(it.date) }
-            } else {
-                emptyList()
-            },
             beforeCreation = if (habit.creationDay != null) {
                 entries.map { habit.isUnknownAllowedOn(it.date) }
             } else {
@@ -157,9 +148,8 @@ data class HabitCardState(
     val checkmarks: List<Int>,
     val completed: List<Boolean>,
     val notes: List<String>,
-    val paused: List<Boolean> = emptyList(),
-    /** Per day: skipped because the habit is not due on that weekday (see #19). */
-    val restDay: List<Boolean> = emptyList(),
+    /** Per day: whether it is shown as "zz" (see [ZzState]); empty if no day is. */
+    val zz: List<ZzState> = emptyList(),
     /** Per day: lies before the creation day of the habit; empty when it has none (see #70). */
     val beforeCreation: List<Boolean> = emptyList(),
     val category: String,
@@ -168,6 +158,55 @@ data class HabitCardState(
     val streakDoneToday: Boolean = false,
     val isShared: Boolean = false
 )
+
+/**
+ * How a day is shown: "zz" stands for every day that is passed over without affecting the streak.
+ * It does not break it and does not count towards it, no matter why (pause, weekday on which the
+ * habit is not due, covered by the weekly or monthly goal, or skipped by hand).
+ */
+enum class ZzState {
+    /** A normal day. */
+    NONE,
+
+    /** A "zz" that continues a streak: shown in the habit color. */
+    STREAK,
+
+    /** A "zz" without a running streak: shown gray. */
+    GRAY
+}
+
+private const val ZZ_LOOKBACK_DAYS = 366
+
+/**
+ * Returns the [ZzState] of every day from [today] back to [from] (newest first). A "zz" day
+ * continues a streak if a day that was actually performed lies before it in the same unbroken run
+ * of completed days.
+ */
+fun zzStates(habit: Habit, from: LocalDate, today: LocalDate): List<ZzState> {
+    // Days that the user checked themselves are never "zz"
+    fun isZz(e: Entry) = e.value == Entry.SKIP || (e.value == Entry.YES_AUTO && !habit.isNumerical)
+    val entries = habit.computedEntries.getByInterval(from.minus(ZZ_LOOKBACK_DAYS), today)
+    if (entries.none { isZz(it) }) return emptyList()
+    val result = ArrayList<ZzState>(entries.size)
+    var performedInRun = false
+    for (entry in entries.asReversed()) {
+        result.add(
+            when {
+                !entry.completed -> {
+                    performedInRun = false
+                    ZzState.NONE
+                }
+                isZz(entry) -> if (performedInRun) ZzState.STREAK else ZzState.GRAY
+                else -> {
+                    performedInRun = true
+                    ZzState.NONE
+                }
+            }
+        )
+    }
+    result.reverse()
+    return result.take(from.daysUntil(today) + 1)
+}
 
 /**
  * Counts the days in [from]..[to] on which the habit was actually performed. Days that are only

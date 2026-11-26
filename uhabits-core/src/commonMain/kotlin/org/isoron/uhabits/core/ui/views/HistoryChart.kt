@@ -58,7 +58,12 @@ class HistoryChart(
         OFF,
         GREY,
         DIMMED,
+
+        /** A day that does not affect the streak ("zz" in the list), within a streak. */
         HATCHED,
+
+        /** Like [HATCHED], but without a running streak: gray. */
+        HATCHED_GRAY,
 
         /** A relapse or an exceeded limit of a habit the user wants to quit. */
         FAILED
@@ -256,6 +261,9 @@ class HistoryChart(
             Square.FAILED -> {
                 FAILED_RED
             }
+            Square.HATCHED_GRAY -> {
+                theme.mediumContrastTextColor.blendWith(theme.cardBackgroundColor, 0.5)
+            }
             Square.DIMMED, Square.HATCHED -> {
                 color.blendWith(theme.cardBackgroundColor, 0.5)
             }
@@ -264,7 +272,7 @@ class HistoryChart(
         canvas.setColor(squareColor)
         canvas.fillRoundRect(x, y, width, height, width * 0.15)
 
-        if (value == Square.HATCHED) {
+        if (value == Square.HATCHED || value == Square.HATCHED_GRAY) {
             canvas.setStrokeWidth(0.75)
             canvas.setColor(theme.cardBackgroundColor)
             var k = width / 10
