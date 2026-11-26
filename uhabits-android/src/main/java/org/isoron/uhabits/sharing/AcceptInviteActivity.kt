@@ -30,6 +30,7 @@ import kotlinx.coroutines.launch
 import org.isoron.uhabits.BuildConfig
 import org.isoron.uhabits.HabitsApplication
 import org.isoron.uhabits.R
+import org.isoron.uhabits.activities.AndroidThemeSwitcher
 import org.isoron.uhabits.core.sharing.AcceptResult
 import org.isoron.uhabits.core.sharing.FriendsService
 import org.isoron.uhabits.core.sharing.InviteLinks
@@ -49,8 +50,12 @@ class AcceptInviteActivity : AppCompatActivity() {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         val component = (application as HabitsApplication).component
+        // Follow the app's dark mode; the manifest theme is the light one (#96).
+        if (AndroidThemeSwitcher(this, component.preferences).isNightMode) {
+            setTheme(R.style.AcceptInviteDialogDark)
+        }
+        super.onCreate(savedInstanceState)
         service = component.friendsService
         binding = AcceptInviteBinding.inflate(layoutInflater)
         setContentView(binding.root)

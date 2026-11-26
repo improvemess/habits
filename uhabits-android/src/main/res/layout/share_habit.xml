@@ -75,8 +75,9 @@
                     style="@style/About.Item"
                     android:textColor="?contrast60" />
 
-                <Button
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/shareButton"
+                    style="@style/ShareTextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
@@ -99,8 +100,9 @@
                     style="@style/About.Item"
                     android:textColor="?contrast60" />
 
-                <Button
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/inviteButton"
+                    style="@style/ShareTextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
@@ -134,8 +136,9 @@
                         style="@style/About.Item"
                         android:textColor="?contrast60" />
 
-                    <Button
+                    <com.google.android.material.button.MaterialButton
                         android:id="@+id/sendLinkButton"
+                        style="@style/ShareTextButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="end"
@@ -159,8 +162,9 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical" />
 
-                <Button
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/stopButton"
+                    style="@style/ShareTextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"

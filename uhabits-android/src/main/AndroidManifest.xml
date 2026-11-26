@@ -127,7 +127,7 @@
             android:name=".sharing.AcceptInviteActivity"
             android:exported="true"
             android:label="@string/accept_invite"
-            android:theme="@style/Theme.AppCompat.Light.Dialog.Alert">
+            android:theme="@style/AcceptInviteDialog">
             <!-- From the invite landing page of any sharing server. -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
