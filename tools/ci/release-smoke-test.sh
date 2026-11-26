@@ -75,7 +75,47 @@ fi
 sleep 2
 screenshot after-skip
 
-# 3. Zufällige Eingaben in der App (ohne Systemtasten, damit monkey die App
+# 3. Fester Ablauf: Gewohnheiten anlegen und öffnen (Editor, Habit-Ansicht,
+#    Diagramme), damit diese Bildschirme sicher im Release-Build laufen und
+#    monkey danach eine gefüllte Liste vorfindet.
+step() {
+    local name=$1 pattern=$2 i
+    for i in 1 2 3 4 5 6 7 8 9 10; do
+        if tap_view "$pattern"; then
+            sleep 1
+            return 0
+        fi
+        sleep 1
+    done
+    echo "::error::Ablauf: Schritt \"$name\" nicht möglich, \"$pattern\" nicht gefunden."
+    screenshot "step-failed"
+    status=1
+    return 1
+}
+
+create_habit() {
+    local type_id=$1 name=$2
+    step "Neue Gewohnheit" "$PACKAGE:id/actionCreateHabit" &&
+        step "Aufbauen" "$PACKAGE:id/buttonBuild" &&
+        step "Typ" "$PACKAGE:id/$type_id" &&
+        step "Name" "$PACKAGE:id/nameInput" &&
+        $ADB shell input text "$name" &&
+        step "Speichern" "$PACKAGE:id/buttonSave"
+}
+
+echo "::group::Fester Ablauf"
+create_habit buttonYesNo "Smoke_yes_no" && echo "Gewohnheit Ja/Nein angelegt."
+create_habit buttonMeasurable "Smoke_measurable" && echo "Messbare Gewohnheit angelegt."
+if step "Gewohnheit öffnen" "Smoke_yes_no"; then
+    sleep 2
+    screenshot show-habit
+    $ADB shell input keyevent KEYCODE_BACK
+    echo "Habit-Ansicht geöffnet."
+fi
+screenshot after-steps
+echo "::endgroup::"
+
+# 4. Zufällige Eingaben in der App (ohne Systemtasten, damit monkey die App
 #    nicht verlässt), in mehreren Runden mit verschiedenen Seeds.
 : > "$OUT/monkey.txt"
 # monkey zieht mit Wischgesten vom oberen Rand die Schnelleinstellungen herunter
@@ -99,7 +139,7 @@ for seed in $SEEDS; do
 done
 kill $collapser 2> /dev/null
 
-# 4. Crash-Puffer: jede FATAL EXCEPTION der App ist ein Fehler.
+# 5. Crash-Puffer: jede FATAL EXCEPTION der App ist ein Fehler.
 $ADB logcat -d -b crash > "$OUT/crash.txt"
 $ADB logcat -d > "$OUT/logcat.txt"
 if grep -q "Process: $PACKAGE" "$OUT/crash.txt"; then
