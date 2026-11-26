@@ -58,6 +58,7 @@ class CheatDaysCardView(context: Context, attrs: AttributeSet) : LinearLayout(co
                     StreakUnit.DAYS -> R.plurals.cheat_days_next_days
                     StreakUnit.WEEKS -> R.plurals.cheat_days_next_weeks
                     StreakUnit.MONTHS -> R.plurals.cheat_days_next_months
+                    StreakUnit.YEARS -> R.plurals.cheat_days_next_years
                 }
                 lines.add(resources.getQuantityString(plural, next, next))
             } else {

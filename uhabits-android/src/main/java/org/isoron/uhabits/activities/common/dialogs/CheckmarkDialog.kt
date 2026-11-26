@@ -65,7 +65,6 @@ class CheckmarkDialog : AppCompatDialogFragment() {
         originalNotes = requireArguments().getString("notes")!!
         originalValue = requireArguments().getInt("value")
         view.notes.setText(originalNotes)
-        if (!prefs.isSkipEnabled) view.skipBtn.visibility = GONE
         if (!requireArguments().getBoolean("allowUnknown", true)) {
             view.unknownBtn.visibility = GONE
         }

@@ -50,7 +50,6 @@ class CheckmarkWidgetTest : BaseViewTest() {
         setTheme(R.style.WidgetTheme)
         today = getToday()
         prefs.widgetOpacity = 255
-        prefs.isSkipEnabled = true
         habit = fixtures.createVeryLongHabit()
         entries = habit.computedEntries
         val widget = CheckmarkWidget(targetContext, 0, habit)

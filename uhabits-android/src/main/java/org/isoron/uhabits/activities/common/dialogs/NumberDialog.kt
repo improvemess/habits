@@ -47,7 +47,6 @@ class NumberDialog : AppCompatDialogFragment() {
         arrayOf(view.yesBtn, view.noBtn, view.unknownBtnNumber).forEach {
             it.typeface = InterfaceUtils.getFontAwesome(requireContext())
         }
-        if (!prefs.isSkipEnabled) view.skipBtnNumber.visibility = View.GONE
         if (!requireArguments().getBoolean("allowUnknown", true)) {
             view.unknownBtnNumber.visibility = View.GONE
         }
