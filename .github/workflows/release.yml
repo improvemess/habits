@@ -1,12 +1,19 @@
 name: Release
 
-# Jeder Merge auf dev (Squash, Commit-Titel = PR-Titel) startet semantic-release:
-# Version aus den Conventional-Commit-Titeln ableiten, CHANGELOG.md und
-# versionName/versionCode aktualisieren, APK bauen und als GitHub-Release
-# veröffentlichen. Konfiguration: .releaserc.json, Build: tools/release/prepare.sh
+# Releases entstehen auf main: Feature-PRs landen per Squash auf dev
+# (Commit-Titel = PR-Titel), ein Release-PR dev → main wird als Merge-Commit
+# gemergt (Ruleset auf main erlaubt nur das). semantic-release liest die
+# einzelnen Conventional-Commit-Titel von dev, leitet daraus die Version ab,
+# aktualisiert CHANGELOG.md und versionName/versionCode, baut die APK und
+# veröffentlicht sie als GitHub-Release. Danach wird main nach dev
+# zurückgeführt. Konfiguration: .releaserc.json, Build: tools/release/prepare.sh,
+# Rückführung: tools/release/back-merge.sh
+#
+# Titel des Release-PRs z. B. "chore(release): dev → main". Er wird zum Titel
+# des Merge-Commits und darf selbst kein Release auslösen (kein feat/fix).
 on:
   push:
-    branches: [dev]
+    branches: [main]
   workflow_dispatch:
 
 concurrency:
@@ -24,10 +31,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     # Der Release-Commit selbst trägt [skip ci]; das hier ist nur die Absicherung.
-    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') }}
+    # workflow_dispatch nur auf main, sonst liefe die Rückführung von einem
+    # anderen Branch aus.
+    if: ${{ github.ref == 'refs/heads/main' && !contains(github.event.head_commit.message, '[skip ci]') }}
     steps:
-      # Gepusht wird per Deploy-Key: Er darf die Ruleset auf dev (Pflicht-Checks)
-      # umgehen, GITHUB_TOKEN dagegen nicht.
+      # Gepusht wird per Deploy-Key: Er darf die Rulesets auf main und dev
+      # (Pflicht-Checks, nur per PR) umgehen, GITHUB_TOKEN dagegen nicht.
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -63,6 +72,16 @@ jobs:
             conventional-changelog-conventionalcommits@10
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Läuft auch ohne neues Release (z. B. nur chore/docs seit dem letzten),
+      # damit dev den Merge-Commit von main ebenfalls enthält.
+      - name: Merge main back into dev
+        env:
+          GIT_AUTHOR_NAME: semantic-release-bot
+          GIT_AUTHOR_EMAIL: 32174276+semantic-release-bot@users.noreply.github.com
+          GIT_COMMITTER_NAME: semantic-release-bot
+          GIT_COMMITTER_EMAIL: 32174276+semantic-release-bot@users.noreply.github.com
+        run: tools/release/back-merge.sh main dev
 
       - name: Summary
         if: steps.release.outputs.new_release_published == 'true'

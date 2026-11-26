@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.27.0](https://github.com/improvemess/habits/compare/v2.26.0...v2.27.0) (2026-11-26)
+
+* APK nach Paket-ID und Version benennen ([#120](https://github.com/improvemess/habits/issues/120)) ([9bad1cc](https://github.com/improvemess/habits/commit/9bad1cca30b8b096ab771944260ecb72b5e6488a)), references [#104](https://github.com/improvemess/habits/issues/104)
+
+### Features
+
+* eigene Paket-ID com.improvemess.habits ([#104](https://github.com/improvemess/habits/issues/104)) ([#119](https://github.com/improvemess/habits/issues/119)) ([9b6463b](https://github.com/improvemess/habits/commit/9b6463b8af755a09a0e13e84a36f5fa9ad8cf7aa)), references [#107](https://github.com/improvemess/habits/issues/107) [#107](https://github.com/improvemess/habits/issues/107)
+* einheitliche Gesten für alle Gewohnheitsarten ([#76](https://github.com/improvemess/habits/issues/76)) ([#103](https://github.com/improvemess/habits/issues/103)) ([d5a8e7d](https://github.com/improvemess/habits/commit/d5a8e7d67ba795e52e010504b9973d16df6920e6))
+* mehrfach pro Tag über das Häufigkeits-Feld ([#43](https://github.com/improvemess/habits/issues/43)) ([#102](https://github.com/improvemess/habits/issues/102)) ([35298e9](https://github.com/improvemess/habits/commit/35298e9a2c77f095c5784bf4863906fe0ed27b6c))
+
 ## [2.26.0](https://github.com/oliverlorenz/uhabits/compare/v2.25.2...v2.26.0) (2026-11-26)
 
 ### Features

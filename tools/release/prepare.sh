@@ -43,5 +43,12 @@ fi
 ./gradlew --stacktrace :uhabits-android:assembleDebug
 
 mkdir -p dist
-cp uhabits-android/build/outputs/apk/debug/uhabits-android-debug.apk "dist/loop-${VERSION}.apk"
-echo "APK: dist/loop-${VERSION}.apk"
+# Name nach Paket-ID und Version, z. B. com.improvemess.habits.2.27.0.apk
+APP_ID=$(sed -n -E 's/^ *applicationId = "([^"]+)".*/\1/p' "$GRADLE_FILE")
+if [[ -z "$APP_ID" ]]; then
+    echo "::error::applicationId nicht in $GRADLE_FILE gefunden" >&2
+    exit 1
+fi
+APK="dist/${APP_ID}.${VERSION}.apk"
+cp uhabits-android/build/outputs/apk/debug/uhabits-android-debug.apk "$APK"
+echo "APK: $APK"
