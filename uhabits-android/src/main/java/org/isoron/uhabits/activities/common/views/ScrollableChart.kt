@@ -167,7 +167,8 @@ abstract class ScrollableChart : View, GestureDetector.OnGestureListener, Animat
         }
         userScrolling = true
         dx *= -direction
-        dx = min(dx, (maxX - scroller.currX).toFloat())
+        // Never scroll past today (negative) or past the oldest day.
+        dx = min(max(dx, -scroller.currX.toFloat()), (maxX - scroller.currX).toFloat())
         scroller.startScroll(
             scroller.currX,
             scroller.currY,

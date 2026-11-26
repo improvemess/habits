@@ -72,6 +72,7 @@ class HabitCardView(
     private var sharedIcon: TextView
     private var scoreRing: RingView
     private var streakFlame: StreakFlameView
+    private var columnsDivider: View
 
     private var dataOffset = 0
     private var state: HabitCardViewState? = null
@@ -231,6 +232,12 @@ class HabitCardView(
             }
         }
 
+        // Clear edge between the name and the day columns (the header draws the same line).
+        columnsDivider = View(context).apply {
+            layoutParams = LinearLayout.LayoutParams(dp(2f).toInt(), MATCH_PARENT)
+            setBackgroundColor(sres.getColor(R.attr.contrast40))
+        }
+
         innerFrame = LinearLayout(context).apply {
             gravity = Gravity.CENTER_VERTICAL
             orientation = LinearLayout.HORIZONTAL
@@ -241,6 +248,7 @@ class HabitCardView(
             addView(streakFlame)
             addView(label)
             addView(sharedIcon)
+            addView(columnsDivider)
             addView(checkmarkPanel)
             addView(numberPanel)
 
