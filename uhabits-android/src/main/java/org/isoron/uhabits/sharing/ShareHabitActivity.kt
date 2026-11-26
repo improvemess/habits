@@ -20,17 +20,18 @@ package org.isoron.uhabits.sharing
 
 import android.content.ContentUris
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
 import android.view.View
-import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.button.MaterialButton
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.qrcode.QRCodeWriter
 import kotlinx.coroutines.CoroutineScope
@@ -38,6 +39,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import org.isoron.platform.gui.toInt
 import org.isoron.uhabits.BuildConfig
 import org.isoron.uhabits.HabitsApplication
 import org.isoron.uhabits.R
@@ -73,6 +75,9 @@ class ShareHabitActivity : AppCompatActivity() {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private var share: Share? = null
 
+    /** The habit color in the current theme, for buttons and radio buttons (#96). */
+    private var accentColor = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val component = (application as HabitsApplication).component
@@ -87,12 +92,19 @@ class ShareHabitActivity : AppCompatActivity() {
 
         binding = ShareHabitBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        val appTheme = binding.root.currentTheme()
         binding.root.setupToolbar(
             toolbar = binding.toolbar,
             title = getString(R.string.share_with_friends),
             color = habit.color,
-            theme = binding.root.currentTheme()
+            theme = appTheme
         )
+        accentColor = appTheme.color(habit.color).toInt()
+        listOf(binding.shareButton, binding.inviteButton, binding.sendLinkButton, binding.stopButton)
+            .forEach { colorButton(it) }
+        val radioTint = ColorStateList.valueOf(accentColor)
+        binding.historyToday.buttonTintList = radioTint
+        binding.historyAll.buttonTintList = radioTint
         binding.outerLinearLayout.applyBottomInset()
         binding.root.applyRootViewInsets()
 
@@ -178,7 +190,8 @@ class ShareHabitActivity : AppCompatActivity() {
                 }
             )
             row.addView(
-                Button(this, null, android.R.attr.borderlessButtonStyle).apply {
+                MaterialButton(this, null, R.attr.borderlessButtonStyle).apply {
+                    colorButton(this)
                     text = getString(R.string.share_remove_friend)
                     setOnClickListener {
                         AlertDialog.Builder(this@ShareHabitActivity)
@@ -196,6 +209,12 @@ class ShareHabitActivity : AppCompatActivity() {
             )
             list.addView(row)
         }
+    }
+
+    /** Text and ripple in the habit color, like the toolbar (#96). */
+    private fun colorButton(button: MaterialButton) {
+        button.setTextColor(accentColor)
+        button.rippleColor = ColorStateList.valueOf(accentColor).withAlpha(RIPPLE_ALPHA)
     }
 
     private fun onStopSharing() {
@@ -245,5 +264,10 @@ class ShareHabitActivity : AppCompatActivity() {
         val matrix = QRCodeWriter().encode(text, BarcodeFormat.QR_CODE, size, size)
         val pixels = IntArray(size * size) { i -> if (matrix[i % size, i / size]) Color.BLACK else Color.WHITE }
         return Bitmap.createBitmap(pixels, size, size, Bitmap.Config.ARGB_8888)
+    }
+
+    companion object {
+        /** About 20 %, like the ripple of a Material text button. */
+        private const val RIPPLE_ALPHA = 0x33
     }
 }

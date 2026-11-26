@@ -62,13 +62,14 @@
 
         <Button
             android:id="@+id/cancelButton"
-            style="?android:attr/borderlessButtonStyle"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@android:string/cancel" />
 
         <Button
             android:id="@+id/acceptButton"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/accept_invite_button" />
