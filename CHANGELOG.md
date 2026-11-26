@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.26.0](https://github.com/oliverlorenz/uhabits/compare/v2.25.2...v2.26.0) (2026-11-26)
+
+### Features
+
+* feste Wochentage für Gewohnheiten ([#19](https://github.com/oliverlorenz/uhabits/issues/19)) ([#100](https://github.com/oliverlorenz/uhabits/issues/100)) ([70a5839](https://github.com/oliverlorenz/uhabits/commit/70a5839727011e50d36164eee7a1c80f811135de)), closes [#95](https://github.com/oliverlorenz/uhabits/issues/95)
+
 ## [2.25.2](https://github.com/oliverlorenz/uhabits/compare/v2.25.1...v2.25.2) (2026-11-26)
 
 ### Bug Fixes
