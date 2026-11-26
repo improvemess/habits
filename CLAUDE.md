@@ -37,6 +37,8 @@ Bei **jeder** Änderung (Feature, Fix, Änderung am Verhalten, an Berechtigungen
 
 - `./gradlew ktlintCheck` (alle Module) und die betroffenen Tests ausführen; CI „Quality Gates" schlägt bei ktlint-Verstößen fehl (z. B. Import-Reihenfolge).
 - Bekannte, bereits vorhandene Testfehler lokal unter Windows (nicht von uns): `StringsTest.testFormat`, `HabitsCSVExporterTest.testExportCSV`, `HabitListTest.testWriteCSV`. Vor Annahme einer Regression die CI prüfen.
+- **Instrumented Tests laufen lokal nicht** (kein Emulator) und werden hier nur kompiliert. Bei Änderungen an UI-Abläufen (Dialoge, Activities, Navigation, Back-Verhalten) deshalb vor dem Push: `uhabits-android/src/androidTest` nach betroffenen Schritten durchsuchen (`CommonSteps.createHabit`, `HabitsTest` u. a.), sie mitziehen und einen Acceptance-Test für das neue Verhalten ergänzen. Ergebnisse von `registerForActivityResult` treffen vor `onStart` ein, also nach `onSaveInstanceState`: im Callback `dismissAllowingStateLoss()` statt `dismiss()` und keine Fragment-Transaktionen mit `commit()`.
+- **Nach jedem Push die CI prüfen** (`gh pr checks <nr> --repo improvemess/habits`, bei Fehlern `gh run view <id> --log-failed`) und Fehler beheben, bevor der PR als fertig gemeldet wird.
 
 ## Lokale Build-Umgebung (Windows)
 
