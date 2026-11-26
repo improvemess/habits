@@ -58,11 +58,6 @@
             android:text="@string/fa_check" />
 
         <TextView
-            android:id="@+id/skipBtn"
-            style="@style/CheckmarkPopupBtn"
-            android:text="@string/fa_skipped" />
-
-        <TextView
             android:id="@+id/noBtn"
             style="@style/CheckmarkPopupBtn"
             android:text="@string/fa_times" />
@@ -97,11 +92,6 @@
             android:id="@+id/saveBtn"
             style="@style/NumericalPopupBtn"
             android:text="@string/save" />
-
-        <TextView
-            android:id="@+id/skipBtnNumber"
-            style="@style/NumericalPopupBtn"
-            android:text="@string/skip_day" />
 
         <TextView
             android:id="@+id/unknownBtnNumber"

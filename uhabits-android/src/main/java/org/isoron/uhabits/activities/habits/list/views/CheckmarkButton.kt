@@ -100,7 +100,6 @@ class CheckmarkButtonView(
         } else {
             Entry.nextToggleValue(
                 value = state.value,
-                isSkipEnabled = preferences.isSkipEnabled,
                 isBeforeCreation = state.beforeCreation
             )
         }

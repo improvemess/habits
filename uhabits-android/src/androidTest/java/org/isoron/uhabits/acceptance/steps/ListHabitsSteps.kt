@@ -51,7 +51,7 @@ object ListHabitsSteps {
             }
             MenuItem.TOGGLE_COMPLETED -> {
                 clickViewWithId(R.id.action_filter)
-                CommonSteps.clickText(R.string.hide_completed)
+                CommonSteps.clickText(R.string.hide_entered)
             }
             else -> throw RuntimeException()
         }

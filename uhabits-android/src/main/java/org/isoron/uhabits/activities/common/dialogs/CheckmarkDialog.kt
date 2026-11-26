@@ -30,7 +30,6 @@ import org.isoron.uhabits.HabitsApplication
 import org.isoron.uhabits.R
 import org.isoron.uhabits.activities.habits.list.views.NEGATIVE_RED
 import org.isoron.uhabits.core.models.Entry.Companion.NO
-import org.isoron.uhabits.core.models.Entry.Companion.SKIP
 import org.isoron.uhabits.core.models.Entry.Companion.UNKNOWN
 import org.isoron.uhabits.core.models.Entry.Companion.YES_MANUAL
 import org.isoron.uhabits.databinding.CheckmarkPopupBinding
@@ -51,7 +50,7 @@ class CheckmarkDialog : AppCompatDialogFragment() {
         val prefs = appComponent.preferences
         view = CheckmarkPopupBinding.inflate(LayoutInflater.from(context))
         val color = requireArguments().getInt("color")
-        arrayOf(view.yesBtn, view.skipBtn).forEach {
+        arrayOf(view.yesBtn).forEach {
             it.setTextColor(color)
         }
         arrayOf(view.noBtn, view.unknownBtn).forEach {
@@ -59,13 +58,12 @@ class CheckmarkDialog : AppCompatDialogFragment() {
         }
         // A cross is a relapse for a habit the user wants to quit
         if (requireArguments().getBoolean("negative", false)) view.noBtn.setTextColor(NEGATIVE_RED)
-        arrayOf(view.yesBtn, view.noBtn, view.skipBtn, view.unknownBtn).forEach {
+        arrayOf(view.yesBtn, view.noBtn, view.unknownBtn).forEach {
             it.typeface = getFontAwesome(requireContext())
         }
         originalNotes = requireArguments().getString("notes")!!
         originalValue = requireArguments().getInt("value")
         view.notes.setText(originalNotes)
-        if (!prefs.isSkipEnabled) view.skipBtn.visibility = GONE
         if (!requireArguments().getBoolean("allowUnknown", true)) {
             view.unknownBtn.visibility = GONE
         }
@@ -83,7 +81,6 @@ class CheckmarkDialog : AppCompatDialogFragment() {
         }
         view.yesBtn.setOnClickListener { onClick(YES_MANUAL) }
         view.noBtn.setOnClickListener { onClick(NO) }
-        view.skipBtn.setOnClickListener { onClick(SKIP) }
         view.unknownBtn.setOnClickListener { onClick(UNKNOWN) }
         view.notes.setOnEditorActionListener { v, actionId, event ->
             onClick(requireArguments().getInt("value"))
