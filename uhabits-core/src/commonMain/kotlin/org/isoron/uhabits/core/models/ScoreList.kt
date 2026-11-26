@@ -79,7 +79,8 @@ class ScoreList {
         val firstWeekday = getFirstWeekday()
         // (measurable habits keep their rolling score, only their completion follows the week mode)
         val isMonthly = frequency.denominator == 30 || frequency.denominator == 31
-        val restartsPeriodically = calendarPeriod && !isNumerical && (frequency.denominator == 7 || isMonthly)
+        val isYearly = frequency.isYearly
+        val restartsPeriodically = calendarPeriod && !isNumerical && (frequency.denominator == 7 || isMonthly || isYearly)
         var rollingSum = 0.0
         var numerator = frequency.numerator
         var denominator = frequency.denominator
@@ -101,7 +102,11 @@ class ScoreList {
             val offset = values.size - i - 1
             val value = values[offset]
             val date = from.plus(i)
-            val startsPeriod = if (isMonthly) date.day == 1 else date.startOfWeek(firstWeekday) == date
+            val startsPeriod = when {
+                isYearly -> date.month == 1 && date.day == 1
+                isMonthly -> date.day == 1
+                else -> date.startOfWeek(firstWeekday) == date
+            }
             if (restartsPeriodically && startsPeriod) {
                 window.clear()
                 rollingSum = 0.0

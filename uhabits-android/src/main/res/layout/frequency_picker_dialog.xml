@@ -160,6 +160,44 @@
             android:text="@string/per_rolling_month" />
 
     <LinearLayout
+            android:id="@+id/xTimesPerYearContainer"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:gravity="center_vertical">
+
+        <RadioButton
+                android:id="@+id/xTimesPerYearRadioButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        <EditText
+                android:id="@+id/xTimesPerYearTextView"
+                android:layout_width="50dp"
+                android:layout_height="40dp"
+                android:gravity="center"
+                android:background="@drawable/bg_input_box"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:inputType="number"
+                android:maxLength="3"
+                android:text="12" />
+
+    </LinearLayout>
+
+    <TextView
+            android:id="@+id/yearModePicker"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginStart="56dp"
+            android:layout_marginBottom="8dp"
+            android:gravity="center_vertical"
+            android:paddingStart="12dp"
+            android:paddingEnd="8dp"
+            android:background="@drawable/bg_input_box"
+            android:drawableEnd="@drawable/ic_arrow_drop_down_dark"
+            android:text="@string/per_rolling_year" />
+
+    <LinearLayout
         android:id="@+id/xTimesPerYDaysContainer"
         android:layout_width="match_parent"
         android:layout_height="48dp"
