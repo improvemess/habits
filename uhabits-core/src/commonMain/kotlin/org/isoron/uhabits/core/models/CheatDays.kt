@@ -22,80 +22,80 @@ import org.isoron.platform.time.DayOfWeek
 import org.isoron.platform.time.LocalDate
 
 /**
- * How generous the streak freezes are (see #20). A freeze is used automatically when a due unit
- * (day, week or month) is missed: the streak survives, but the number does not grow. Freezes are
- * earned by done units, up to [cap]; a new streak starts with [startFreezes].
+ * How generous the cheat days are (see #20). A cheat day is used automatically when a due unit
+ * (day, week or month) is missed: the streak survives, but the number does not grow. Cheat days are
+ * earned by done units, up to [cap]; a new streak starts with [startCheatDays].
  *
- * [earnEvery] holds the number of done units that earn one freeze, for days, weeks and months.
+ * [earnEvery] holds the number of done units that earn one cheat day, for days, weeks and months.
  */
-enum class FreezeLevel(
+enum class CheatDayLevel(
     val id: Int,
-    val startFreezes: Int,
+    val startCheatDays: Int,
     val cap: Int,
     private val earnEvery: List<Int>
 ) {
-    /** No freezes: a miss breaks the streak. */
+    /** No cheat days: a miss breaks the streak. */
     STRICT(0, 0, 0, listOf(0, 0, 0)),
 
     BALANCED(1, 1, 2, listOf(14, 4, 3)),
 
     RELAXED(2, 2, 3, listOf(7, 3, 2));
 
-    /** Done units that earn one freeze in [unit]; 0 if the level has no freezes. */
+    /** Done units that earn one cheat day in [unit]; 0 if the level has no cheat days. */
     fun earnEvery(unit: StreakUnit): Int = earnEvery[unit.id]
 
     companion object {
         /** Level used when nothing was chosen. */
         val DEFAULT = BALANCED
 
-        fun fromId(id: Int): FreezeLevel? = entries.firstOrNull { it.id == id }
+        fun fromId(id: Int): CheatDayLevel? = entries.firstOrNull { it.id == id }
     }
 }
 
 /** From [since] on (inclusive) the level with id [levelId] applies. */
-data class FreezeChange(val since: LocalDate, val levelId: Int)
+data class CheatDayChange(val since: LocalDate, val levelId: Int)
 
 /**
- * The global freeze level as a history: a change only applies from its day on and never to the
+ * The global cheat day level as a history: a change only applies from its day on and never to the
  * past, so that past days are always judged by the rule that held back then. Days before the first
- * change use [FreezeLevel.DEFAULT].
+ * change use [CheatDayLevel.DEFAULT].
  */
-data class FreezeHistory(val changes: List<FreezeChange> = emptyList()) {
-    private val sorted: List<FreezeChange> =
+data class CheatDayHistory(val changes: List<CheatDayChange> = emptyList()) {
+    private val sorted: List<CheatDayChange> =
         changes.sortedBy { it.since.daysSince2000 }.associateBy { it.since }.values.toList()
 
     /** The level that applies on [date]. */
-    fun levelOn(date: LocalDate): FreezeLevel {
-        val change = sorted.lastOrNull { !it.since.isNewerThan(date) } ?: return FreezeLevel.DEFAULT
-        return FreezeLevel.fromId(change.levelId) ?: FreezeLevel.DEFAULT
+    fun levelOn(date: LocalDate): CheatDayLevel {
+        val change = sorted.lastOrNull { !it.since.isNewerThan(date) } ?: return CheatDayLevel.DEFAULT
+        return CheatDayLevel.fromId(change.levelId) ?: CheatDayLevel.DEFAULT
     }
 
     /** The latest level. */
-    val current: FreezeLevel
-        get() = sorted.lastOrNull()?.let { FreezeLevel.fromId(it.levelId) } ?: FreezeLevel.DEFAULT
+    val current: CheatDayLevel
+        get() = sorted.lastOrNull()?.let { CheatDayLevel.fromId(it.levelId) } ?: CheatDayLevel.DEFAULT
 
     /** Returns the history with [level] valid from [since] on; later planned changes are replaced. */
-    fun changedFrom(since: LocalDate, level: FreezeLevel): FreezeHistory {
+    fun changedFrom(since: LocalDate, level: CheatDayLevel): CheatDayHistory {
         val kept = sorted.filter { it.since.isOlderThan(since) }
-        val before = kept.lastOrNull()?.levelId ?: FreezeLevel.DEFAULT.id
-        if (before == level.id) return FreezeHistory(kept)
-        return FreezeHistory(kept + FreezeChange(since, level.id))
+        val before = kept.lastOrNull()?.levelId ?: CheatDayLevel.DEFAULT.id
+        if (before == level.id) return CheatDayHistory(kept)
+        return CheatDayHistory(kept + CheatDayChange(since, level.id))
     }
 
     /** Text stored in the preferences: `daysSince2000:levelId` pairs separated by commas. */
     fun encode(): String = sorted.joinToString(",") { "${it.since.daysSince2000}:${it.levelId}" }
 
     companion object {
-        fun decode(text: String?): FreezeHistory {
-            if (text.isNullOrBlank()) return FreezeHistory()
-            val result = mutableListOf<FreezeChange>()
+        fun decode(text: String?): CheatDayHistory {
+            if (text.isNullOrBlank()) return CheatDayHistory()
+            val result = mutableListOf<CheatDayChange>()
             for (part in text.split(",")) {
                 val pair = part.split(":")
                 val days = pair.getOrNull(0)?.trim()?.toIntOrNull() ?: continue
                 val id = pair.getOrNull(1)?.trim()?.toIntOrNull() ?: continue
-                result.add(FreezeChange(LocalDate(days), id))
+                result.add(CheatDayChange(LocalDate(days), id))
             }
-            return FreezeHistory(result)
+            return CheatDayHistory(result)
         }
     }
 }
@@ -105,73 +105,90 @@ data class UnitOutcome(val date: LocalDate, val done: Boolean, val counts: Boole
 
 /**
  * Result of walking through the due units: the streak [count] (only units with [UnitOutcome.counts]),
- * whether the streak is still [alive], whether the latest unit was bridged by a freeze ([frozen]),
- * the [freezes] left, and whether the next miss would break the streak ([atRisk]; never for a level
- * without freezes).
+ * whether the streak is still [alive], whether the latest unit was bridged by a cheat day ([used]),
+ * the [cheatDays] left, and whether the next miss would break the streak ([atRisk]; never for a level
+ * without cheat days). [untilNext] is the number of done units until the next cheat day is earned,
+ * or null if none can be earned (level without cheat days, stock full, or no streak).
  */
-data class FreezeResult(
+data class CheatDayResult(
     val count: Int,
     val alive: Boolean,
-    val frozen: Boolean,
-    val freezes: Int,
-    val atRisk: Boolean
+    val used: Boolean,
+    val cheatDays: Int,
+    val atRisk: Boolean,
+    val untilNext: Int? = null
 )
 
-object StreakFreezeEvaluator {
+object CheatDayEvaluator {
     /**
-     * Walks through [units] (oldest first). A miss uses a freeze if one is left, otherwise the streak
-     * breaks and the count falls to 0; freezes may be used in a row. Done units earn freezes (one
-     * per `earnEvery`, never above the cap). A new streak starts with the start freezes of its level.
-     * When the level changes, the stock starts at zero, so a change never grants freezes.
+     * Walks through [units] (oldest first). A miss uses a cheat day if one is left, otherwise the streak
+     * breaks and the count falls to 0; cheat days may be used in a row. Done units earn cheat days (one
+     * per `earnEvery`, never above the cap). A new streak starts with the start cheat days of its level.
+     * When the level changes, the stock starts at zero, so a change never grants cheat days.
      */
     fun evaluate(
         units: List<UnitOutcome>,
         unit: StreakUnit,
-        levelOn: (LocalDate) -> FreezeLevel
-    ): FreezeResult {
+        levelOn: (LocalDate) -> CheatDayLevel
+    ): CheatDayResult {
         var count = 0
         var alive = false
-        var frozen = false
-        var freezes = 0
+        var used = false
+        var cheatDays = 0
         var progress = 0
-        var level: FreezeLevel? = null
+        var level: CheatDayLevel? = null
         for (outcome in units) {
             val unitLevel = levelOn(outcome.date)
             if (unitLevel != level) {
-                freezes = 0
+                cheatDays = 0
                 progress = 0
                 level = unitLevel
             }
             if (outcome.done) {
                 if (!alive) {
                     alive = true
-                    freezes = unitLevel.startFreezes
+                    cheatDays = unitLevel.startCheatDays
                     progress = 0
                 }
-                frozen = false
+                used = false
                 if (outcome.counts) count++
                 val every = unitLevel.earnEvery(unit)
-                if (every > 0 && freezes < unitLevel.cap) {
+                if (every > 0 && cheatDays < unitLevel.cap) {
                     progress++
                     if (progress >= every) {
-                        freezes++
+                        cheatDays++
                         progress = 0
                     }
                 }
             } else if (alive) {
-                if (freezes > 0) {
-                    freezes--
-                    frozen = true
+                if (cheatDays > 0) {
+                    cheatDays--
+                    used = true
                 } else {
                     alive = false
-                    frozen = false
+                    used = false
                     count = 0
                     progress = 0
                 }
             }
         }
-        val current = level ?: return FreezeResult(0, false, false, 0, false)
-        return FreezeResult(count, alive, frozen && alive, if (alive) freezes else 0, alive && freezes == 0 && current.cap > 0)
+        val current = level ?: return CheatDayResult(0, false, false, 0, false)
+        val every = current.earnEvery(unit)
+        val untilNext = if (alive && every > 0 && cheatDays < current.cap) every - progress else null
+        return CheatDayResult(
+            count = count,
+            alive = alive,
+            used = used && alive,
+            cheatDays = if (alive) cheatDays else 0,
+            atRisk = alive && cheatDays == 0 && current.cap > 0,
+            untilNext = untilNext
+        )
+    }
+
+    /** Evaluates [habit] up to [today] in its streak unit, with the global level [history]. */
+    fun forHabit(habit: Habit, history: CheatDayHistory, today: LocalDate, firstWeekday: DayOfWeek): CheatDayResult {
+        val unit = habit.streakUnit ?: StreakUnit.defaultFor(habit.effectiveFrequency)
+        return evaluate(unitsOf(habit, unit, today, firstWeekday), unit) { history.levelOn(it) }
     }
 
     /**

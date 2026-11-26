@@ -265,17 +265,35 @@
     <string name="streak_unit_days_short">d</string>
     <string name="streak_unit_weeks_short">w</string>
     <string name="streak_unit_months_short">mo</string>
-    <string name="streak_freeze_strict">Strict</string>
-    <string name="streak_freeze_balanced">Balanced</string>
-    <string name="streak_freeze_relaxed">Relaxed</string>
-    <string name="pref_streak_freeze_title">Streak freezes</string>
-    <string name="pref_streak_freeze_description">A freeze is used automatically when you miss a due day, week or month: the streak survives, but the number does not grow. You earn freezes by completing units. Strict: no freezes. Balanced: 1 to start, 1 more per 14 days / 4 weeks / 3 months, up to 2. Relaxed: 2 to start, 1 more per 7 days / 3 weeks / 2 months, up to 3. Changes only apply from today on.</string>
-    <string-array name="streak_freeze_entries">
-        <item>@string/streak_freeze_strict</item>
-        <item>@string/streak_freeze_balanced</item>
-        <item>@string/streak_freeze_relaxed</item>
+    <string name="cheat_days_strict">Strict</string>
+    <string name="cheat_days_balanced">Balanced</string>
+    <string name="cheat_days_relaxed">Relaxed</string>
+    <string name="pref_cheat_days_title">Cheat days</string>
+    <string name="pref_cheat_days_description">A cheat day is used automatically when you miss a due day, week or month: the streak survives, but the number does not grow. You earn cheat days by completing units. Strict: none. Balanced: 1 to start, 1 more per 14 days / 4 weeks / 3 months, up to 2. Relaxed: 2 to start, 1 more per 7 days / 3 weeks / 2 months, up to 3. Changes only apply from today on. You see your cheat days at the top of each habit.</string>
+    <string name="cheat_days_title">Cheat days</string>
+    <string name="cheat_days_count">%1$d of %2$d</string>
+    <string name="cheat_days_new_streak">Your next streak starts with %1$d.</string>
+    <string name="cheat_days_none_left">None left: the next miss breaks your streak.</string>
+    <string name="cheat_days_used">A cheat day saved your streak.</string>
+    <string name="cheat_days_full">You are at the maximum.</string>
+    <plurals name="cheat_days_next_days">
+        <item quantity="one">Next cheat day after %d more done day.</item>
+        <item quantity="other">Next cheat day after %d more done days.</item>
+    </plurals>
+    <plurals name="cheat_days_next_weeks">
+        <item quantity="one">Next cheat day after %d more done week.</item>
+        <item quantity="other">Next cheat day after %d more done weeks.</item>
+    </plurals>
+    <plurals name="cheat_days_next_months">
+        <item quantity="one">Next cheat day after %d more done month.</item>
+        <item quantity="other">Next cheat day after %d more done months.</item>
+    </plurals>
+    <string-array name="cheat_days_entries">
+        <item>@string/cheat_days_strict</item>
+        <item>@string/cheat_days_balanced</item>
+        <item>@string/cheat_days_relaxed</item>
     </string-array>
-    <string-array name="streak_freeze_values">
+    <string-array name="cheat_days_values">
         <item>0</item>
         <item>1</item>
         <item>2</item>

@@ -143,7 +143,7 @@ class ListHabitsScreen(
                 theme = themeSwitcher.currentTheme!!,
                 showStreak = preferences.isStreakFlameEnabled,
                 sharedHabits = shareStore.sharedHabitUuids(),
-                freezeHistory = preferences.streakFreezeHistory
+                cheatDayHistory = preferences.cheatDayHistory
             )
         )
     }

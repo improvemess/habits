@@ -102,8 +102,6 @@ class HabitCardView(
             streak = r.streak
             unitLabel = context.getString(r.streakUnit.shortRes)
             isActive = r.streakDoneToday
-            isFrozen = r.streakFrozen
-            isAtRisk = r.streakAtRisk
             visibility = if (newState.showStreak) View.VISIBLE else View.GONE
         }
         checkmarkPanel.visibility = when (r.isNumerical) {

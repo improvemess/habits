@@ -68,11 +68,11 @@
 
         <ListPreference
                 android:defaultValue="1"
-                android:entries="@array/streak_freeze_entries"
-                android:entryValues="@array/streak_freeze_values"
-                android:key="pref_streak_freeze"
-                android:summary="@string/pref_streak_freeze_description"
-                android:title="@string/pref_streak_freeze_title"
+                android:entries="@array/cheat_days_entries"
+                android:entryValues="@array/cheat_days_values"
+                android:key="pref_cheat_days"
+                android:summary="@string/pref_cheat_days_description"
+                android:title="@string/pref_cheat_days_title"
                 app:iconSpaceReserved="false" />
 
         <SwitchPreferenceCompat

@@ -24,8 +24,8 @@ import org.isoron.platform.time.getFirstWeekdayNumberAccordingToLocale
 import org.isoron.platform.time.getToday
 import org.isoron.platform.utils.StringUtils.Companion.joinLongs
 import org.isoron.platform.utils.StringUtils.Companion.splitLongs
-import org.isoron.uhabits.core.models.FreezeHistory
-import org.isoron.uhabits.core.models.FreezeLevel
+import org.isoron.uhabits.core.models.CheatDayHistory
+import org.isoron.uhabits.core.models.CheatDayLevel
 import org.isoron.uhabits.core.models.HabitList
 import org.isoron.uhabits.core.sharing.SharingServers
 import org.isoron.uhabits.core.ui.ThemeSwitcher
@@ -234,18 +234,18 @@ open class Preferences(private val storage: Storage) {
             storage.putBoolean("pref_streak_flame", enabled)
         }
 
-    /** Global streak freeze level as a history, so that a change never applies to the past (see #20). */
-    open var streakFreezeHistory: FreezeHistory
-        get() = FreezeHistory.decode(storage.getString("pref_streak_freeze_history", ""))
+    /** Global cheat days level as a history, so that a change never applies to the past (see #20). */
+    open var cheatDayHistory: CheatDayHistory
+        get() = CheatDayHistory.decode(storage.getString("pref_cheat_days_history", ""))
         set(history) {
-            storage.putString("pref_streak_freeze_history", history.encode())
+            storage.putString("pref_cheat_days_history", history.encode())
         }
 
-    /** The streak freeze level now; changing it only takes effect from today on. */
-    open var streakFreezeLevel: FreezeLevel
-        get() = streakFreezeHistory.current
+    /** The cheat days level now; changing it only takes effect from today on. */
+    open var cheatDayLevel: CheatDayLevel
+        get() = cheatDayHistory.current
         set(level) {
-            streakFreezeHistory = streakFreezeHistory.changedFrom(getToday(), level)
+            cheatDayHistory = cheatDayHistory.changedFrom(getToday(), level)
         }
 
     /**

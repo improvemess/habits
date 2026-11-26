@@ -25,7 +25,7 @@ import androidx.preference.PreferenceManager
 import me.tatarka.inject.annotations.Inject
 import org.isoron.uhabits.R
 import org.isoron.uhabits.core.AppScope
-import org.isoron.uhabits.core.models.FreezeLevel
+import org.isoron.uhabits.core.models.CheatDayLevel
 import org.isoron.uhabits.core.preferences.Preferences
 import org.isoron.uhabits.inject.AppContext
 
@@ -97,8 +97,8 @@ class SharedPreferencesStorage(
             "pref_streak_flame" -> {
                 preferences.isStreakFlameEnabled = getBoolean(key, true)
             }
-            "pref_streak_freeze" -> {
-                FreezeLevel.fromId(getString(key, "1").toIntOrNull() ?: 1)?.let { preferences.streakFreezeLevel = it }
+            "pref_cheat_days" -> {
+                CheatDayLevel.fromId(getString(key, "1").toIntOrNull() ?: 1)?.let { preferences.cheatDayLevel = it }
             }
         }
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
