@@ -93,19 +93,40 @@ step() {
     return 1
 }
 
+# Rückgabe 0, wenn eine View mit passender resource-id oder passendem Text sichtbar ist.
+visible() {
+    $ADB shell uiautomator dump /sdcard/ui.xml > /dev/null 2>&1 &&
+        $ADB pull /sdcard/ui.xml "$OUT/ui.xml" > /dev/null 2>&1 &&
+        tr '>' '\n' < "$OUT/ui.xml" | grep -qE "(resource-id|text)=\"($1)\""
+}
+
+# Legt eine Gewohnheit über den Editor an. Mit drittem Argument wird es als Ziel
+# eingetragen (Pflichtfeld bei messbaren Gewohnheiten).
 create_habit() {
-    local type_id=$1 name=$2
+    local type_id=$1 name=$2 target=${3:-}
     step "Neue Gewohnheit" "$PACKAGE:id/actionCreateHabit" &&
         step "Aufbauen" "$PACKAGE:id/buttonBuild" &&
         step "Typ" "$PACKAGE:id/$type_id" &&
         step "Name" "$PACKAGE:id/nameInput" &&
-        $ADB shell input text "$name" &&
-        step "Speichern" "$PACKAGE:id/buttonSave"
+        $ADB shell input text "$name" || return 1
+    if [ -n "$target" ]; then
+        step "Ziel" "$PACKAGE:id/targetInput" && $ADB shell input text "$target" || return 1
+    fi
+    step "Speichern" "$PACKAGE:id/buttonSave" || return 1
+    sleep 1
+    if visible "$PACKAGE:id/buttonSave"; then
+        echo "::error::Ablauf: \"$name\" ließ sich nicht speichern, der Editor ist noch offen."
+        screenshot "save-failed"
+        status=1
+        $ADB shell input keyevent KEYCODE_BACK
+        $ADB shell input keyevent KEYCODE_BACK
+        return 1
+    fi
 }
 
 echo "::group::Fester Ablauf"
 create_habit buttonYesNo "Smoke_yes_no" && echo "Gewohnheit Ja/Nein angelegt."
-create_habit buttonMeasurable "Smoke_measurable" && echo "Messbare Gewohnheit angelegt."
+create_habit buttonMeasurable "Smoke_measurable" 5 && echo "Messbare Gewohnheit angelegt."
 if step "Gewohnheit öffnen" "Smoke_yes_no"; then
     sleep 2
     screenshot show-habit
