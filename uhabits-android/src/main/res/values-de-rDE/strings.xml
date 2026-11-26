@@ -308,6 +308,29 @@
     <string name="streak_unit_months">Monate</string>
     <string name="streak_unit_days_short">T</string>
     <string name="streak_unit_weeks_short">W</string>
+    <string name="cheat_days_strict">Streng</string>
+    <string name="cheat_days_balanced">Ausgewogen</string>
+    <string name="cheat_days_relaxed">Entspannt</string>
+    <string name="pref_cheat_days_title">Cheat Days</string>
+    <string name="pref_cheat_days_description">Ein Cheat Day wird automatisch eingesetzt, wenn du einen fälligen Tag, eine Woche oder einen Monat verpasst: Die Streak bleibt erhalten, die Zahl steigt aber nicht. Cheat Days verdienst du durch erledigte Einheiten. Streng: keine. Ausgewogen: 1 zum Start, 1 weiterer pro 14 Tage / 4 Wochen / 3 Monate, höchstens 2. Entspannt: 2 zum Start, 1 weiterer pro 7 Tage / 3 Wochen / 2 Monate, höchstens 3. Änderungen gelten erst ab heute. Deine Cheat Days siehst du oben in jeder Gewohnheit.</string>
+    <string name="cheat_days_title">Cheat Days</string>
+    <string name="cheat_days_count">%1$d von %2$d</string>
+    <string name="cheat_days_new_streak">Deine nächste Streak startet mit %1$d.</string>
+    <string name="cheat_days_none_left">Keiner mehr übrig: Der nächste Aussetzer bricht deine Streak.</string>
+    <string name="cheat_days_used">Ein Cheat Day hat deine Streak gerettet.</string>
+    <string name="cheat_days_full">Du hast das Maximum erreicht.</string>
+    <plurals name="cheat_days_next_days">
+        <item quantity="one">Nächster Cheat Day nach %d weiterem erledigten Tag.</item>
+        <item quantity="other">Nächster Cheat Day nach %d weiteren erledigten Tagen.</item>
+    </plurals>
+    <plurals name="cheat_days_next_weeks">
+        <item quantity="one">Nächster Cheat Day nach %d weiterer erledigter Woche.</item>
+        <item quantity="other">Nächster Cheat Day nach %d weiteren erledigten Wochen.</item>
+    </plurals>
+    <plurals name="cheat_days_next_months">
+        <item quantity="one">Nächster Cheat Day nach %d weiterem erledigten Monat.</item>
+        <item quantity="other">Nächster Cheat Day nach %d weiteren erledigten Monaten.</item>
+    </plurals>
     <string name="streak_unit_months_short">M</string>
     <string name="friends">Freunde</string>
     <string name="friends_empty">Noch teilt kein Freund eine Gewohnheit mit dir. Wenn dir jemand einen Einladungslink schickt, öffne ihn, oder kopiere ihn und wähle hier „Einladung annehmen“.</string>

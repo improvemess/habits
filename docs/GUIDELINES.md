@@ -15,7 +15,7 @@ Please see `docs/BUILD.md` and `docs/TEST.md`
 
 ## Branching Policy
 
-This repository uses the [git-flow branching model](https://nvie.com/posts/a-successful-git-branching-model/). Basically, there are two main branches, `dev` and `master`. All the development takes place in the `dev` branch. After the new features have been implemented and tested, they are merged into the `master` branch and a new version of the app is released. Please submit your pull requests against the `dev` branch.
+This fork uses two main branches, `dev` and `main`. All the development takes place in the `dev` branch, which is also the default branch. Releases are made by merging `dev` into `main`. Please submit your pull requests against the `dev` branch. See `docs/RELEASE.md` for details.
 
 ## Submitting Code
 
@@ -46,6 +46,8 @@ For Kotlin, we follow [ktlint](https://ktlint.github.io/) style with default set
 For legacy Java code, we don't have strict guidelines. Please follow a code style similar to the file you are modifying. Note that new classes should be written in Kotlin. Pull requests converting existing Java code to Kotlin are also welcome.
 
 ## Release Process
+
+In this fork, versions and releases are created automatically from Conventional Commit titles when `dev` is merged into `main`; see `docs/RELEASE.md`. The rest of this section describes upstream.
 
 The project loosely follows [semantic versioning](https://semver.org/), adapted for applications. Suppose, for example, that version `1.2.3` has just been released. The next version would be:
 * `1.2.4` if a bug is being fixed.

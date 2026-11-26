@@ -21,6 +21,8 @@ package org.isoron.uhabits.core.ui.screens.habits.list
 import org.isoron.platform.time.LocalDate
 import org.isoron.platform.time.getFirstWeekday
 import org.isoron.platform.time.getToday
+import org.isoron.uhabits.core.models.CheatDayEvaluator
+import org.isoron.uhabits.core.models.CheatDayHistory
 import org.isoron.uhabits.core.models.Entry
 import org.isoron.uhabits.core.models.EntryList
 import org.isoron.uhabits.core.models.Habit
@@ -52,7 +54,9 @@ object ListHabitsPresenter {
         theme: Theme,
         showStreak: Boolean = false,
         /** UUIDs of habits shared with friends; their cards get a marker. */
-        sharedHabits: Set<String> = emptySet()
+        sharedHabits: Set<String> = emptySet(),
+        /** Global cheat days level history (see #20). */
+        cheatDayHistory: CheatDayHistory = CheatDayHistory()
     ): ListHabitsState {
         val view = allHabits.getFiltered(filter)
         view.primaryOrder = primaryOrder
@@ -61,7 +65,7 @@ object ListHabitsPresenter {
         val items = mutableListOf<HabitCardState>()
         for (habit in view) {
             val id = habit.id ?: continue
-            items.add(cardState(habit, id, checkmarkCount, isShared = habit.uuid in sharedHabits))
+            items.add(cardState(habit, id, checkmarkCount, isShared = habit.uuid in sharedHabits, cheatDayHistory = cheatDayHistory))
         }
         return ListHabitsState(
             items = items,
@@ -79,20 +83,29 @@ object ListHabitsPresenter {
      * The card of one habit with its last [checkmarkCount] days. Also used for
      * friends' habits, which are shown with the same cards (read-only).
      */
-    fun cardState(habit: Habit, id: Long, checkmarkCount: Int, isShared: Boolean = false): HabitCardState {
+    fun cardState(
+        habit: Habit,
+        id: Long,
+        checkmarkCount: Int,
+        isShared: Boolean = false,
+        cheatDayHistory: CheatDayHistory = CheatDayHistory()
+    ): HabitCardState {
         val today = getToday()
         val dateFrom = today.minus(checkmarkCount - 1)
         val score = habit.scores[today].value
-        val ongoing = habit.streaks.getOngoingStreak(today)
         val streakUnit = habit.streakUnit ?: StreakUnit.defaultFor(habit.effectiveFrequency)
-        val streak = ongoing?.let { countStreak(habit, it.start, it.end, streakUnit) } ?: 0
+        val cheatDays = CheatDayEvaluator.evaluate(
+            CheatDayEvaluator.unitsOf(habit, streakUnit, today, getFirstWeekday()),
+            streakUnit
+        ) { cheatDayHistory.levelOn(it) }
+        val streak = cheatDays.count
         // A manually skipped day keeps the streak alive, but it is not "done". During a pause
         // the flame stays colored (if there is a streak); on the first day after the pause it
         // is gray again until the streak is continued or lapses.
         val skippedToday = habit.computedEntries.get(today).value == Entry.SKIP
         // In weeks or months the streak only counts completed periods; until the first one is
         // complete there is no streak yet and the flame stays gray at 0.
-        val streakDoneToday = ongoing != null && ongoing.end >= today &&
+        val streakDoneToday = cheatDays.alive && habit.computedEntries.get(today).completed &&
             (streakUnit == StreakUnit.DAYS || streak > 0) &&
             (!skippedToday || (streak > 0 && habit.pauses.isPaused(today)))
         val entries = habit.computedEntries.getByInterval(dateFrom, today)
