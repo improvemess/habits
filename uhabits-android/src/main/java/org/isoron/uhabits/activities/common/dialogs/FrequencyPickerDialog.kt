@@ -49,7 +49,11 @@ class FrequencyPickerDialog(
     /** Wording "per week" instead of "every week" for limits of habits to quit. */
     private val quit: Boolean = false,
     /** Bit mask of the fixed weekdays (see DueDays), 0 if the habit uses a frequency (see #19). */
-    private val fixedWeekdays: Int = 0
+    private val fixedWeekdays: Int = 0,
+    /** Number of repetitions per day of a new habit; more than one makes it a measurable habit (see #43). */
+    private val timesPerDay: Int = 1,
+    /** Existing yes/no habits keep one repetition per day, as their entries cannot become counts. */
+    private val timesPerDayEditable: Boolean = true
 ) : AppCompatDialogFragment() {
     // The rolling or calendar choice of the week row and of the month row are independent; only the
     // choice of the selected row is kept.
@@ -62,6 +66,9 @@ class FrequencyPickerDialog(
 
     /** Called on save with the chosen weekdays, or 0 if a frequency was chosen instead. */
     var onFixedDaysPicked: (weekdays: Int) -> Unit = {}
+
+    /** Called on save with the number of repetitions per day, 1 unless "times per day" was chosen. */
+    var onTimesPerDayPicked: (times: Int) -> Unit = {}
 
     private var pickedDays = fixedWeekdays
 
@@ -78,6 +85,9 @@ class FrequencyPickerDialog(
         if (measurable) {
             setUpMeasurableRows()
         } else {
+            binding.everyDayText.setText(R.string.times_per_day)
+            binding.timesPerDayTextView.setText(timesPerDay.toString())
+            binding.timesPerDayTextView.isEnabled = timesPerDayEditable
             addBeforeAfterText(
                 this.getString(R.string.every_x_days),
                 binding.everyXDaysContainer
@@ -106,6 +116,11 @@ class FrequencyPickerDialog(
 
         binding.everyDayRadioButton.setOnClickListener {
             check(binding.everyDayRadioButton)
+            selectInputField(binding.timesPerDayTextView)
+        }
+
+        binding.timesPerDayTextView.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) check(binding.everyDayRadioButton)
         }
 
         binding.everyXDaysRadioButton.setOnClickListener {
@@ -198,6 +213,7 @@ class FrequencyPickerDialog(
     private fun setUpMeasurableRows() {
         binding.everyXDaysContainer.visibility = View.GONE
         binding.xTimesPerYDaysContainer.visibility = View.GONE
+        binding.timesPerDayTextView.visibility = View.GONE
         binding.xTimesPerWeekTextView.visibility = View.GONE
         binding.xTimesPerMonthTextView.visibility = View.GONE
         binding.everyDayText.setText(if (quit) R.string.quit_per_day else R.string.every_day)
@@ -233,11 +249,19 @@ class FrequencyPickerDialog(
     private fun onSaveClicked() {
         if (binding.fixedDaysRadioButton.isChecked && pickedDays != 0) {
             onFixedDaysPicked(pickedDays)
+            onTimesPerDayPicked(1)
             dismiss()
             return
         }
         onFixedDaysPicked(0)
+        onTimesPerDayPicked(pickedTimesPerDay())
         saveFrequency()
+    }
+
+    /** More than one repetition per day, only if that row is chosen of a yes/no habit. */
+    private fun pickedTimesPerDay(): Int {
+        if (measurable || !binding.everyDayRadioButton.isChecked || !timesPerDayEditable) return 1
+        return binding.timesPerDayTextView.text.toString().toIntOrNull()?.coerceAtLeast(1) ?: 1
     }
 
     private fun saveFrequency() {
@@ -376,6 +400,7 @@ class FrequencyPickerDialog(
             if (freqNumerator == 1 && !(freqDenominator == 7 && calendarPeriod)) {
                 if (freqDenominator == 1) {
                     binding.everyDayRadioButton.isChecked = true
+                    selectInputField(binding.timesPerDayTextView)
                 } else {
                     binding.everyXDaysRadioButton.isChecked = true
                     binding.everyXDaysTextView.setText(freqDenominator.toString())

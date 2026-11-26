@@ -161,6 +161,8 @@
     <string name="every_day">Every day</string>
     <string name="every_week">Every week</string>
     <string name="times">times</string>
+    <string name="times_per_day">times per day</string>
+    <string name="x_times_per_day">%d times per day</string>
     <string name="per_rolling_week">per rolling week</string>
     <string name="per_calendar_week">per calendar week</string>
     <string name="per_rolling_month">per rolling month</string>

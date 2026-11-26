@@ -146,6 +146,8 @@
     <string name="every_day">Jeden Tag</string>
     <string name="every_week">Jede Woche</string>
     <string name="times">mal</string>
+    <string name="times_per_day">mal pro Tag</string>
+    <string name="x_times_per_day">%d mal pro Tag</string>
     <string name="per_rolling_week">pro rollierender Woche</string>
     <string name="per_calendar_week">pro Kalenderwoche</string>
     <string name="per_rolling_month">pro rollierendem Monat</string>
