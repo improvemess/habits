@@ -25,6 +25,7 @@ import org.isoron.platform.time.LocalDate
 import org.isoron.platform.time.getToday
 import org.isoron.uhabits.core.models.Entry.Companion.UNKNOWN
 import org.isoron.uhabits.core.preferences.Preferences
+import org.isoron.uhabits.core.ui.screens.habits.list.ZzState
 import org.isoron.uhabits.inject.ActivityContext
 
 data class CheckmarkPanelState(
@@ -32,9 +33,8 @@ data class CheckmarkPanelState(
     val color: Int,
     val notes: List<String>,
     val buttonCount: Int,
-    val paused: List<Boolean> = emptyList(),
     val isNegative: Boolean = false,
-    val restDay: List<Boolean> = emptyList()
+    val zz: List<ZzState> = emptyList()
 )
 
 class CheckmarkPanelView(
@@ -92,9 +92,8 @@ class CheckmarkPanelView(
                         index + dataOffset < state.notes.size -> state.notes[index + dataOffset]
                         else -> ""
                     },
-                    state.paused.getOrElse(index + dataOffset) { false },
                     state.isNegative,
-                    state.restDay.getOrElse(index + dataOffset) { false }
+                    state.zz.getOrElse(index + dataOffset) { ZzState.NONE }
                 )
             )
             button.onToggle = { value, notes -> onToggle(date, value, notes) }

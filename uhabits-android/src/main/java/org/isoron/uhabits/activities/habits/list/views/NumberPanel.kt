@@ -24,6 +24,7 @@ import me.tatarka.inject.annotations.Inject
 import org.isoron.platform.time.LocalDate
 import org.isoron.platform.time.getToday
 import org.isoron.uhabits.core.preferences.Preferences
+import org.isoron.uhabits.core.ui.screens.habits.list.ZzState
 import org.isoron.uhabits.inject.ActivityContext
 
 data class NumberPanelState(
@@ -34,7 +35,7 @@ data class NumberPanelState(
     val notes: List<String>,
     val buttonCount: Int,
     val isNegative: Boolean = false,
-    val restDay: List<Boolean> = emptyList()
+    val zz: List<ZzState> = emptyList()
 )
 
 class NumberPanelView(
@@ -94,7 +95,7 @@ class NumberPanelView(
                         else -> ""
                     },
                     state.isNegative,
-                    state.restDay.getOrElse(index + dataOffset) { false }
+                    state.zz.getOrElse(index + dataOffset) { ZzState.NONE }
                 )
             )
             button.onEdit = { onEdit(date) }

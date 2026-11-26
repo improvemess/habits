@@ -26,6 +26,8 @@ import org.isoron.platform.gui.toInt
 import org.isoron.platform.time.getToday
 import org.isoron.uhabits.core.models.Entry
 import org.isoron.uhabits.core.models.Habit
+import org.isoron.uhabits.core.ui.screens.habits.list.ZzState
+import org.isoron.uhabits.core.ui.screens.habits.list.zzStates
 import org.isoron.uhabits.core.ui.views.WidgetTheme
 import org.isoron.uhabits.widgets.views.CheckmarkWidgetView
 
@@ -61,6 +63,7 @@ open class CheckmarkWidget(
             } else {
                 entryState = habit.computedEntries.get(today).value
             }
+            zz = zzStates(habit, today, today).firstOrNull() ?: ZzState.NONE
             percentage = habit.scores[today].value.toFloat()
             refresh()
         }

@@ -34,11 +34,14 @@ import org.isoron.uhabits.core.models.PaletteColor
 import org.isoron.uhabits.core.preferences.Preferences
 import org.isoron.uhabits.core.ui.callbacks.CheckMarkDialogCallback
 import org.isoron.uhabits.core.ui.callbacks.NumberPickerCallback
+import org.isoron.uhabits.core.ui.screens.habits.list.ZzState
+import org.isoron.uhabits.core.ui.screens.habits.list.zzStates
 import org.isoron.uhabits.core.ui.views.HistoryChart
 import org.isoron.uhabits.core.ui.views.HistoryChart.Square.DIMMED
 import org.isoron.uhabits.core.ui.views.HistoryChart.Square.FAILED
 import org.isoron.uhabits.core.ui.views.HistoryChart.Square.GREY
 import org.isoron.uhabits.core.ui.views.HistoryChart.Square.HATCHED
+import org.isoron.uhabits.core.ui.views.HistoryChart.Square.HATCHED_GRAY
 import org.isoron.uhabits.core.ui.views.HistoryChart.Square.OFF
 import org.isoron.uhabits.core.ui.views.HistoryChart.Square.ON
 import org.isoron.uhabits.core.ui.views.OnDateClickedListener
@@ -112,11 +115,16 @@ class HistoryCardPresenter(
 
     private fun toggle(date: LocalDate) {
         val entry = habit.computedEntries.get(date)
-        val nextValue = Entry.nextToggleValue(
-            value = entry.value,
-            isSkipEnabled = preferences.isSkipEnabled,
-            areQuestionMarksEnabled = preferences.areQuestionMarksEnabled
-        )
+        // Tapping a "zz" day checks it; checking it again leads back to "zz"
+        val nextValue = if (entry.value == SKIP) {
+            Entry.YES_MANUAL
+        } else {
+            Entry.nextToggleValue(
+                value = entry.value,
+                isSkipEnabled = preferences.isSkipEnabled,
+                areQuestionMarksEnabled = preferences.areQuestionMarksEnabled
+            )
+        }
         commandRunner.run(
             CreateRepetitionCommand(
                 habitList,
@@ -162,10 +170,17 @@ class HistoryCardPresenter(
             val today = getToday()
             val oldest = habit.computedEntries.getKnown().lastOrNull()?.date ?: today
             val entries = habit.computedEntries.getByInterval(oldest, today)
+            // Every day that does not affect the streak looks the same; only the color differs
+            val zz = zzStates(habit, oldest, today)
+            fun zzSquare(index: Int) = when (zz.getOrNull(index)) {
+                null, ZzState.NONE -> null
+                ZzState.STREAK -> HATCHED
+                ZzState.GRAY -> HATCHED_GRAY
+            }
             val series = if (habit.isNumerical) {
-                entries.map {
+                entries.mapIndexed { index, it ->
                     when {
-                        it.value == SKIP -> HATCHED
+                        it.value == SKIP -> zzSquare(index) ?: HATCHED_GRAY
                         habit.isNegative && !it.completed && it.value > 0 -> FAILED
                         (it.completed && it.value > 0) -> ON
                         it.completed -> DIMMED
@@ -174,11 +189,10 @@ class HistoryCardPresenter(
                     }
                 }
             } else {
-                entries.map {
+                entries.mapIndexed { index, it ->
                     when (it.value) {
                         YES_MANUAL -> ON
-                        YES_AUTO -> DIMMED
-                        SKIP -> HATCHED
+                        YES_AUTO, SKIP -> zzSquare(index) ?: HATCHED_GRAY
                         Entry.NO -> if (habit.isNegative) FAILED else OFF
                         else -> OFF
                     }
