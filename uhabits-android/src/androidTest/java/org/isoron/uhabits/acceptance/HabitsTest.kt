@@ -105,17 +105,23 @@ class HabitsTest : BaseUserInterfaceTest() {
 
         // Editor -> choice between yes/no and measurable
         pressBack()
+        // The dialog window takes a moment to regain focus; Espresso fails otherwise (flaky).
+        device.waitForIdle()
         Espresso.onView(ViewMatchers.withText("Yes or No"))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         verifyNotShown("I want to build a habit")
 
         // Choice between yes/no and measurable -> choice between build and quit
         pressBack()
+        // The dialog window takes a moment to regain focus; Espresso fails otherwise (flaky).
+        device.waitForIdle()
         verifyShowsScreen(SELECT_HABIT_TYPE)
         verifyNotShown("Yes or No")
 
         // First choice -> leaves the flow
         pressBack()
+        // The dialog window takes a moment to regain focus; Espresso fails otherwise (flaky).
+        device.waitForIdle()
         verifyShowsScreen(LIST_HABITS)
         verifyDoesNotDisplayText("I want to build a habit")
     }
