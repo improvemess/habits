@@ -30,10 +30,22 @@ failed_tests = []
 am_args = "-e class "
 exit_code = 1
 initial_time = 0.0
+stack_lines = []
+in_stack = False
+last_stack = []
 
 for line in open(log_filename).readlines():
     matches = re.findall('^([0-9.]*)', line)
     current_time = float(matches[0])
+
+    if line.split(" ", 1)[-1].startswith("INSTRUMENTATION_STATUS: stack="):
+        in_stack = True
+        stack_lines = [line.split("stack=", 1)[1].rstrip()]
+    elif in_stack and "INSTRUMENTATION_STATUS" not in line and "INSTRUMENTATION_RESULT" not in line:
+        stack_lines.append(line.split(" ", 1)[-1].rstrip())
+    elif in_stack:
+        in_stack = False
+        last_stack = stack_lines
 
     matches = re.findall('INSTRUMENTATION_STATUS: class=(.*)', line)
     if len(matches) > 0:
@@ -52,6 +64,9 @@ for line in open(log_filename).readlines():
         status_code = int(matches[0])
         if (status_code < 0) and (status_code != STATUS_DISABLED):
             am_args += f"{current_class}#{current_method},"
+            error("FAIL detail %s#%s:
+  %s" % (current_class, current_method, "
+  ".join(last_stack[:8])))
             failed_tests.append(f"{current_class}#{current_method}")
         if status_code == STATUS_START:
             initial_time = current_time
