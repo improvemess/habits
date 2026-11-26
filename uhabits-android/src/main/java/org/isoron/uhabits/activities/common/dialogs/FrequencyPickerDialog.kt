@@ -62,6 +62,9 @@ class FrequencyPickerDialog(
     private var _binding: FrequencyPickerDialogBinding? = null
     private val binding get() = _binding!!
 
+    /** The weekday choice is its own dialog; it must not outlive this one (see onDestroyView). */
+    private var weekdayDialog: AlertDialog? = null
+
     var onFrequencyPicked: (num: Int, den: Int, calendarPeriod: Boolean) -> Unit = { _, _, _ -> }
 
     /** Called on save with the chosen weekdays, or 0 if a frequency was chosen instead. */
@@ -75,6 +78,10 @@ class FrequencyPickerDialog(
     constructor() : this(1, 1)
 
     override fun onDestroyView() {
+        // Otherwise tapping OK in a weekday choice left open after this dialog was closed
+        // (back, rotation) would update views that no longer exist and crash.
+        weekdayDialog?.dismiss()
+        weekdayDialog = null
         super.onDestroyView()
         _binding = null
     }
@@ -195,7 +202,7 @@ class FrequencyPickerDialog(
 
     private fun showWeekdayChoice() {
         val selected = DueDays.toWeekdayList(pickedDays).toArray()
-        AlertDialog.Builder(requireActivity())
+        weekdayDialog = AlertDialog.Builder(requireActivity())
             .setTitle(R.string.select_weekdays)
             .setMultiChoiceItems(
                 JavaLocalDateFormatter(Locale.getDefault()).longWeekdayNames(DayOfWeek.SATURDAY),
@@ -203,9 +210,10 @@ class FrequencyPickerDialog(
             ) { _, which, isChecked -> selected[which] = isChecked }
             .setPositiveButton(android.R.string.ok) { _, _ ->
                 pickedDays = DueDays.fromWeekdayList(WeekdayList(selected))
-                updateFixedDaysText()
+                if (_binding != null) updateFixedDaysText()
             }
             .setNegativeButton(android.R.string.cancel, null)
+            .setOnDismissListener { weekdayDialog = null }
             .show()
     }
 
