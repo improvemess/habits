@@ -51,8 +51,8 @@ android {
     }
 
     defaultConfig {
-        versionCode = 22500
-        versionName = "2.25.0"
+        versionCode = 22501
+        versionName = "2.25.1"
         minSdk = 28
         targetSdk = 36
         applicationId = "org.isoron.uhabits"

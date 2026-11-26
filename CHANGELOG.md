@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.25.1](https://github.com/oliverlorenz/uhabits/compare/v2.25.0...v2.25.1) (2026-11-26)
+
+* split instrumented tests across three emulators ([#90](https://github.com/oliverlorenz/uhabits/issues/90)) ([ebaabca](https://github.com/oliverlorenz/uhabits/commit/ebaabca2ac44140e7136be5ed1db83a7502b9171)), closes [#94](https://github.com/oliverlorenz/uhabits/issues/94)
+
+### Bug Fixes
+
+* show why sharing fails instead of "server unreachable" ([#98](https://github.com/oliverlorenz/uhabits/issues/98)) ([aabbd36](https://github.com/oliverlorenz/uhabits/commit/aabbd3691818984542e7d5858e6806c2795d3bc2)), references [#97](https://github.com/oliverlorenz/uhabits/issues/97)
+
 ## [2.25.0](https://github.com/oliverlorenz/uhabits/compare/v2.24.0...v2.25.0) (2026-11-25)
 
 * run Android assemble, unit tests and lint as parallel jobs ([#89](https://github.com/oliverlorenz/uhabits/issues/89)) ([097c0ba](https://github.com/oliverlorenz/uhabits/commit/097c0ba937c68b31fdd95975bed281c6110191ea))
