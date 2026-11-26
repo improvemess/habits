@@ -78,7 +78,7 @@ object ListHabitsSteps {
         Espresso.onView(ViewMatchers.withId(id)).perform(ViewActions.click())
     }
 
-    private fun longClickDescendantWithClass(cls: Class<*>, count: Int): ViewAction {
+    private fun clickDescendantWithClass(cls: Class<*>, count: Int): ViewAction {
         return object : ViewAction {
             override fun getConstraints(): Matcher<View> {
                 return ViewMatchers.isEnabled()
@@ -98,7 +98,7 @@ object ListHabitsSteps {
                         val v = vg.getChildAt(i)
                         if (v is ViewGroup) stack.push(v)
                         if (cls.isInstance(v) && countRemaining > 0) {
-                            v.performLongClick()
+                            v.performClick()
                             uiController.loopMainThreadUntilIdle()
                             countRemaining--
                         }
@@ -108,7 +108,7 @@ object ListHabitsSteps {
         }
     }
 
-    fun longPressCheckmarks(habit: String?, count: Int) {
+    fun toggleCheckmarks(habit: String?, count: Int) {
         CommonSteps.scrollToText(habit)
         Espresso.onView(
             allOf(
@@ -116,7 +116,7 @@ object ListHabitsSteps {
                 ViewMatchers.withClassName(endsWith("HabitCardView"))
             )
         ).perform(
-            longClickDescendantWithClass(CheckmarkButtonView::class.java, count)
+            clickDescendantWithClass(CheckmarkButtonView::class.java, count)
         )
         BaseUserInterfaceTest.device.waitForIdle()
     }

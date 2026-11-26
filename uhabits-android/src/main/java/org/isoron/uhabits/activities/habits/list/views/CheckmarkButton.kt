@@ -27,6 +27,7 @@ import android.graphics.RectF
 import android.graphics.Typeface
 import android.text.TextPaint
 import android.view.HapticFeedbackConstants
+import android.view.MotionEvent
 import android.view.View
 import android.view.View.MeasureSpec.EXACTLY
 import me.tatarka.inject.annotations.Inject
@@ -62,9 +63,7 @@ internal val NEGATIVE_RED = Color.rgb(0xD3, 0x2F, 0x2F)
 class CheckmarkButtonView(
     context: Context,
     val preferences: Preferences
-) : View(context),
-    View.OnClickListener,
-    View.OnLongClickListener {
+) : View(context) {
 
     private var state = CheckmarkButtonState(Color.BLACK, 0, "")
 
@@ -81,9 +80,11 @@ class CheckmarkButtonView(
 
     val currentValue: Int get() = state.value
 
+    private val gestures = EntryButtonGestures(this) { preferences.isShortToggleEnabled }
+
     init {
-        setOnClickListener(this)
-        setOnLongClickListener(this)
+        isClickable = true
+        isLongClickable = true
     }
 
     fun performToggle() {
@@ -103,20 +104,18 @@ class CheckmarkButtonView(
         invalidate()
     }
 
-    override fun onClick(v: View) {
-        if (preferences.isShortToggleEnabled) {
-            performToggle()
-        } else {
-            onEdit()
-        }
+    override fun onTouchEvent(event: MotionEvent): Boolean = gestures.onTouchEvent(event)
+
+    /** Main action: toggles the checkmark. */
+    override fun performClick(): Boolean {
+        super.performClick()
+        performToggle()
+        return true
     }
 
-    override fun onLongClick(v: View): Boolean {
-        if (preferences.isShortToggleEnabled) {
-            onEdit()
-        } else {
-            performToggle()
-        }
+    /** Opens the dialog for notes and corrections. */
+    override fun performLongClick(): Boolean {
+        onEdit()
         return true
     }
 

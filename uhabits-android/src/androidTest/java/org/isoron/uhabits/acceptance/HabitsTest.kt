@@ -48,7 +48,7 @@ import org.isoron.uhabits.acceptance.steps.ListHabitsSteps.MenuItem.TOGGLE_ARCHI
 import org.isoron.uhabits.acceptance.steps.ListHabitsSteps.MenuItem.TOGGLE_COMPLETED
 import org.isoron.uhabits.acceptance.steps.ListHabitsSteps.MenuItem.UNARCHIVE
 import org.isoron.uhabits.acceptance.steps.ListHabitsSteps.clickMenu
-import org.isoron.uhabits.acceptance.steps.ListHabitsSteps.longPressCheckmarks
+import org.isoron.uhabits.acceptance.steps.ListHabitsSteps.toggleCheckmarks
 import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -177,7 +177,7 @@ class HabitsTest : BaseUserInterfaceTest() {
     fun shouldToggleCheckmarksAndUpdateScore() {
         launchApp()
         verifyShowsScreen(LIST_HABITS)
-        longPressCheckmarks("Wake up early", count = 2)
+        toggleCheckmarks("Wake up early", count = 2)
         clickText("Wake up early")
         verifyShowsScreen(SHOW_HABIT)
         // TODO: find a better way than sleeping in tests
@@ -195,7 +195,7 @@ class HabitsTest : BaseUserInterfaceTest() {
         clickMenu(TOGGLE_COMPLETED)
         verifyDoesNotDisplayText("Track time")
         verifyDisplaysText("Wake up early")
-        longPressCheckmarks("Wake up early", count = 1)
+        toggleCheckmarks("Wake up early", count = 1)
         // TODO: find a better way than sleeping in tests
         Thread.sleep(2001L)
         verifyDoesNotDisplayText("Wake up early")

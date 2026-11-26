@@ -89,9 +89,9 @@ class EntryPanelViewTest : BaseViewTest() {
     fun testToggle() {
         val dates = mutableListOf<LocalDate>()
         view.onToggle = { t, _, _ -> dates.add(t) }
-        view.buttons[0].performLongClick()
-        view.buttons[2].performLongClick()
-        view.buttons[3].performLongClick()
+        view.buttons[0].performClick()
+        view.buttons[2].performClick()
+        view.buttons[3].performClick()
         assertThat(dates, equalTo(listOf(day(0), day(2), day(3))))
     }
 
@@ -100,9 +100,9 @@ class EntryPanelViewTest : BaseViewTest() {
         val dates = mutableListOf<LocalDate>()
         view.setDataOffset(3)
         view.onToggle = { t, _, _ -> dates += t }
-        view.buttons[0].performLongClick()
-        view.buttons[2].performLongClick()
-        view.buttons[3].performLongClick()
+        view.buttons[0].performClick()
+        view.buttons[2].performClick()
+        view.buttons[3].performClick()
         assertThat(dates, equalTo(listOf(day(3), day(5), day(6))))
     }
 }

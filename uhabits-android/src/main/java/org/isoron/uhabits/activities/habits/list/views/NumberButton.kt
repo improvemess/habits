@@ -25,9 +25,9 @@ import android.graphics.Paint
 import android.graphics.RectF
 import android.graphics.Typeface
 import android.text.TextPaint
+import android.view.HapticFeedbackConstants
+import android.view.MotionEvent
 import android.view.View
-import android.view.View.OnClickListener
-import android.view.View.OnLongClickListener
 import me.tatarka.inject.annotations.Inject
 import org.isoron.uhabits.R
 import org.isoron.uhabits.core.models.Entry
@@ -69,9 +69,7 @@ fun Double.toShortString(): String = when {
 class NumberButtonView(
     @ActivityContext context: Context,
     val preferences: Preferences
-) : View(context),
-    OnClickListener,
-    OnLongClickListener {
+) : View(context) {
 
     private var state = NumberButtonState(0, 0.0, false, "", "")
 
@@ -86,16 +84,25 @@ class NumberButtonView(
         invalidate()
     }
 
+    private val gestures = EntryButtonGestures(this) { preferences.isShortToggleEnabled }
+
     init {
-        setOnClickListener(this)
-        setOnLongClickListener(this)
+        isClickable = true
+        isLongClickable = true
     }
 
-    override fun onClick(v: View) {
+    override fun onTouchEvent(event: MotionEvent): Boolean = gestures.onTouchEvent(event)
+
+    /** Main action: increments the value. */
+    override fun performClick(): Boolean {
+        super.performClick()
         onIncrement()
+        performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+        return true
     }
 
-    override fun onLongClick(v: View): Boolean {
+    /** Opens the dialog for value, notes and corrections. */
+    override fun performLongClick(): Boolean {
         onEdit()
         return true
     }
