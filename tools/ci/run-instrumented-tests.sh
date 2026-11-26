@@ -26,7 +26,7 @@ ADB=${ADB:-adb}
 ATTEMPTS=${ATTEMPTS:-2}
 NUM_SHARDS=${NUM_SHARDS:-1}
 SHARD_INDEX=${SHARD_INDEX:-0}
-PACKAGE=org.isoron.uhabits
+PACKAGE=com.improvemess.habits
 RUNNER=$PACKAGE.test/androidx.test.runner.AndroidJUnitRunner
 
 shard_args=""

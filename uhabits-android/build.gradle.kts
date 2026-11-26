@@ -55,7 +55,12 @@ android {
         versionName = "2.26.0"
         minSdk = 28
         targetSdk = 36
-        applicationId = "org.isoron.uhabits"
+        // Eigene ID statt upstream org.isoron.uhabits, damit der Fork in F-Droid
+        // aufgenommen werden kann und neben dem Original installierbar ist (#104).
+        // namespace (Kotlin-Pakete, R-Klasse) bleibt org.isoron.uhabits.
+        applicationId = "com.improvemess.habits"
+        // Für XML-Ressourcen, die die Paket-ID brauchen (preferences.xml: targetPackage).
+        resValue("string", "application_id", applicationId!!)
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
