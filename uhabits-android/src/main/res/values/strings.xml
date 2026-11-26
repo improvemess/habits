@@ -289,8 +289,6 @@
     <string name="pref_skip_title">Enable skip days</string>
     <string name="skip_day">Skip</string>
     <string name="pref_skip_description">Toggle twice to add a skip instead of a checkmark. Skips keep your score unchanged and don\'t break your streak.</string>
-    <string name="pref_unknown_title">Show question marks for missing data</string>
-    <string name="pref_unknown_description">Differentiate days without data from actual lapses. To enter a lapse, toggle twice.</string>
     <string name="you_are_now_a_developer">You are now a developer</string>
     <string name="activity_not_found">No app was found to support this action</string>
     <string name="pref_midnight_delay_title">Extend day a few hours past midnight</string>

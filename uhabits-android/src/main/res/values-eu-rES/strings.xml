@@ -206,8 +206,6 @@
     <string name="no_boolean_habits">Ez da bai-ala-ez ohiturarik aurkitu</string>
     <string name="pref_skip_title">Gaitu atseden egunak</string>
     <string name="pref_skip_description">Sakatu bi aldiz kontrol-markaren ordez atseden bat gehitzeko. Atsedenek zure puntuazioa aldatu gabe mantentzen dute eta ez dute segida hausten.</string>
-    <string name="pref_unknown_title">Adierazi galdera ikurra falta diren datuetan</string>
-    <string name="pref_unknown_description">Bereizi daturik gabeko egunak benetako hutsegiteetatik. Hutsegite bat sartzeko, sakatu bi aldiz.</string>
     <string name="you_are_now_a_developer">Garatzailea zara!</string>
     <string name="activity_not_found">Ez da aurkitu akzio hau gauzatu dezakeen aplikaziorik</string>
     <string name="pref_midnight_delay_title">Luzatu eguna gauerdia osteko ordu batzuetara</string>

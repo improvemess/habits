@@ -207,13 +207,6 @@ open class Preferences(private val storage: Storage) {
             storage.putBoolean("pref_skip_enabled", value)
         }
 
-    open var areQuestionMarksEnabled: Boolean
-        get() = storage.getBoolean("pref_unknown_enabled", false)
-        set(value) {
-            storage.putBoolean("pref_unknown_enabled", value)
-            for (l in listeners) l.onQuestionMarksChanged()
-        }
-
     /** Server for new shares; existing shares keep theirs (see [org.isoron.uhabits.core.sharing.Share]). */
     open var sharingServerUrl: String
         get() {
@@ -262,7 +255,6 @@ open class Preferences(private val storage: Storage) {
     interface Listener {
         fun onCheckmarkSequenceChanged() {}
         fun onNotificationsChanged() {}
-        fun onQuestionMarksChanged() {}
     }
 
     interface Storage {

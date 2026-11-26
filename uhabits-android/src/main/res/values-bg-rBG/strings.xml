@@ -208,8 +208,6 @@
     <string name="decrement">Намаляване</string>
     <string name="pref_skip_title">Включване на пропуснати дни</string>
     <string name="pref_skip_description">Маркирайте два пъти за да добавите пропускане вместо отметка. Пропусканията поддържат силата на навика ви непроменена и не прекъсват поредицата ви.</string>
-    <string name="pref_unknown_title">Показване на питанки при липсващи данни</string>
-    <string name="pref_unknown_description">Разграничаване на дните без данни от реални пропуски. За да добавите пропуск, маркирайте два пъти.</string>
     <string name="you_are_now_a_developer">Вие вече сте разработчик</string>
     <string name="activity_not_found">Не е намерено приложение, което да поддържа това действие</string>
     <string name="pref_midnight_delay_title">Удължаване на деня с няколко часа след полунощ</string>

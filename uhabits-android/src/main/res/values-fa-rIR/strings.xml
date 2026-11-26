@@ -208,8 +208,6 @@
     <string name="decrement">کاهش</string>
     <string name="pref_skip_title">فعال کردن پریدن از روزها</string>
     <string name="pref_skip_description">دو بار تپ کنید تا به جای تیک زدن، از آن روز بپرید. پریدن از یک روز، امتیاز شما را دست‌نخورده نگه‌می‌دارد و استمرار عادت را خراب نمی‌کند.</string>
-    <string name="pref_unknown_title">نمایش علامت سوال برای مواردی که دیتایی وجود ندارد</string>
-    <string name="pref_unknown_description">روزهایی که دیتا ندارند و آن‌هایی که از رویشان پریده‌اید را متفاوت نشان می‌دهد. برای پریدن از روی یک روز، دو بار روی آن تپ کنید.</string>
     <string name="you_are_now_a_developer">شما اکنون یک توسعه‌دهنده هستید</string>
     <string name="activity_not_found">هیچ برنامه‌ای برای انجام این کار یافت نشد.</string>
     <string name="pref_midnight_delay_title">تمدید کردن روز تا چند ساعت بعد از نیمه‌شب</string>

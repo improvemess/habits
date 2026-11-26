@@ -206,8 +206,6 @@
     <string name="decrement">遞减</string>
     <string name="pref_skip_title">啟用跳過天數功能</string>
     <string name="pref_skip_description">切換兩次、設定跳過，以取代完成標記。跳過功能將維持你的分數不變，不打破你的連續紀錄。</string>
-    <string name="pref_unknown_title">在資料缺漏處顯示問號</string>
-    <string name="pref_unknown_description">將沒有數據的天數與逾期者分開。要更改逾期設定，請切換兩次。</string>
     <string name="you_are_now_a_developer">你現在已成為開發人員！</string>
     <string name="activity_not_found">找不到可以處理這個動作的應用程式。</string>
     <string name="pref_midnight_delay_title">將一天延長到午夜過後幾個小時</string>

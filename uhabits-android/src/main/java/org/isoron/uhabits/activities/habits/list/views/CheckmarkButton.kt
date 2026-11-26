@@ -52,7 +52,9 @@ data class CheckmarkButtonState(
     val notes: String,
     val paused: Boolean = false,
     val isNegative: Boolean = false,
-    val restDay: Boolean = false
+    val restDay: Boolean = false,
+    /** The day lies before the habit was created; only there a tap can reset the day (see #70). */
+    val beforeCreation: Boolean = false
 )
 
 /** A day that rests: part of a pause, or a day on which the habit is not due. */
@@ -95,7 +97,7 @@ class CheckmarkButtonView(
             Entry.nextToggleValue(
                 value = state.value,
                 isSkipEnabled = preferences.isSkipEnabled,
-                areQuestionMarksEnabled = preferences.areQuestionMarksEnabled
+                isBeforeCreation = state.beforeCreation
             )
         }
         state = state.copy(value = v)
@@ -152,7 +154,7 @@ class CheckmarkButtonView(
                 NO -> {
                     if (state.isNegative) {
                         NEGATIVE_RED
-                    } else if (preferences.areQuestionMarksEnabled) {
+                    } else if (state.beforeCreation) {
                         mediumContrastColor
                     } else {
                         lowContrastColor
@@ -163,13 +165,7 @@ class CheckmarkButtonView(
             val id = when (state.value) {
                 SKIP -> R.string.fa_skipped
                 NO -> R.string.fa_times
-                UNKNOWN -> {
-                    if (preferences.areQuestionMarksEnabled) {
-                        R.string.fa_question
-                    } else {
-                        R.string.fa_times
-                    }
-                }
+                UNKNOWN -> R.string.fa_times
                 else -> R.string.fa_check
             }
             paint.typeface = when {
@@ -180,7 +176,6 @@ class CheckmarkButtonView(
             // A rest day is shown faded, so that it is not mistaken for a real pause
             if (state.isResting && !state.paused) paint.color = lowContrastColor
             paint.textSize = when {
-                id == R.string.fa_question -> sp(12.0f)
                 state.value == YES_AUTO -> sp(13.0f)
                 else -> sp(14.0f)
             }

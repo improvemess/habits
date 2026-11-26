@@ -279,7 +279,8 @@ class SQLiteHabitList(private val modelFactory: ModelFactory) : HabitList() {
                 negativeSince = habit.negativeSince?.unixTime,
                 calendarPeriod = if (habit.calendarPeriod) 1 else 0,
                 streakUnit = habit.streakUnit?.id ?: StreakUnit.AUTO_ID,
-                dueDays = habit.dueDays.encode()
+                dueDays = habit.dueDays.encode(),
+                createdOn = habit.createdOn?.unixTime
             )
         }
 
@@ -302,6 +303,7 @@ class SQLiteHabitList(private val modelFactory: ModelFactory) : HabitList() {
             habit.calendarPeriod = data.calendarPeriod != 0
             habit.streakUnit = StreakUnit.fromId(data.streakUnit)
             habit.dueDays = DueDays.decode(data.dueDays)
+            habit.createdOn = data.createdOn?.let { LocalDate.fromUnixTime(it) }
             if (data.reminderHour != null && data.reminderMin != null) {
                 habit.reminder = Reminder(
                     data.reminderHour!!,

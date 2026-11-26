@@ -71,11 +71,6 @@ class ListHabitsActivity : AppCompatActivity(), Preferences.Listener {
 
     private lateinit var menu: ListHabitsMenu
 
-    override fun onQuestionMarksChanged() {
-        invalidateOptionsMenu()
-        menu.behavior.onPreferencesChanged()
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

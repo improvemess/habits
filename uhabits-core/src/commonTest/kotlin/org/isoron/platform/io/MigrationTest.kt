@@ -8,7 +8,7 @@ class MigrationTest {
     @Test
     fun testMigrateFromScratch() = runTest {
         val db = TestDatabaseHelper.createEmptyDatabase()
-        assertEquals(36, db.getVersion())
+        assertEquals(37, db.getVersion())
 
         db.run(
             """
