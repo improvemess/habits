@@ -21,6 +21,7 @@ package org.isoron.uhabits.core.ui.screens.habits.show.views
 
 import org.isoron.platform.time.TruncateField
 import org.isoron.platform.time.getToday
+import org.isoron.uhabits.core.models.Frequency
 import org.isoron.uhabits.core.models.Habit
 import org.isoron.uhabits.core.models.PaletteColor
 import org.isoron.uhabits.core.models.countSkippedDays
@@ -125,6 +126,7 @@ class TargetCardPresenter {
                 else -> dailyTarget * daysInQuarter
             }
             var targetThisYear = when (denominator) {
+                Frequency.YEAR_DAYS -> habit.targetValue
                 30 -> habit.targetValue * monthsInYear
                 7 -> habit.targetValue * weeksInYear
                 else -> dailyTarget * daysInYear

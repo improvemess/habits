@@ -25,6 +25,7 @@ import org.isoron.uhabits.core.models.CheatDayEvaluator
 import org.isoron.uhabits.core.models.CheatDayHistory
 import org.isoron.uhabits.core.models.Entry
 import org.isoron.uhabits.core.models.EntryList
+import org.isoron.uhabits.core.models.Frequency
 import org.isoron.uhabits.core.models.Habit
 import org.isoron.uhabits.core.models.HabitList
 import org.isoron.uhabits.core.models.HabitList.Order
@@ -231,13 +232,13 @@ internal fun countStreak(habit: Habit, from: LocalDate, to: LocalDate, unit: Str
     if (unit == StreakUnit.DAYS) return countPerformedDays(habit, from, to)
     val calendar = EntryList.isCalendarPeriod(habit.effectiveFrequency, habit.calendarPeriod)
     val den = habit.effectiveFrequency.denominator
-    val matchesGoal = (unit == StreakUnit.WEEKS && den == 7) || (unit == StreakUnit.MONTHS && (den == 30 || den == 31))
+    val matchesGoal = (unit == StreakUnit.WEEKS && den == 7) || (unit == StreakUnit.MONTHS && (den == 30 || den == 31)) || (unit == StreakUnit.YEARS && den == Frequency.YEAR_DAYS)
     if (matchesGoal && !calendar) {
         // Only full weeks or months count, also with the days the goal filled in: 6 check marks in a
         // row of a "3 times per week" goal span about 10 days, which is one week, not two. The one
         // exception is a goal that was just reached while the streak is shorter than a period (the
         // rest of its period still lies in the future): that is already 1.
-        val periodLength = if (unit == StreakUnit.WEEKS) 7 else 30
+        val periodLength = unit.days
         val fullPeriods = (from.daysUntil(to) + 1) / periodLength
         val goalReached = countPerformedDays(habit, from, to) >= maxOf(1, habit.effectiveFrequency.numerator)
         return maxOf(fullPeriods, if (goalReached) 1 else 0)
