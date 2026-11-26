@@ -46,7 +46,7 @@ The workflow *Release* (`.github/workflows/release.yml`) runs on every push to `
 
 | Build | Key | Where |
 |---|---|---|
-| Releases (GitHub) | Release key, alias `habits`, SHA-256 in `tools/release/release-cert.sha256` | Secrets `LOOP_KEY_STORE_BASE64` (keystore, base64), `LOOP_KEY_PASSWORD`, `LOOP_STORE_PASSWORD`; the workflow decodes the keystore, passes its path as `LOOP_KEY_STORE` and sets `LOOP_KEY_ALIAS=habits` itself |
+| Releases (GitHub) | Release key, alias `habits`, SHA-256 in `tools/release/release-cert.sha256` | Secrets `LOOP_KEY_STORE_BASE64` (keystore, base64), `LOOP_KEY_PASSWORD`, `LOOP_STORE_PASSWORD`; the workflow decodes the keystore, passes its path as `LOOP_KEY_STORE`; `tools/release/prepare.sh` sets `LOOP_KEY_ALIAS=habits` (not in the workflow: semantic-release would mask the value in the release notes) |
 | Debug APKs (CI) | Fixed debug key | Secret `DEBUG_KEYSTORE_BASE64` |
 | F-Droid, local `assembleRelease` | none (unsigned) | Without `LOOP_KEY_*`, Gradle builds an unsigned release APK |
 

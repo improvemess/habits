@@ -37,6 +37,12 @@ echo "Version gesetzt: ${VERSION} (versionCode ${VERSION_CODE})"
 # Release-Build (R8) mit dem Release-Schlüssel aus LOOP_KEY_* (#127). Ohne
 # diese Variablen baute Gradle eine unsignierte APK (so baut F-Droid); für ein
 # GitHub-Release ist das ein Fehler.
+#
+# Der Alias ist kein Geheimnis und steht deshalb hier statt im Workflow:
+# semantic-release maskiert die Werte aller Umgebungsvariablen, deren Name
+# KEY enthält, auch in Release-Notes und CHANGELOG ("habits" -> "[secure]").
+# Werte, die erst dieses Skript setzt, sieht semantic-release nicht.
+export LOOP_KEY_ALIAS="${LOOP_KEY_ALIAS:-habits}"
 for var in LOOP_KEY_STORE LOOP_KEY_ALIAS LOOP_KEY_PASSWORD LOOP_STORE_PASSWORD; do
     if [[ -z "${!var:-}" ]]; then
         echo "::error::$var ist nicht gesetzt – die Release-APK wäre unsigniert." >&2

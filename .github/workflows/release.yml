@@ -75,9 +75,6 @@ jobs:
             conventional-changelog-conventionalcommits@10
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Alias ist kein Geheimnis; als Secret würde GitHub das Wort "habits"
-          # in allen Logs maskieren (auch in der Paket-ID).
-          LOOP_KEY_ALIAS: habits
           LOOP_KEY_PASSWORD: ${{ secrets.LOOP_KEY_PASSWORD }}
           LOOP_STORE_PASSWORD: ${{ secrets.LOOP_STORE_PASSWORD }}
 
