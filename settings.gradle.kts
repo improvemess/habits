@@ -23,9 +23,14 @@ dependencyResolutionManagement {
             }
         }
         mavenCentral()
-        maven(url = "https://plugins.gradle.org/m2/")
-        maven(url = "https://oss.sonatype.org/content/repositories/snapshots/")
-        maven(url = "https://jitpack.io")
+        // Nur für AppIntro, das nicht auf Maven Central veröffentlicht wird. Auf die
+        // Gruppe beschränkt, damit keine andere Abhängigkeit unbemerkt von jitpack kommt
+        // (F-Droid, #109).
+        maven(url = "https://jitpack.io") {
+            content {
+                includeGroup("com.github.AppIntro")
+            }
+        }
     }
 }
 
