@@ -21,8 +21,11 @@ package org.isoron.uhabits.core.preferences
 import org.isoron.platform.time.DayOfWeek
 import org.isoron.platform.time.LocalDate
 import org.isoron.platform.time.getFirstWeekdayNumberAccordingToLocale
+import org.isoron.platform.time.getToday
 import org.isoron.platform.utils.StringUtils.Companion.joinLongs
 import org.isoron.platform.utils.StringUtils.Companion.splitLongs
+import org.isoron.uhabits.core.models.FreezeHistory
+import org.isoron.uhabits.core.models.FreezeLevel
 import org.isoron.uhabits.core.models.HabitList
 import org.isoron.uhabits.core.sharing.SharingServers
 import org.isoron.uhabits.core.ui.ThemeSwitcher
@@ -229,6 +232,20 @@ open class Preferences(private val storage: Storage) {
         get() = storage.getBoolean("pref_streak_flame", true)
         set(enabled) {
             storage.putBoolean("pref_streak_flame", enabled)
+        }
+
+    /** Global streak freeze level as a history, so that a change never applies to the past (see #20). */
+    open var streakFreezeHistory: FreezeHistory
+        get() = FreezeHistory.decode(storage.getString("pref_streak_freeze_history", ""))
+        set(history) {
+            storage.putString("pref_streak_freeze_history", history.encode())
+        }
+
+    /** The streak freeze level now; changing it only takes effect from today on. */
+    open var streakFreezeLevel: FreezeLevel
+        get() = streakFreezeHistory.current
+        set(level) {
+            streakFreezeHistory = streakFreezeHistory.changedFrom(getToday(), level)
         }
 
     /**

@@ -72,6 +72,24 @@ class StreakFlameView : View {
             }
         }
 
+    /** The latest unit was bridged by a streak freeze: the flame is dimmed (see #20). */
+    var isFrozen: Boolean = false
+        set(value) {
+            if (field != value) {
+                field = value
+                invalidate()
+            }
+        }
+
+    /** No freeze left, the next miss would break the streak: the flame is shown as a warning. */
+    var isAtRisk: Boolean = false
+        set(value) {
+            if (field != value) {
+                field = value
+                invalidate()
+            }
+        }
+
     var isArchived: Boolean = false
         set(value) {
             if (field != value) {
@@ -142,6 +160,8 @@ class StreakFlameView : View {
 
         val displayColor = when {
             isArchived -> sres.getColor(R.attr.contrast60)
+            isAtRisk && streak > 0 -> WARNING_COLOR
+            isActive && isFrozen -> Color.argb(150, Color.red(color), Color.green(color), Color.blue(color))
             isActive -> color
             else -> sres.getColor(R.attr.contrast40)
         }
@@ -166,5 +186,9 @@ class StreakFlameView : View {
 
         canvas.drawText(FontAwesome.FIRE, startX, flameY, pFlame)
         canvas.drawText(streakStr, startX + flameWidth + spacing, textY, pText)
+    }
+
+    private companion object {
+        val WARNING_COLOR = Color.rgb(255, 152, 0)
     }
 }

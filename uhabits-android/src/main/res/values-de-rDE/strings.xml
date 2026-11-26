@@ -310,6 +310,11 @@
     <string name="streak_unit_months">Monate</string>
     <string name="streak_unit_days_short">T</string>
     <string name="streak_unit_weeks_short">W</string>
+    <string name="streak_freeze_strict">Streng</string>
+    <string name="streak_freeze_balanced">Ausgewogen</string>
+    <string name="streak_freeze_relaxed">Entspannt</string>
+    <string name="pref_streak_freeze_title">Streakfreezes</string>
+    <string name="pref_streak_freeze_description">Ein Freeze wird automatisch eingesetzt, wenn du einen fälligen Tag, eine Woche oder einen Monat verpasst: Die Streak bleibt erhalten, die Zahl steigt aber nicht. Freezes verdienst du durch erledigte Einheiten. Streng: keine Freezes. Ausgewogen: 1 zum Start, 1 weiterer pro 14 Tage / 4 Wochen / 3 Monate, höchstens 2. Entspannt: 2 zum Start, 1 weiterer pro 7 Tage / 3 Wochen / 2 Monate, höchstens 3. Änderungen gelten erst ab heute.</string>
     <string name="streak_unit_months_short">M</string>
     <string name="friends">Freunde</string>
     <string name="friends_empty">Noch teilt kein Freund eine Gewohnheit mit dir. Wenn dir jemand einen Einladungslink schickt, öffne ihn, oder kopiere ihn und wähle hier „Einladung annehmen“.</string>

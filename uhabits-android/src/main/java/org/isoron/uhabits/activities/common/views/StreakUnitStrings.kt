@@ -21,6 +21,7 @@ package org.isoron.uhabits.activities.common.views
 
 import androidx.annotation.StringRes
 import org.isoron.uhabits.R
+import org.isoron.uhabits.core.models.FreezeLevel
 import org.isoron.uhabits.core.models.StreakUnit
 
 /** Full name of the unit, e.g. "Weeks". */
@@ -39,4 +40,13 @@ val StreakUnit.shortRes: Int
         StreakUnit.DAYS -> R.string.streak_unit_days_short
         StreakUnit.WEEKS -> R.string.streak_unit_weeks_short
         StreakUnit.MONTHS -> R.string.streak_unit_months_short
+    }
+
+/** Name of the level, e.g. "Balanced". */
+@get:StringRes
+val FreezeLevel.nameRes: Int
+    get() = when (this) {
+        FreezeLevel.STRICT -> R.string.streak_freeze_strict
+        FreezeLevel.BALANCED -> R.string.streak_freeze_balanced
+        FreezeLevel.RELAXED -> R.string.streak_freeze_relaxed
     }

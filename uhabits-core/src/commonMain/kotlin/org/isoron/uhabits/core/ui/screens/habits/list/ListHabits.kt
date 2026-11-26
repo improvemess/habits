@@ -23,11 +23,13 @@ import org.isoron.platform.time.getFirstWeekday
 import org.isoron.platform.time.getToday
 import org.isoron.uhabits.core.models.Entry
 import org.isoron.uhabits.core.models.EntryList
+import org.isoron.uhabits.core.models.FreezeHistory
 import org.isoron.uhabits.core.models.Habit
 import org.isoron.uhabits.core.models.HabitList
 import org.isoron.uhabits.core.models.HabitList.Order
 import org.isoron.uhabits.core.models.HabitMatcher
 import org.isoron.uhabits.core.models.PaletteColor
+import org.isoron.uhabits.core.models.StreakFreezeEvaluator
 import org.isoron.uhabits.core.models.StreakUnit
 import org.isoron.uhabits.core.ui.views.Theme
 
@@ -52,7 +54,9 @@ object ListHabitsPresenter {
         theme: Theme,
         showStreak: Boolean = false,
         /** UUIDs of habits shared with friends; their cards get a marker. */
-        sharedHabits: Set<String> = emptySet()
+        sharedHabits: Set<String> = emptySet(),
+        /** Global streak freeze level history (see #20). */
+        freezeHistory: FreezeHistory = FreezeHistory()
     ): ListHabitsState {
         val view = allHabits.getFiltered(filter)
         view.primaryOrder = primaryOrder
@@ -61,7 +65,7 @@ object ListHabitsPresenter {
         val items = mutableListOf<HabitCardState>()
         for (habit in view) {
             val id = habit.id ?: continue
-            items.add(cardState(habit, id, checkmarkCount, isShared = habit.uuid in sharedHabits))
+            items.add(cardState(habit, id, checkmarkCount, isShared = habit.uuid in sharedHabits, freezeHistory = freezeHistory))
         }
         return ListHabitsState(
             items = items,
@@ -79,20 +83,29 @@ object ListHabitsPresenter {
      * The card of one habit with its last [checkmarkCount] days. Also used for
      * friends' habits, which are shown with the same cards (read-only).
      */
-    fun cardState(habit: Habit, id: Long, checkmarkCount: Int, isShared: Boolean = false): HabitCardState {
+    fun cardState(
+        habit: Habit,
+        id: Long,
+        checkmarkCount: Int,
+        isShared: Boolean = false,
+        freezeHistory: FreezeHistory = FreezeHistory()
+    ): HabitCardState {
         val today = getToday()
         val dateFrom = today.minus(checkmarkCount - 1)
         val score = habit.scores[today].value
-        val ongoing = habit.streaks.getOngoingStreak(today)
         val streakUnit = habit.streakUnit ?: StreakUnit.defaultFor(habit.effectiveFrequency)
-        val streak = ongoing?.let { countStreak(habit, it.start, it.end, streakUnit) } ?: 0
+        val freeze = StreakFreezeEvaluator.evaluate(
+            StreakFreezeEvaluator.unitsOf(habit, streakUnit, today, getFirstWeekday()),
+            streakUnit
+        ) { freezeHistory.levelOn(it) }
+        val streak = freeze.count
         // A manually skipped day keeps the streak alive, but it is not "done". During a pause
         // the flame stays colored (if there is a streak); on the first day after the pause it
         // is gray again until the streak is continued or lapses.
         val skippedToday = habit.computedEntries.get(today).value == Entry.SKIP
         // In weeks or months the streak only counts completed periods; until the first one is
         // complete there is no streak yet and the flame stays gray at 0.
-        val streakDoneToday = ongoing != null && ongoing.end >= today &&
+        val streakDoneToday = freeze.alive && habit.computedEntries.get(today).completed &&
             (streakUnit == StreakUnit.DAYS || streak > 0) &&
             (!skippedToday || (streak > 0 && habit.pauses.isPaused(today)))
         val entries = habit.computedEntries.getByInterval(dateFrom, today)
@@ -117,6 +130,9 @@ object ListHabitsPresenter {
             streak = streak,
             streakUnit = streakUnit,
             streakDoneToday = streakDoneToday,
+            streakFrozen = freeze.frozen,
+            streakFreezes = freeze.freezes,
+            streakAtRisk = freeze.atRisk,
             restDay = if (habit.dueDays.isEverFixed) {
                 entries.map { it.value == Entry.SKIP && habit.isRestDay(it.date) && !habit.pauses.isPaused(it.date) }
             } else {
@@ -146,6 +162,12 @@ data class HabitCardState(
     val streak: Int = 0,
     val streakUnit: StreakUnit = StreakUnit.DAYS,
     val streakDoneToday: Boolean = false,
+    /** The latest due unit was missed and bridged by a streak freeze (see #20). */
+    val streakFrozen: Boolean = false,
+    /** Streak freezes left. */
+    val streakFreezes: Int = 0,
+    /** The next miss would break the streak (no freeze left). */
+    val streakAtRisk: Boolean = false,
     val isShared: Boolean = false
 )
 
