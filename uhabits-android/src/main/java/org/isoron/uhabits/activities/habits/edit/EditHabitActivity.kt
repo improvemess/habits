@@ -396,6 +396,7 @@ class EditHabitActivity : AppCompatActivity() {
             )
         }
         component.commandRunner.run(command)
+        setResult(RESULT_OK)
         finish()
     }
 
